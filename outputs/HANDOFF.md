@@ -90,7 +90,7 @@ Repo: [femedici/vibe-tv, branch agent/vibe-tv](https://github.com/femedici/vibe-
 
 Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`. Branch de integração `agent/vibe-tv`; origin fork e upstream original preservados. Base desta continuação: `9597ae2dabedd500e490c2a6e68f86fd5ca4b96f`. Código Android, histórico e licença MIT mantidos.
 
-Publicação 1.0.4: pendente de commit/push neste registro; coordenador atualizará a evidência após conferir o remoto.
+Publicação 1.0.4: commit `709d72f7dc51f402f3d52120117f6c361cf04f1f` enviado; `git ls-remote` confirmou o mesmo SHA de HEAD. Este registro de evidência segue na mesma branch. A publicação não declara concluídas as pendências físicas T017/T009 nem a troca global de Home.
 
 Worktrees mantidas: `.worktrees/state` (agent/vibe-tv-state), `.worktrees/platform` (agent/vibe-tv-platform), `.worktrees/interface` (agent/vibe-tv-interface). Nenhuma limpeza automática. Base comum original c084d09.
 
