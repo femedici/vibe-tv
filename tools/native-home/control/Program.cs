@@ -43,11 +43,12 @@ internal static class HomeControl
         Guard.Require(read == size, "Original SMACK metadata changed while reading");
         return "BASE64:" + Convert.ToBase64String(value);
     }
-    static void MakeSdkPrivate(string path)
+    static void MakeTransferPrivate(string path)
     {
         Guard.Require(path == Backup || path == BackupHash || path == Observed, "Only new snapshot artifacts may change ownership");
         Guard.RegularFile(path);
-        Guard.Require(chmod(path, 384) == 0 && chown(path, 901, 901) == 0, "Cannot make completed backup privately readable by SDK");
+        // SDB file transfer runs as owner5001:100; SDK command execution uses901:901.
+        Guard.Require(chmod(path, 384) == 0 && chown(path, 5001, 100) == 0, "Cannot make completed snapshot privately readable by SDB transfer");
     }
     static void SaveBackup()
     {
@@ -62,8 +63,8 @@ internal static class HomeControl
             stream.Write(bytes, 0, bytes.Length);
             stream.Flush(true);
         }
-        MakeSdkPrivate(Backup);
-        MakeSdkPrivate(BackupHash);
+        MakeTransferPrivate(Backup);
+        MakeTransferPrivate(BackupHash);
         Console.WriteLine("BACKUP_SHA256=" + hash);
         Console.WriteLine("SOURCE_SMACK64=" + smack);
         Console.WriteLine("BACKUP_RESULT=consistent_integrity_ok");
@@ -96,7 +97,7 @@ internal static class HomeControl
         {
             using (var readOnly = new Sqlite(Database, true)) readOnly.Backup(Observed);
             string hash = Guard.Hash(Observed);
-            MakeSdkPrivate(Observed);
+            MakeTransferPrivate(Observed);
             Console.WriteLine("OBSERVED_SHA256=" + hash);
             Console.WriteLine("OBSERVED_RESULT=consistent_integrity_ok");
         }
