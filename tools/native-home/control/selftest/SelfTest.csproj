@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseAppHost>false</UseAppHost>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="SelfTest.cs" />
+    <Compile Include="../../namespace/Guard.cs" />
+    <Compile Include="../Sqlite.cs" />
+    <Compile Include="../Route.cs" />
+    <EmbeddedResource Include="../../apply.sql" LogicalName="VibeHome.apply.sql" />
+    <EmbeddedResource Include="../../restore.sql" LogicalName="VibeHome.restore.sql" />
+  </ItemGroup>
+</Project>

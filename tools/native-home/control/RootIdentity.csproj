@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseAppHost>false</UseAppHost>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>$(DefineConstants);HOME_$(HomeMode)</DefineConstants>
+    <BackupHashValid>$([System.Text.RegularExpressions.Regex]::IsMatch('$(ExpectedBackupSha256)', '^[0-9a-f]{64}$'))</BackupHashValid>
+  </PropertyGroup>
+  <Target Name="RequireFixedMode" BeforeTargets="BeforeBuild">
+    <Error Condition="'$(HomeMode)' != 'IDENTITY' And '$(HomeMode)' != 'BACKUP' And '$(HomeMode)' != 'APPLY' And '$(HomeMode)' != 'RESTORE'" Text="HomeMode must be exactly IDENTITY, BACKUP, APPLY or RESTORE." />
+    <Error Condition="'$(HomeMode)' == 'APPLY' And '$(BackupHashValid)' != 'True'" Text="APPLY requires ExpectedBackupSha256 from the verified private original backup." />
+  </Target>
+  <ItemGroup>
+    <Compile Include="../namespace/Guard.cs" Link="Guard.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Sqlite.cs" />
+    <Compile Include="Route.cs" />
+    <EmbeddedResource Include="../apply.sql" LogicalName="VibeHome.apply.sql" />
+    <EmbeddedResource Include="../restore.sql" LogicalName="VibeHome.restore.sql" />
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>ExpectedBackupSha256</_Parameter1>
+      <_Parameter2>$(ExpectedBackupSha256)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
