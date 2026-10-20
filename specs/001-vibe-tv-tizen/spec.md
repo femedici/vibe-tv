@@ -1,6 +1,6 @@
 # Feature Specification: Vibe TV para Samsung Tizen
 
-**Feature Branch**: `agent/vibe-tv`
+**Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
 **Status**: 1.0.4 installed; HDMI no-signal precondition corrected; physical PS5 wake and global Home requirements remain unfulfilled/unverified
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
@@ -69,7 +69,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 ## Requirements
 ### Functional Requirements
 - **FR-001** Preserve original repository history/license and publish changes on agent/vibe-tv.
-- **FR-002** Provide a separate hub and label local preview; do not replace Smart Hub.
+- **FR-002** Provide a signed Tizen hub and label local preview. Investigate native Home routing using the CleanFrame/Couchroot references for this exact TV; preserve Smart Hub as a recovery/settings destination. Native Home replacement remains unmet until validated on the physical remote.
 - **FR-003** Largest hero reflects the last successful launch through Vibe TV; maintain an honest empty state.
 - **FR-004** Use application-relevant art and the two supplied PS5 assets.
 - **FR-005** Provide initial order exactly as US2 specifies; support persistent reorder, add and remove.
@@ -84,7 +84,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-017** Use bundled original brand artwork for known favorites and accessible installed icons for other apps, preserving aspect ratio and the user's PS5 artwork. Unknown apps with an unavailable icon use a neutral app symbol. Resolve known duplicate app labels using IDs observed on the TV and still present in the inventory; never invent an installed app.
 - **FR-014** Document build/package, device prerequisites, recovery limits and hardware test procedure; publish handoff.
 - **FR-015** Validate state at storage/inventory boundaries and recover gracefully from failures without losing previous valid state.
-- **FR-016** Clearly document startup limitations: cannot promise becoming Home or starting at every power-on.
+- **FR-016** Clearly distinguish Home routing from boot autorun. Neither is proven on the AU8000; do not promise success before exact-device validation.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.
@@ -116,3 +116,11 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 
 ## PS5 follow-up (2026-10-20)
 Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests global Home replacement. Actual TV inspection reproduced the Vibe precondition failure with HDMI2 in disconnected and source remaining TV1. Version 1.0.4 removes only that incorrect guard, retains native APIs/error handling, and passes 45 tests. Signed direct update and runtime version confirmed. Physical post-click image and wake await owner confirmation; Inspector disconnection alone is not success evidence. No supported public mechanism for global Home replacement was found in Samsung documentation; that requested outcome remains unmet, not silently removed from scope.
+
+## CleanFrame redesign and native Home investigation (2026-10-20)
+- Owner explicitly requests rebuilding from Nathan Clark’s CleanFrame and its native Home method, then chooses **keep the large last-access card with CleanFrame style and adjustments**. This authorizes the visual redesign and compatibility investigation; it does not establish AU8000 root-method compatibility or authorize an unreviewed privilege-escalation script.
+- Approved design: retain hero + requested favorite order, PS5 assets, five themes, upper-right controls and successful-launch-only history; adapt CleanFrame’s quiet utilities, dock spacing/materials and restrained focus. Keep native adapter, storage key, signed application identity and installed service sessions. No Frame-only Art Mode, regional sample catalog, private fonts or fictional media history.
+- CleanFrame MIT source pinned at fa537d1892b71d2de2bf94c24cbff3812e9f70d5; its Tizen 6.5 manifest and modern CSS cannot be copied blindly into Tizen 6.0/Chromium 76. Preserve asset notices and provenance.
+- Actual read-only preflight: AU8000 firmware T-NKLAUABC-2310.0, armv7/Tizen 6.0. Its libaul lacks aul_get_default_app, which CleanFrame’s guarded net6 helper requires. CleanFrame’s reported non-root success concerns a 2024 The Frame, not this TV.
+- Couchroot’s QN90A Tizen 6 reference uses different root-assisted database routing. This is evidence to review, not proof for AU8000. No native Home setting, database, privilege or firmware was changed during preflight.
+- Earlier public-API findings remain correct but are insufficient to rule out undocumented native routing. Existing requirements saying Home remains system-owned describe the current implementation, not removal of the owner’s replacement goal.
