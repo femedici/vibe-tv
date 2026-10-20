@@ -1,28 +1,27 @@
-# Handoff — Vibe TV 1.1.3 / resposta imediata e ícones
+# Handoff — Vibe TV 1.1.5 / fundos por app e seleção sem borda
 
 20/10/2026 · Samsung UN50AU8000GXZD · coordenador Codex `/root`.
 
 ## Entrega e estado real
 
-- **1.1.3 assinada, atualizada diretamente e aberta na TV.** Sem transições/animações; favoritos só com ícones originais, nomes acessíveis preservados e sem fundo retangular coletivo. Cinco degradês estáticos atrás do cartão de último acesso.
-- Proprietário testou na versão 1.1.2 a remoção temporária das animações na própria AU8000 e aprovou: **“perfeito! mantenhjaassim, com a alteração dos icones”**. Esse comportamento está permanente na nova versão. O feedback aprovado substitui a preferência anterior por animação de 150 ms.
-- Lista consultada automaticamente ao entrar/voltar e ao abrir Adicionar. Um favorito ainda não identificado aguarda a consulta e abre com **um único clique** quando existe um ID seguro. Abertura duplicada, intenção antiga após sair e busy residual foram corrigidos; botão manual removido. Apps conhecidos continuam abrindo durante consulta.
-- **70/70 testes Node passaram**; cinco temas, nomes acessíveis, proporções e navegação nos tamanhos 1280×720/390×844 verificados em navegador. Pacote assinado contém os mesmos 24 arquivos de runtime do source/unsigned.
-- **Home curto já abre Vibe**, confirmado pelo proprietário após YouTube. A aplicação/restauração/reaplicação do roteamento foi verificada anteriormente; não foi repetida nesta revisão. Smart Hub continua instalado e o firmware é o original.
-- Confirmação final da 1.1.3 para **YouTube → Home → YouTube sem atualização manual** foi solicitada e ainda não chegou neste registro. HDMI/CEC, menu Samsung, demais sessões e boot permanecem separados e pendentes.
-- Prévia local em execução: [127.0.0.1:4173](http://127.0.0.1:4173). Ela não se conecta à TV.
+- **1.1.5 assinada, atualizada diretamente e aberta na TV.** Ícones cerca de 7% maiores; seleção com pequeno aumento, sombra discreta e **sem borda/anel**, conforme a correção do proprietário após testar 1.1.4. Sem transições/animações.
+- Fundo acompanha o último app aberto com sucesso pelo Vibe: YouTube vermelho→branco, Netflix vermelho→preto, Prime azul, Max roxo, Samsung laranja/violeta, Disney verde-azulado, Spotify verde e PS5 com a imagem fornecida. Foco/falha não mudam o fundo. Temas preservados nos painéis e em apps extras desconhecidos.
+- Consulta automática e abertura por identidade nativa preservadas. **72/72 testes passaram**; oito paletas, foco sem borda, imagens e layouts 1280×720/390×844 verificados no navegador. Pacote assinado tem os mesmos 24 arquivos de runtime do source/unsigned.
+- **Home curto já abre Vibe**, confirmado anteriormente após YouTube. Roteamento e reversão não foram repetidos nesta revisão. Smart Hub/firmware permanecem.
+- Aprovação física anterior sem animações preservada; não houve novo benchmark de latência/FPS. A confirmação da aparência/rapidez da 1.1.5 e os ciclos YouTube→Home→YouTube, HDMI/CEC, menu Samsung, demais sessões e boot seguem pendentes.
+- Prévia local ativa: [127.0.0.1:4173](http://127.0.0.1:4173), sem conexão à TV.
 
-![Vibe TV 1.1.3 — prévia local no navegador, sem TV](immediate-icons-dark.jpg)
+![Vibe TV 1.1.5 — navegador simulado, sem TV](brand-background-youtube.jpg)
 
-Capturas da prévia: [claro](immediate-icons-light.jpg), [cinza](immediate-icons-gray.jpg), [pastel](immediate-icons-pastel.jpg), [vinho](immediate-icons-wine.jpg). Não são fotos da televisão.
+[Netflix](brand-background-netflix.jpg) · [Prime](brand-background-prime.jpg) · [Max](brand-background-max.jpg) · [Samsung](brand-background-samsung.jpg) · [Disney](brand-background-disney.jpg) · [Spotify](brand-background-spotify.jpg) · [PS5](brand-background-ps5.jpg) · [layouts](brand-background-layouts.jpg). São capturas simuladas, não fotos da televisão.
 
 ## Pedido original e pedido otimizado
 
 Original: clonar Free My TV no GitHub de Felipe como vibe-tv, reconstruir a interface preservando aplicativos/configurações/logins; cartão de último acesso; PS5 HDMI 2 com artes fornecidas; ordem YouTube, PS5, Netflix, Prime, HBO Max, Samsung TV Plus, Disney+, Spotify; organização, temas, prints e documentação. Depois pediu Home nativo e reformulação baseada no CleanFrame, mantendo seu cartão grande.
 
-Pedido desta continuação: eliminar o atraso nas setas, deixar apenas ícones sem nomes/faixa coletiva, fundos em degradê por tema e aplicativos atualizados sem clique manual. Após comparação física, aprovou manter o modo sem animações.
+Pedido desta continuação: aumentar um pouco os ícones inferiores; fundo baseado no último app aberto, com os exemplos YouTube vermelho→branco, Netflix vermelho→preto e PS5 com sua arte; seleção elevada sem perder desempenho. Após instalar 1.1.4, o proprietário pediu retirar a borda preta.
 
-**Pedido otimizado:** tornar permanente a resposta imediata aprovada na TV, aplicar os ícones e degradês solicitados, recuperar a consulta de apps automaticamente sem segundo clique, preservar identidade/contas/rota Home e entregar código validado, atualização assinada, capturas, documentação e branch publicada.
+**Pedido otimizado:** aplicar ícones maiores e fundos estáticos por último acesso, com destaque por escala/sombra **sem borda**, preservando resposta imediata, atualização automática, artes/contas/rota Home; validar, atualizar a TV, registrar capturas e publicar a branch.
 
 ## Decisões e restrições
 
@@ -41,7 +40,7 @@ App estático sem novas dependências. `state.js` mantém `vibe-tv.preferences.v
 
 `launch()` abre imediatamente alvos conhecidos. Para desconhecidos reserva a intenção, aguarda a consulta mais recente, revalida o favorito/ID e só então chama a API. Sair cancela a intenção que ainda aguarda inventário, antes da API nativa, mesmo se voltar antes de terminar; remover favorito não abre outro. Callback nativo confirma histórico; falhas liberam busy e não gravam acesso. `finishLaunch()` também limpa busy na fileira reconstruída.
 
-CSS não contém transições/animações. O foco aumenta/destaca o próprio ícone imediatamente; nomes continuam no aria-label e na organização. Gradientes são estáticos, sem camadas animadas. Não acrescentar `will-change`, polling ou animações por hipótese de desempenho.
+CSS não contém transições/animações. O foco aumenta/destaca o próprio ícone imediatamente; nomes continuam no aria-label e na organização. `renderHero()` define `body[data-app]` a partir do mesmo `brandId` usado pelo cartão. Sem histórico usa o primeiro atalho; extra desconhecido/lista vazia usa o tema. Esse caminho não roda por tecla. Sete gradientes estáticos e a imagem PS5 já existente substituem o fundo; os painéis preservam o tema. Nenhuma extração dinâmica de cores de apps adicionais. Não acrescentar `will-change`, polling ou animações por hipótese de desempenho.
 
 PS5 usa o objeto real HDMI 2 de connected/disconnected, `setSource`, depois `org.tizen.tv-viewer`. O bloqueio indevido por falta de sinal foi corrigido na 1.0.4; CEC/wake ainda não confirmado. Ajustes oferece o destino Samsung observado `com.samsung.tv.csfs`, sem registrar histórico; acesso físico pendente.
 
@@ -80,34 +79,35 @@ A reversão já foi testada com comparação integral das três tabelas/rowids. 
 
 | ID | Estado | Evidência / próxima ação |
 | --- | --- | --- |
-| T022 responsividade | done | Comparação física sem animações aprovada; comportamento instalado permanentemente |
-| T025 ícones e temas | done | Diff, cinco temas, foco/aria/layouts e pacote verificados |
-| T026 consulta/abertura automática | done | RED/GREEN, 28 controller/70 total; fixture de recuperação e revisão independente |
-| T027 validar/instalar/publicar | done | Código/capturas/documentação publicados; SHA remoto conferido |
-| T016 abertura repetida | pending | Receber teste físico YouTube→Home→YouTube 1.1.3 |
-| T009 hardware geral | in_progress | Outros apps/sessões, configurações, imagem/áudio e boot |
-| T017 PS5 | in_progress | Separar confirmação de imagem HDMI 2 e despertar CEC |
+| T022 responsividade | done | Ensaio físico anterior sem animações aprovado; comportamento preservado |
+| T025–T027 revisão 1.1.3 | done | Consulta automática/ícones e publicação anteriores preservados |
+| T028 fundos/ícones | done | Dois RED → 30 controller / 72 total GREEN; oito fundos, layouts e seleção sem borda conferidos |
+| T029 validar/instalar/publicar | in_progress | 1.1.5 instalada/aberta, capturas e docs prontos; concluir commit/push e conferir SHA |
+| T016 abertura repetida | pending | Receber teste físico YouTube→Home→YouTube |
+| T009 hardware geral | in_progress | Outros apps/sessões, configurações, imagem/áudio, boot e percepção da nova apresentação |
+| T017 PS5 | in_progress | Confirmar imagem HDMI 2 e despertar CEC separadamente |
 | T021 Home nativo | in_progress | YouTube→Home confirmado; falta HDMI→Home/menu Samsung/boot |
 
-T025 depende da aprovação física; T026 de T024; T027 reúne T025/T026. Os itens físicos anteriores não impedem a entrega desta revisão nem devem ser marcados concluídos por testes simulados.
+T028 depende de T027 e pedido explícito; T029 depende de T028. Agentes fizeram somente revisão independente. Itens físicos não são encerrados por simulação.
 
-Ao retomar: ler este handoff, spec/tracker e `git status`; preservar a resposta sem animações aprovada. Receber o resultado físico pendente sem reinstalar/resetar por rotina. Se houver falha, medir o caso específico e distinguir API, foco e tempo de abertura. Não voltar a pedir autorização já concedida nem repetir o teste root. Só recuperar a rota quando solicitado e com as guardas existentes.
+Ao retomar: ler este handoff, spec/tracker e `git status`; preservar seleção sem borda e ausência de animação. Receber feedback físico sem reinstalar/resetar por rotina. Se houver falha, medir o caso e distinguir API/foco/abertura; não repetir root para ajustes visuais. Recuperar rota somente no escopo autorizado e com as guardas existentes.
 
 ## Arquivos alterados nesta revisão
 
-- `tizen/app.js`: ícones sem captions, Promise compartilhada, consulta automática em Adicionar/ativação, cancelamento e limpeza de busy; versão exibida 1.1.3.
-- `tizen/styles.css`: sem animações/transições, material coletivo removido, ícones/foco e cinco degradês; assets inalterados.
-- `tizen/config.xml`: versão 1.1.3; identidade/permissões preservadas.
-- `tests/controller.test.cjs`: dez casos novos, incluindo consulta pendente, retorno, favorito removido, saída/cancelamento e busy.
-- `tests/ui-fixture.cjs`: `?inventory=retry` falha inicialmente e recupera depois; nunca incluído no pacote.
-- `specs/001-vibe-tv-tizen/{spec,plan,tasks}.md`: contrato/decisão/execução atuais.
-- `README.md`, `docs/vibe-tv/{installation,validation,cleanframe-home}.md`: versão/evidência/procedimento.
-- `outputs/immediate-icons-{dark,light,gray,pastel,wine}.jpg` e este handoff.
+- `package.json`: escopo CommonJS explícito para os testes, sem dependências ou alteração no pacote da TV.
+- `tizen/app.js`: atributo `data-app` reaproveita identidade do hero; versão 1.1.5 exibida.
+- `tizen/styles.css`: oito fundos, texto contrastante do hub, ícones maiores e sombra sem borda/transição. Assets originais inalterados.
+- `tizen/config.xml`: versão 1.1.5; ID/permissões preservados.
+- `tests/controller.test.cjs`: dois testes de vínculo do fundo a sucesso/hero e fallback.
+- `tests/ui-fixture.cjs`: cenário `?catalog=all` para os oito fundos, mantendo cenários de falha/recuperação; não vai no WGT.
+- `specs/001-vibe-tv-tizen/{spec,plan,tasks}.md`: FR022/023, correção sem borda e evidência.
+- `README.md`, `docs/vibe-tv/{installation,validation}.md`: comportamento, versão e validações.
+- `outputs/brand-background-*.jpg`: oito marcas/layouts simulados; este handoff.
 
 ## Validação e limites da medição
 
 ```sh
-node --test tests/*.test.cjs                 # 70/70 nesta revisão
+node --test tests/*.test.cjs                 # 72/72 nesta revisão
 node --check tizen/app.js
 node --check tests/ui-fixture.cjs
 node tools/package-tizen.cjs
@@ -115,19 +115,23 @@ git diff --check
 SPECIFY_FEATURE_DIRECTORY=specs/001-vibe-tv-tizen .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
 ```
 
-TDD: primeira rodada reproduziu 6 falhas em 23 testes; revisão adicionou 3 RED em 28; todos corrigidos, sem retirar testes. Revisão independente controller/plataforma sem achados após as correções. Native Python 16/C# 38 são evidência histórica; código nativo não mudou e não foi reexecutado nesta revisão.
+TDD: dois novos RED no controller, depois 30/30 controller e 72/72 totais. Sucesso muda o fundo; foco/falha não; custom conhecido resolve marca e desconhecido/vazio usam fallback. CSS trivial validado no navegador, sem teste que apenas copie a implementação. Revisores independentes não encontraram impedimentos; coordenador inspecionou diff e resultados.
 
-Browser real: cinco temas, 1912×884 e frames 1280×720/390×844; captions 0, imagens quebradas 0, fundo coletivo transparente, transição 0 s, nomes acessíveis e setas até Spotify/↑hero. Fixture confirma uma ativação após falha inicial causa uma consulta nova e uma abertura, sem botão manual. Algumas prévias de captura mostraram hero vazio; a tela visível e os arquivos finais foram conferidos completos, inclusive por decodificação dos pixels quando o visualizador divergiu. Não foi estabelecido defeito no app nem introduzida correção especulativa de CSS.
+Browser: oito fundos e zero imagens quebradas, transição 0 s, nomes acessíveis, painéis do tema preservados. Foco final: border 0 px/outline none no botão/tile, sombra única curta, escala 1,12 e deslocamento−4 px. 1280×720/390×844 sem overflow da página; extremidades e sombra cabem, ↑hero/↓primeiro favorito e ordem salva corretos. Capturas finais foram refeitas após retirar a borda. Contraste calculado do texto do hub nos sete gradientes ficou ≥4,85:1; é checagem das paletas, não certificação global.
 
-Inspector físico funcionou na 1.1.2: 397 apps em 3.212 ms. Amostra original: 79 setas: fila de evento mediana 15 / p95 321 / máximo 398 ms; sem transições: 39 setas: mediana 4 / p95 6 / máximo 7 ms. Handler p95 10,4→6,7 ms, próximo callback rAF p95 16→8 ms. Amostras manuais diferentes, possível interferência de diagnóstico inicial; **não** são FPS nem botão→pixel. Proprietário aprovou a resposta percebida. Probe temporário não entrou no código; lançamento normal da 1.1.3 encerrou debug.
+Pacotes 1.1.4 e 1.1.5: CRC/XML/ID/versão válidos e 24 runtime iguais a source/unsigned. A 1.1.4 abriu na TV e o usuário rejeitou sua borda; removida na 1.1.5. Atualização direta 1.1.5 retornou `install completed`, `was_execute` retornou `launched`. Somente Vibe foi encerrado; não usar `tz install`, cujo wrapper observado desinstala primeiro. Nenhum novo root/roteamento/reset/firmware/conta alterado.
 
-Pacote 1.1.3: CRC/XML/ID/versão válidos, 24 runtime iguais entre source/unsigned/signed; extras apenas assinaturas e diretórios. SDB reconfirmou modelo; `vd_appinstall` retornou `install completed`; somente Vibe anterior foi encerrado; `was_execute` retornou `launched`. Não usar `tz install`, pois o wrapper observado desinstala primeiro. Não houve mudança de rota, root, reset, firmware ou contas nesta revisão.
+Evidência física histórica 1.1.2: 397 apps em 3.212 ms; 79 setas com transições tiveram fila p95 de 321 ms e 39 sem transições p95 de 6 ms. Ensaios manuais diferentes, possível interferência inicial; não são FPS nem botão→pixel. Proprietário aprovou sem animações. **Não atribuir esses números à 1.1.5**: não foi feito novo benchmark. A sombra estática ainda tem custo de pintura; percepção final permanece não verificada.
+
+Na última validação, Node herdou `type: module` do diretório pai deste repositório e falhou ao carregar os módulos UMD pelos testes CommonJS. O source da TV estava inalterado. Um `package.json` mínimo com `type: commonjs` delimita o projeto sem tocar no arquivo externo; a mesma suíte voltou a 72/72 com Node 25.8.1. Nenhuma dependência foi instalada e esse arquivo não entra no WGT.
+
+Native Python 16/C# 38 são históricos; helpers não mudaram e não foram reexecutados nesta revisão. Home/HDMI/CEC/boot/sessões pendentes continuam no tracker.
 
 ## Git e execução local
 
 Raiz `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch **agent/vibe-tv-cleanframe**: [GitHub](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base desta continuação: `875c26651765cf670d04d5a5a5e10be9ee47aee6`. Implementação, capturas e documentação publicadas em `9bf72b2f88feec17ce829796c0eee7cab1a1e23c`; `git ls-remote` confirmou o mesmo SHA. Este recibo e o fechamento do tracker seguem na mesma branch. Nenhum PR/merge em main.
+Base desta continuação: `07027a1e0b1df91d948b19880a42a3ce8a5d8e25`. Commit/push desta revisão em andamento; conferir receipt após publicação. Nenhum PR/merge em main.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (`agent/cleanframe-interface`), `.worktrees/native-home` (`agent/au8000-native-home`) e anteriores de state/platform/interface. Só o coordenador escreveu esta revisão; agentes foram revisores somente leitura.
 

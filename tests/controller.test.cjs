@@ -9,7 +9,7 @@ const Navigation = require(path.join(root, 'tizen/navigation.js'));
 const Platform = require(path.join(root, 'tizen/platform.js'));
 const source = fs.readFileSync(path.join(root, 'tizen/app.js'), 'utf8');
 
-function controller(blockedStorage = false, startup = false) {
+function controller(blockedStorage = false, startup = false, paintHero = false) {
   let resolveLaunch, rejectLaunch, launchedId, resolveInventory, rejectInventory, inventoryCalls = 0, launchCalls = 0;
   const measurements = [];
   const scrolls = [];
@@ -17,12 +17,12 @@ function controller(blockedStorage = false, startup = false) {
   const listeners = {};
   const windowListeners = {};
   const document = {
-    body: {classList:{add(){},remove(){}}}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
+    body: {attributes:{}, setAttribute(name, value) { this.attributes[name] = value; }, classList:{add(){},remove(){}}}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
     getElementById(id) { return nodes[id] || null; }
   };
-  for (const id of ['toast', 'storage-note', 'hero-open', 'nav-settings', 'preview-badge', 'clock', 'panel-close', 'panel-overlay', 'add-button', ...State.catalog.map(item => 'favorite-' + item.id)]) {
+  for (const id of ['toast', 'storage-note', 'hero-open', 'hero-visual', 'hero-eyebrow', 'hero-title', 'hero-description', 'nav-settings', 'preview-badge', 'clock', 'panel-close', 'panel-overlay', 'add-button', ...State.catalog.map(item => 'favorite-' + item.id)]) {
     nodes[id] = {
-      id, hidden: true, textContent: '', attributes: {},
+      id, hidden: true, textContent: '', attributes: {}, dataset:{}, appendChild() {},
       setAttribute(name, value) { this.attributes[name] = value; }, removeAttribute(name) { delete this.attributes[name]; },
       focus() { document.activeElement = this; }, scrollIntoView() { scrolls.push(id); },
       getBoundingClientRect() {
@@ -61,21 +61,24 @@ function controller(blockedStorage = false, startup = false) {
   assert.ok(start > 0, 'controller startup marker must exist');
   // Keep real launch/commit/focus and state/platform logic; skip visual startup and rendering.
   vm.runInNewContext(source.slice(0, start) + `
-    render = function () {};
+    render = function () { ${paintHero ? 'renderHero();' : ''} };
+    ${paintHero ? 'brand = icon = function () { return {}; };' : ''}
     renderPanel = function () {};
     inventory = ${startup ? '[]' : "[{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]"};
-    window.review = {launch:launch, action:handleAction, refresh:refreshInventory,
+    window.review = {launch:launch, action:handleAction, refresh:refreshInventory, paint:render,
       inventory:function (apps) { inventory = apps; },
       setState:function (next) { state = next; },
       state:function () { return state; }};
   ` + (startup ? source.slice(start) : '}());'), { window, document, Date, Promise });
   return {
     nodes, document, measurements, scrolls,
+    paint: window.review.paint,
     key(key) { listeners.keydown({key,preventDefault(){}}); },
     state: window.review.state,
     setState(next) {
       window.review.setState(next);
       next.order.forEach((id, index) => {
+        if (!nodes['favorite-' + id]) return;
         const rect = nodes['favorite-' + id].rect;
         rect.left = index * 130; rect.right = rect.left + 130;
       });
@@ -94,13 +97,45 @@ function controller(blockedStorage = false, startup = false) {
     },
     samsungHome() { window.review.action({dataset:{action:"samsung-home"}}); },
     launchedId() { return launchedId; },
-    launch() { window.review.launch(State.catalog[0]); },
+    launch(id = 'youtube') { window.review.launch(State.items(window.review.state()).find(item => item.id === id)); },
     async finish(failed = false) {
       if (failed) rejectLaunch({ name: 'NotFoundError' }); else resolveLaunch();
       await new Promise(setImmediate);
     }
   };
 }
+
+test('background follows successful hero identity, not navigation or failed launch', async () => {
+  const app = controller(false, false, true);
+  app.paint();
+  assert.equal(app.document.body.attributes['data-app'], 'youtube');
+  app.key('ArrowRight');
+  assert.equal(app.document.body.attributes['data-app'], 'youtube');
+  app.inventory([{id:'test.netflix',name:'Netflix'}]);
+  app.launch('netflix');
+  await app.finish(true);
+  assert.equal(app.document.body.attributes['data-app'], 'youtube');
+  app.launch('netflix');
+  await app.finish();
+  assert.equal(app.document.body.attributes['data-app'], 'netflix');
+  app.paint();
+  assert.equal(app.document.body.attributes['data-app'], 'netflix');
+});
+
+test('hero backdrop resolves known custom brands and safely falls back for unknown or empty favorites', () => {
+  const app = controller(false, false, true);
+  const youtube = {id:'app:9Ur5IzDKqV.TizenYouTube',appId:'9Ur5IzDKqV.TizenYouTube',kind:'app',name:'YouTube'};
+  const plex = {id:'app:test.plex',appId:'test.plex',kind:'app',name:'Plex'};
+  for (const [item, expected] of [[youtube,'youtube'],[plex,'custom']]) {
+    app.setState(State.recordLaunch(State.add(State.defaults(), item), item.id, 1));
+    app.paint();
+    assert.equal(app.document.body.attributes['data-app'], expected);
+  }
+  const empty = {...State.defaults(), order:[], custom:[], last:null};
+  app.setState(empty);
+  app.paint();
+  assert.equal(app.document.body.attributes['data-app'], 'custom');
+});
 
 test('successful launch keeps the storage failure warning visible', async () => {
   const app = controller(true);

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
-**Status**: 1.1.3 signed/direct-updated/launched. Owner approved immediate remote feedback in the physical no-transition comparison; it is now permanent. Icon-only favorites, five gradients and automatic inventory recovery validated locally (70 tests). Final YouTube→Home→YouTube feedback pending. Native short Home and routing restore previously verified; HDMI/PS5 wake/startup remain separate pending checks.
+**Status**: 1.1.5 signed/direct-updated/launched. Larger icons, borderless static elevation and last-app backgrounds validated (72 tests, eight browser palettes/layouts). No-transition feedback preserved; automatic inventory unchanged. Native short Home and routing restore previously verified; physical acceptance of this presentation and repeated app/HDMI/CEC/boot checks remain separate.
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -91,8 +91,11 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 
 - **FR-018** Favorite arrows follow saved order without whole-hub geometry reads; row boundaries perform no geometry queries. Scroll only to reveal an out-of-view favorite. Keep panels reachable; visual feedback follows FR-020, which supersedes the prior motion-preservation constraint. An app resolved from the last successful in-memory inventory remains launchable while refreshing; retain that inventory on refresh failure, replace it on success, and never bypass identity resolution or native launch errors.
 - **FR-019** Remove the home-screen navigation legend below the apps. Refresh the actual installed-app inventory at startup and supported re-entry events; coalesce simultaneous requests and keep known app launches usable. This must not depend on a refresh control; FR-021 removes that control. Keep native failure reporting and no hardware calls in preview.
-- **FR-020** Use immediate focus feedback without CSS transitions/animations, matching the physically approved comparison. Favorites display only their original icons, preserving accessible names and native identities; remove visible names, input/status captions and the collective rectangular background. Keep focus visually unmistakable on the icon itself. Each existing theme has a distinct static gradient behind the last-access card.
+- **FR-020** Use immediate focus feedback without CSS transitions/animations, matching the physically approved comparison. Favorites display only their original icons, preserving accessible names and native identities; remove visible names, input/status captions and the collective rectangular background. Keep focus visually unmistakable on the icon itself. The later FR-022 replaces the theme-driven main background with app-driven artwork; existing themes remain available for panels and unknown-app fallback.
 - **FR-021** Opening Add queries installed apps automatically. Activating a favorite without a resolved target waits for the shared lookup or starts one, then launches only a safely resolved native ID without a second click. Prevent duplicate activations, retain known-app availability, and report lookup/missing-target errors without guessing IDs or recording false history. Remove the manual-refresh dependency and control.
+
+- **FR-022** The main background follows the hero/last successfully opened app, not focused favorites. YouTube uses red→white, Netflix red→black, PS5 the supplied artwork; Prime blue, HBO Max purple, Samsung TV Plus orange/violet, Disney+ teal and Spotify green gradients. Before history exists, use the first shortcut; unknown extra apps use the chosen theme. Preserve theme styling in panels, readable controls and original app art. Use static CSS and existing assets only, with no per-key color sampling/animation.
+- **FR-023** Increase the favorite icons modestly and give the selected icon a slightly larger immediate scale plus a localized static shadow, with no border or focus ring around the tile. Keep navigation order, original proportions, accessible names, overflow reachability and the approved zero-transition behavior.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.
@@ -141,3 +144,8 @@ Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests
 
 ## Immediate feedback and automatic recovery — 1.1.3
 The owner approved a CSS-only no-transition comparison on the physical AU8000. Arrow-event queue delay p95 was 321 ms over 79 baseline events and 6 ms over 39 no-transition events; these manual trials are not button-to-pixel latency or FPS measurements. Version 1.1.3 makes no-animation feedback permanent, removes shelf captions/material, adds five static gradients and resolves a single pending activation after automatic inventory recovery. 70/70 tests passed, signed/source/unsigned runtime bytes matched, and direct update plus normal launch completed. Final repeated native opening, HDMI/CEC and boot acceptance remain separately tracked.
+
+## Brand backdrop and larger focus — owner request 20/10/2026
+The owner requests larger icons, a background matching the last app (explicit YouTube red→white, Netflix red→black, PS5 supplied artwork) and an elevated selected icon without losing performance. This is a refinement of the approved immediate UI. Existing themes retain panel styling and unknown-app fallback; no provider/history/API or native-route change.
+
+Owner follow-up during 1.1.4 testing: remove the black selection border. Version 1.1.5 removes the focus ring entirely; elevation is only immediate scale/offset, opacity and a compact shadow.

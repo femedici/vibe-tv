@@ -13,6 +13,7 @@ fs.writeFileSync(path.join(root, 'test-native.js'), `
   var launched = [];
   var inventoryCalls = 0;
   var retryScenario = location.search === '?inventory=retry';
+  var catalogScenario = location.search === '?catalog=all';
   window.tizen = {
     application: {
       getAppsInfo: function (success, failure) {
@@ -26,13 +27,20 @@ fs.writeFileSync(path.join(root, 'test-native.js'), `
         {id:'test.plex',name:'Plex (teste)',iconPath:'/assets/icon.png'},
         {id:'test.ps5.app',name:'PlayStation 5',iconPath:'/missing-test-icon.png'}
         ];
+        if (catalogScenario) apps = apps.concat([
+          {id:'org.tizen.primevideo',name:'Prime Video'},
+          {id:'test.max',name:'HBO Max'},
+          {id:'test.samsung',name:'Samsung TV Plus'},
+          {id:'test.disney',name:'Disney+'},
+          {id:'test.spotify',name:'Spotify'}
+        ]);
         if (retryScenario) setTimeout(function () { success(apps); }, 600);
         else success(apps);
       },
       launch: function (id, success, failure) {
         launched.push(id);
         document.body.setAttribute('data-test-calls', launched.join(','));
-        if (id === 'test.netflix') failure({name:'NotFoundError'});
+        if (id === 'test.netflix' && !catalogScenario) failure({name:'NotFoundError'});
         else success();
       },
       getCurrentApplication: function () { return {exit:function () {

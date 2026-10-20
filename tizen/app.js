@@ -142,7 +142,9 @@
     action.dataset.panel = 'add';
     action.dataset.id = item ? item.id : '';
     action.setAttribute('aria-label', item ? 'Abrir ' + item.name + (last ? '. Último acesso pelo Vibe TV.' : '. Acesso rápido.') : 'Adicionar aplicativo');
-    action.className = 'hero-card art-' + (item ? brandId(item) : 'custom');
+    var heroBrand = item ? brandId(item) : 'custom';
+    action.className = 'hero-card art-' + heroBrand;
+    document.body.setAttribute('data-app', heroBrand);
     visual.textContent = '';
     if (item) visual.appendChild(brand(item));
     else visual.appendChild(icon('plus'));
@@ -306,7 +308,7 @@
     detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. A configuração de início é independente do destino do botão Home.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.1.3', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.1.5', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');

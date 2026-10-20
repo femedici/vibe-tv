@@ -1,4 +1,4 @@
-**Estado atual 1.1.2:** veja a seção de atualização automática ao final. As seções anteriores preservam evidência histórica.
+**Estado atual 1.1.5:** veja a seção “Fundo por aplicativo e seleção sem borda” ao final. As seções anteriores preservam evidência histórica.
 
 # Validação do Vibe TV — 1.0.4
 
@@ -172,3 +172,19 @@ O proprietário respondeu **“perfeito! mantenhjaassim, com a alteração dos i
 Capturas da **prévia local**, não da TV: [escuro](../../outputs/immediate-icons-dark.jpg), [claro](../../outputs/immediate-icons-light.jpg), [cinza](../../outputs/immediate-icons-gray.jpg), [pastel](../../outputs/immediate-icons-pastel.jpg), [vinho](../../outputs/immediate-icons-wine.jpg).
 
 HDMI/CEC, outros serviços/sessões, menu Samsung, boot e tempo de abertura fria/quente continuam pendentes separadamente. A aprovação do teste de setas não encerra esses itens.
+
+
+## Fundo por aplicativo e seleção sem borda — 1.1.5, 20/10/2026
+
+- `renderHero()` reaproveita a identidade já resolvida e define `data-app`. CSS estático aplica sete degradês de marca e a arte original PS5, sem amostragem de pixels, dependência ou trabalho novo em cada seta. Antes de existir histórico, usa o primeiro favorito; app adicional desconhecido usa o tema escolhido. Mover o foco ou falhar ao abrir não troca o fundo.
+- Ícones passaram de 6,6×3,72 rem para 7,05×3,97 rem (cerca de 7%). Seleção usa escala 1,12, deslocamento de −4px, opacidade plena e sombra curta. A 1.1.4 foi instalada, mas o proprietário rejeitou a borda preta; a **1.1.5 remove todo anel de foco dos favoritos**. Browser final: bordas 0px, outline none, sombra única com blur e transição 0s. Não há animação, filtro novo ou nova imagem.
+- TDD comportamental: dois testes novos falharam antes do atributo; depois **30/30 controller e 72/72 totais**. Cobrem sucesso versus falha/foco, marca conhecida adicionada como app, extra desconhecido e lista vazia. Mudança cosmética da borda foi conferida pelo estilo computado/captura, sem teste que apenas repete CSS.
+- Coordenador inspecionou o diff; revisões independentes de controller/plataforma e CSS não encontraram impedimentos. Sintaxe JS, diff e pré-requisitos Spec Kit passaram.
+- Navegador real, fixture explicitamente simulada: oito aberturas atualizam identidade/fundo correspondente, zero imagens quebradas, nomes acessíveis mantidos e painéis ainda seguem o tema escolhido (claro conferido com PS5 ativo). Frames 1280×720/390×844: setas alcançam todos os favoritos, ↑ volta ao hero, ↓ alcança o primeiro da ordem salva, sem overflow da página; foco das extremidades mantém espaço para a sombra. O fundo permanece ao navegar. Capturas finais atualizadas após remover a borda.
+- Contraste calculado por amostragem de 101 posições por trecho dos sete gradientes: texto do hub mínimo 5,26:1 YouTube; 8,24 Netflix; 5,00 Prime; 8,41 Max; 6,50 Samsung; 4,85 Disney; 4,89 Spotify. Isso verifica as paletas, não certifica a acessibilidade de toda a interface. PS5 usa a imagem original com escurecimento estático; conteúdo/ícones conservam suas cores.
+- Pacote assinado 1.1.5: CRC/XML/versão/ID válidos, 24 arquivos de runtime iguais entre source/unsigned/signed, extras apenas assinaturas e diretórios. Modelo reconfirmado; atualização direta retornou `install completed`, somente a instância Vibe anterior foi encerrada e `was_execute` retornou `launched`. Sem desinstalação, root ou alteração da rota Home.
+- Não foi feita nova medição de FPS/latência na TV. A aprovação física da ausência de animação pertence ao ensaio anterior 1.1.2. A escala/sombra são estáticas; isso reduz trabalho contínuo, mas não prova custo zero. Aceitação visual/física 1.1.5, ciclos consecutivos YouTube, HDMI/CEC, menu Samsung, outros serviços e boot permanecem distintos.
+
+Capturas **do navegador simulado**, não fotos da TV: [YouTube](../../outputs/brand-background-youtube.jpg), [Netflix](../../outputs/brand-background-netflix.jpg), [Prime](../../outputs/brand-background-prime.jpg), [HBO Max](../../outputs/brand-background-max.jpg), [Samsung TV Plus](../../outputs/brand-background-samsung.jpg), [Disney+](../../outputs/brand-background-disney.jpg), [Spotify](../../outputs/brand-background-spotify.jpg), [PS5](../../outputs/brand-background-ps5.jpg), [layouts](../../outputs/brand-background-layouts.jpg).
+
+Na validação final, o Node passou a herdar `type: module` do `package.json` no diretório pai e os testes CommonJS falharam no carregamento dos módulos UMD, antes das asserções. O repo agora declara `type: commonjs` num `package.json` mínimo e privado; a mesma suíte passou novamente 72/72 no Node 25.8.1. O arquivo externo não foi alterado, nenhuma dependência instalada e o WGT continua com 24 arquivos.

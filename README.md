@@ -4,13 +4,13 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: versão 1.1.3 assinada, instalada e iniciada na Samsung AU8000.** Resposta imediata sem animações: comportamento aprovado pelo proprietário no A/B físico da 1.1.2 e incorporado permanentemente à 1.1.3. Favoritos só com ícones, sem nomes/faixa coletiva, e cinco fundos em degradê. Consulta automática na entrada, ao adicionar e ao abrir um favorito ainda não identificado; um único clique aguarda a identificação. Os 70 testes da aplicação passaram; o teste físico final YouTube → Home → YouTube na 1.1.3 ainda aguarda retorno.
+**Estado: versão 1.1.5 assinada, instalada e iniciada na Samsung AU8000.** Ícones maiores, seleção elevada com sombra discreta e sem borda; resposta imediata sem animações preservada. Fundo acompanha o último app aberto com sucesso: sete degradês de marca e a arte PS5 fornecida. Consulta automática de apps permanece. Os 72 testes passaram; a percepção física desta nova apresentação e os ciclos completos de abertura/retorno ainda precisam de confirmação.
 
 O método não oficial de Home usa um helper separado, exclusivo desta TV/firmware. O Home curto já está configurado para Vibe; backup de roteamento, aplicação, restauração e reaplicação passaram no aparelho. O proprietário confirmou YouTube → Home curto → Vibe; a comparação física sem animações foi aprovada e incorporada na 1.1.3. Evidências e reversão em [Home nativo](docs/vibe-tv/cleanframe-home.md). Nenhum resultado de navegador substitui o teste físico do Home, do HDMI-CEC ou do boot.
 
 O proprietário já confirmou artes, navegação e abertura nativa do YouTube nas versões anteriores. O histórico de episódios permanece dentro dos apps; o Vibe registra apenas suas próprias aberturas bem-sucedidas.
 
-![Vibe TV 1.1.3 — prévia local no navegador, sem TV](outputs/immediate-icons-dark.jpg)
+![Vibe TV 1.1.5 — teste visual simulado no navegador, sem TV](outputs/brand-background-youtube.jpg)
 
 ## Rodar localmente
 
@@ -32,7 +32,8 @@ A prévia permite verificar aparência, foco, temas e organização. Abertura de
 - Ordem inicial: YouTube, PS5, Netflix, Prime Video, HBO Max, Samsung TV Plus, Disney+ e Spotify.
 - Favoritos editáveis e persistentes; apps adicionais dependem do inventário real da TV.
 - PS5 associado ao HDMI 2, com logo e fundo fornecidos pelo proprietário.
-- Temas escuro, claro, cinza, pastel e vinho, cada um com degradê estático; foco imediato sem animações.
+- Fundo estático do último app: YouTube vermelho→branco, Netflix vermelho→preto, Prime azul, HBO Max roxo, Samsung TV Plus laranja/violeta, Disney+ verde-azulado, Spotify verde e PS5 com a arte fornecida. Mover o foco não muda o fundo.
+- Temas escuro, claro, cinza, pastel e vinho continuam nos painéis e no fundo de apps adicionais sem paleta conhecida. Ícones cerca de 7% maiores; seleção com escala/sombra discreta, sem borda ou animação.
 - Controles de organização e ajustes no topo direito; ↓ do cartão vai direto aos apps, com destaque imediato no ícone. Sem nomes nos favoritos nem legenda de teclas no rodapé.
 - Consulta automática ao abrir/voltar ao hub e ao adicionar apps. Favorito sem identificação aguarda a consulta e abre com um único clique; erros continuam explícitos. Não há botão de atualização manual.
 - Configurações nativas permanecem acessíveis pelo controle Samsung/Smart Hub.

@@ -9,7 +9,18 @@ body[data-theme="pastel"] { --bg: #e9d7e6; --ambient: #cae6dc; --surface: #d8dfd
 body[data-theme="wine"] { --bg: #211422; --ambient: #7d3653; --surface: #533c48; --panel: #3d2d37; --text: #f8efed; --muted: #d5bfc8; --line: #745563; --accent: #f0d4c1; --on-accent: #4b303c; --soft: #654553; --shadow: rgba(25,8,15,.22); }
 * { box-sizing: border-box; }
 html { min-height: 100%; }
-body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); background: linear-gradient(135deg,var(--ambient),var(--bg) 85%); color: var(--text); -webkit-font-smoothing: antialiased; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); background: var(--app-background,linear-gradient(135deg,var(--ambient),var(--bg) 85%)); color: var(--text); -webkit-font-smoothing: antialiased; }
+/* The hero chooses this once per successful access, never while moving focus. */
+body[data-app] { --app-text: #fff; --app-muted: #fff; --app-line: rgba(255,255,255,.3); }
+body[data-app="custom"] { --app-text: var(--text); --app-muted: var(--muted); --app-line: var(--line); }
+body[data-app="youtube"] { --app-background: linear-gradient(160deg,#f34b50,#f7babc 58%,#fff 100%); --app-text: #26090d; --app-muted: #26090d; --app-line: rgba(38,9,13,.25); }
+body[data-app="netflix"] { --app-background: linear-gradient(155deg,#9e101f,#26090f 58%,#050507); }
+body[data-app="prime"] { --app-background: linear-gradient(155deg,#126ed3,#103c70 55%,#071d37); }
+body[data-app="max"] { --app-background: linear-gradient(155deg,#663399,#30164d 55%,#120922); }
+body[data-app="samsung"] { --app-background: linear-gradient(155deg,#a33c27,#4a246d 55%,#101323); }
+body[data-app="disney"] { --app-background: linear-gradient(155deg,#087e85,#07383d 60%,#03171b); }
+body[data-app="spotify"] { --app-background: linear-gradient(155deg,#14823e,#092118 60%,#050b08); }
+body[data-app="ps5"] { --app-background: linear-gradient(rgba(4,7,24,.58),rgba(4,7,24,.62)),url('assets/ps5-background.png') center 53% / cover; }
 .panel-open { overflow: hidden; }
 button, h1, h2, p, ul { margin: 0; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; -webkit-tap-highlight-color: transparent; }
@@ -23,18 +34,19 @@ button:active:not(:disabled) { transform: scale(.97); }
 
 /* Fixed proportions at TV sizes; no page scrolling is needed at 16:9. */
 .shell { padding-left: 7.3vw; padding-right: 7.3vw; }
-.hub { max-width: 2560px; margin: 0 auto; }
+.hub { max-width: 2560px; margin: 0 auto; color: var(--app-text,var(--text)); }
+.hub .eyebrow, .hub .preview-badge, .hub .storage-note { color: var(--app-muted,var(--muted)); }
 .topbar { height: 14vh; min-height: 4.8rem; display: flex; align-items: center; justify-content: space-between; }
 .topbar-leading, .main-nav, .hub-controls { display: flex; align-items: center; }
 #clock { font-size: 1.85rem; line-height: 1; font-weight: 500; letter-spacing: -.055em; font-variant-numeric: tabular-nums; }
-.main-nav { margin-left: 1rem; padding-left: 1rem; border-left: 1px solid var(--line); }
-.home-button { padding: .6rem .35rem; background: none; border-radius: .4rem; opacity: .65; }
+.main-nav { margin-left: 1rem; padding-left: 1rem; border-left: 1px solid var(--app-line,var(--line)); }
+.home-button { padding: .6rem .35rem; background: none; border-radius: .4rem; opacity: 1; }
 .home-button:focus, .home-button:hover { opacity: 1; }
 .wordmark { display: block; font-size: .9rem; font-weight: 700; line-height: 1; letter-spacing: -.06em; }
 .wordmark span { font-size: .58rem; font-weight: 500; letter-spacing: -.02em; margin-left: .2rem; }
 .preview-badge { margin-left: 1rem; font-size: .55rem; color: var(--muted); white-space: nowrap; }
 .hub-controls { margin-left: auto; }
-.nav-button { position: relative; width: 2.7rem; height: 2.7rem; display: flex; align-items: center; justify-content: center; margin-left: .65rem; padding: 0; background: none; color: var(--text); border-radius: 50%; opacity: .64; }
+.nav-button { position: relative; width: 2.7rem; height: 2.7rem; display: flex; align-items: center; justify-content: center; margin-left: .65rem; padding: 0; background: none; color: var(--app-text,var(--text)); border-radius: 50%; opacity: 1; }
 .nav-button .icon { width: 1.3rem; height: 1.3rem; }
 .nav-button:hover, .nav-button:focus { opacity: 1; box-shadow: none; }
 .nav-button:focus .icon { transform: translateY(-2px) scale(1.1); }
@@ -74,13 +86,13 @@ button:active:not(:disabled) { transform: scale(.97); }
 
 /* Original app icons float directly on the theme. Focus changes immediately. */
 .favorites-section { margin-top: 5vh; }
-.favorites { display: flex; list-style: none; padding: .65rem 0; margin: 0; overflow-x: auto; scrollbar-width: none; }
+.favorites { display: flex; list-style: none; padding: .8rem .4rem; margin: 0; overflow-x: auto; scrollbar-width: none; }
 .favorites::-webkit-scrollbar { height: 0; }
 .favorite { width: 12.5%; min-width: 7.2rem; flex: 0 0 auto; }
-.app-button { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 5.8rem; padding: .8rem .3rem; background: none; text-align: center; border-radius: 1.2rem; isolation: isolate; }
+.app-button { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 6.2rem; padding: .8rem .3rem; background: none; text-align: center; border-radius: 1.2rem; isolation: isolate; }
 .app-button:focus { box-shadow: none; }
-.app-tile { position: relative; display: block; flex: 0 0 auto; width: 6.6rem; max-width: 88%; height: 3.72rem; border-radius: .65rem; background: #263136; color: #fff; opacity: .8; }
-.app-button:focus .app-tile { transform: translateY(-3px) scale(1.1); opacity: 1; box-shadow: 0 0 0 2px var(--accent); }
+.app-tile { position: relative; display: block; flex: 0 0 auto; width: 7.05rem; max-width: 100%; height: 3.97rem; border-radius: .65rem; background: #263136; color: #fff; opacity: .8; }
+.app-button:focus .app-tile { transform: translateY(-4px) scale(1.12); opacity: 1; box-shadow: 0 .35rem .4rem -.15rem rgba(0,0,0,.5); }
 .app-button:active:not(:disabled) { transform: none; }
 .app-button:active:not(:disabled) .app-tile { transform: scale(.98); }
 .app-tile > img { position: absolute; width: 76%; height: 72%; top: 14%; left: 12%; object-fit: contain; }
@@ -177,8 +189,8 @@ kbd { font-family: inherit; font-size: inherit; font-weight: 600; padding: 0 .15
   .hero-description { font-size: .72rem; }
   .hero-go { bottom: 1.4rem; right: 1.2rem; width: 2.3rem; height: 2.3rem; }
   .favorites-section { margin-top: 1.2rem; }
-  .favorites { padding: .5rem 0; }
-  .favorite { min-width: 8.4rem; }
+  .favorites { padding: .7rem .4rem; }
+  .favorite { min-width: 8.8rem; }
   .panel { padding: 1.5rem 1.1rem; }
   .panel-header h2 { font-size: 1.65rem; }
   .panel-intro { font-size: .85rem; }
