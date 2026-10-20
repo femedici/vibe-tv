@@ -17,7 +17,7 @@
 
 **Home continua abrindo Smart Hub.** Não foi feita substituição de sistema. Os exemplos Android usam a seleção de launcher do Android; a Samsung não oferece esse mecanismo público para o WGT. O usuário autorizou a melhor alternativa suportada. Autorun Last App foi ativado por ele, mas início após ligar/usar outros apps não foi verificado. Não há acesso a episódio/progresso/arte privada dos serviços. Backup integral não existe; reset não foi executado.
 
-Publicação desta continuação: commit/push da branch `agent/vibe-tv` em andamento; atualizar este registro após verificar o remoto. Entrega anterior publicada: `98afd9704983da2c8a22bf306e0174e4b84cf161`.
+Continuação publicada na branch `agent/vibe-tv`, commit `28941a40a781225d6bbf9a21435329c48285110e`. Push concluído e SHA remoto conferido igual ao local. Este fechamento documental vem em seguida na mesma branch. **O bug de reabertura T016 permanece em aberto; a publicação não declara essa correção concluída.**
 
 ## Pedido original e otimizado
 
@@ -57,7 +57,7 @@ Privilégios: somente `application.launch` e `tv.window`. O original Android em 
 - T012: ícones/IDs corrigidos, aceitos pelo proprietário.
 - T013: pesquisa Home/autorun concluída; sem mecanismo público para substituir Home.
 - T014: refinamento 1.0.3 implementado/validado/instalado.
-- T015: revisão/capturas/docs feitas, publicação em andamento (depende de T014).
+- T015: revisão/capturas/docs e publicação concluídas (depende de T014). T016 permanece separado e aberto.
 - T009: validação física parcial em andamento (depende de T008). Navegação/destaque aceitos; falha na reabertura do YouTube em T016; demais serviços/sessões, PS5, desempenho e autorun ainda não verificados.
 
 Não marcar toda a integração física concluída com base no sucesso do YouTube ou de uma fixture.
@@ -113,4 +113,4 @@ Para TV, seguir [installation.md](../docs/vibe-tv/installation.md). Ferramentas 
 Próxima ação: coletar a mensagem do segundo clique no YouTube e reproduzir T016. Após reiniciar somente Vibe para diagnóstico, versão 1.0.3 foi confirmada no Web Inspector; estado inicial sem aria-busy e sem toast. Isso não reproduz a falha. A conexão de debug posteriormente fechou, sem causa confirmada. Se houver problema reproduzível, corrigir com teste proporcional, incrementar versão, reempacotar/assinar e atualizar só Vibe. Para demais verificações físicas, orientar um teste por vez; não reiniciar/resetar a TV como atalho sem contexto. Home global e histórico privado não devem ser prometidos.
 
 ## Novo relato do proprietário — após 1.0.3
-O proprietário confirmou navegação e destaque corretos, mas relatou que o YouTube abriu uma vez e não abriu na segunda tentativa. Reabertura em investigação em T016; causa ainda não comprovada. A instalação e a primeira abertura não validam ciclos consecutivos. Publicação final aguarda essa correção ou evidência clara do bloqueio.
+O proprietário confirmou navegação e destaque corretos, mas relatou que o YouTube abriu uma vez e não abriu na segunda tentativa. Reabertura em investigação em T016; causa ainda não comprovada. A instalação e a primeira abertura não validam ciclos consecutivos. O código e as evidências foram publicados com esse problema conhecido; a correção depende de reproduzir o segundo clique e obter o erro.

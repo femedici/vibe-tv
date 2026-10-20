@@ -6,6 +6,8 @@ Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv),
 
 **Estado: versão 1.0.3 assinada, instalada e iniciada na Samsung AU8000.** Artes e abertura do YouTube confirmadas pelo proprietário na 1.0.2; navegação refinada e 44 testes aprovados na 1.0.3. Demais integrações físicas ainda não verificadas. O Vibe é um aplicativo Tizen independente. Home continua abrindo o Smart Hub.
 
+**Problema conhecido em investigação:** o proprietário relatou que o YouTube abriu uma vez e não reabriu na segunda tentativa. Navegação/destaque da 1.0.3 foram aceitos; causa da reabertura ainda não capturada (T016).
+
 ![Vibe TV — prévia local da versão 1.0.3](outputs/vibe-tv-1.0.3-dark.png)
 
 ## Rodar localmente
