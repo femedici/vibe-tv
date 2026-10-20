@@ -124,3 +124,5 @@ Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests
 - Actual read-only preflight: AU8000 firmware T-NKLAUABC-2310.0, armv7/Tizen 6.0. Its libaul lacks aul_get_default_app, which CleanFrame’s guarded net6 helper requires. CleanFrame’s reported non-root success concerns a 2024 The Frame, not this TV.
 - Couchroot’s QN90A Tizen 6 reference uses different root-assisted database routing. This is evidence to review, not proof for AU8000. No native Home setting, database, privilege or firmware was changed during preflight.
 - Earlier public-API findings remain correct but are insufficient to rule out undocumented native routing. Existing requirements saying Home remains system-owned describe the current implementation, not removal of the owner’s replacement goal.
+
+- Subsequent explicit approval: owner authorizes the bounded temporary-root test, identity and consistent backup first, only short-Home change and restore. No firmware, boot relay, other application changes or global authentication-file changes. Abort on guard/backup failure; preserve uncertain outcomes instead of retrying.

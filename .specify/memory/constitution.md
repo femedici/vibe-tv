@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version: 1.0.0 -> 1.1.0 (owner accepted documented factory reset as fallback and authorized standalone app installation)
+Version: 1.1.0 -> 1.2.0 (owner explicitly authorized bounded temporary-root Home routing test)
 Principles: populated from user requirements, global rules and confirmed Tizen scope.
 Added: Platform and preservation boundaries; Development and verification.
 Removed: template examples. No new domain or performance principles assumed.
@@ -53,9 +53,7 @@ device identifiers MUST remain outside Git and public screenshots.
 ## Platform and preservation boundaries
 
 Spec Kit is fixed at 1.0.3; no automatic upgrade. The active feature tasks.md is the
-single tracker. Research and local work can proceed within approved scope. Rooting,
-firmware replacement, factory reset, Smart Hub reset, private service token migration,
-and disabling Samsung components are not authorized shortcuts.
+single tracker. Research and local work can proceed within approved scope. The owner now explicitly authorizes an exact-device temporary-root test limited to identity, consistent routing backup, short-Home routing and restoration. No global authentication-file changes, persistent root service, boot relay, firmware replacement, reset, private service token migration or Samsung component removal are authorized. Abort before mutation if the approved prerequisites cannot be established.
 
 ## Development and verification
 
@@ -73,4 +71,4 @@ must preserve them unless the user authorizes an amendment; record reasons and u
 the living spec and tracker. Version amendments semantically and check compliance during
 specification, planning, review and convergence. Higher-priority instructions prevail.
 
-**Version**: 1.1.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19
+**Version**: 1.2.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-20
