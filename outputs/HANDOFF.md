@@ -79,7 +79,7 @@ Tracker único: `specs/001-vibe-tv-tizen/tasks.md`; coordenador é o único edit
 | --- | --- | --- |
 | T018 pesquisa/compatibilidade | done | Evidência integrada |
 | T019 apresentação CleanFrame | done | Código/capturas integrados |
-| T020 integração/publicação | in_progress | Finalizar commit/push e registrar verificação remota |
+| T020 integração/publicação | done | Código, capturas e handoff publicados; SHA remoto conferido |
 | T021 Home nativo | in_progress | Receber teste físico YouTube→Home; depois HDMI→Home e menu Samsung |
 | T009 hardware geral | in_progress | Sessões, configurações, boot e desempenho físico |
 | T016 YouTube repetido | pending | Dois ciclos abrir/voltar/reabrir; usuário relatou abertura correta, sem causa anterior reproduzida |
@@ -122,7 +122,7 @@ Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências
 
 Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch de integração: **agent/vibe-tv-cleanframe**. [Repositório/branch](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Publicação final ainda será registrada após confirmar o remoto.
+Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. Este registro de publicação segue na mesma branch. Não houve PR, merge em main ou limpeza de worktrees.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (agent/cleanframe-interface), `.worktrees/native-home` (agent/au8000-native-home) e as anteriores state/platform/interface. Nenhuma limpeza automática ou PR.
 
