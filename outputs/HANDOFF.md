@@ -82,7 +82,7 @@ A reversão já foi testada com comparação integral das três tabelas/rowids. 
 | T022 responsividade | done | Ensaio físico anterior sem animações aprovado; comportamento preservado |
 | T025–T027 revisão 1.1.3 | done | Consulta automática/ícones e publicação anteriores preservados |
 | T028 fundos/ícones | done | Dois RED → 30 controller / 72 total GREEN; oito fundos, layouts e seleção sem borda conferidos |
-| T029 validar/instalar/publicar | in_progress | 1.1.5 instalada/aberta, capturas e docs prontos; concluir commit/push e conferir SHA |
+| T029 validar/instalar/publicar | done | 1.1.5 instalada/aberta; código, capturas e docs publicados; SHA remoto conferido |
 | T016 abertura repetida | pending | Receber teste físico YouTube→Home→YouTube |
 | T009 hardware geral | in_progress | Outros apps/sessões, configurações, imagem/áudio, boot e percepção da nova apresentação |
 | T017 PS5 | in_progress | Confirmar imagem HDMI 2 e despertar CEC separadamente |
@@ -131,7 +131,7 @@ Native Python 16/C# 38 são históricos; helpers não mudaram e não foram reexe
 
 Raiz `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch **agent/vibe-tv-cleanframe**: [GitHub](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base desta continuação: `07027a1e0b1df91d948b19880a42a3ce8a5d8e25`. Commit/push desta revisão em andamento; conferir receipt após publicação. Nenhum PR/merge em main.
+Base desta continuação: `07027a1e0b1df91d948b19880a42a3ce8a5d8e25`. Implementação, capturas e documentação publicadas em `dd385e47a76569c8f0915fba9188423c308b1f54`; `git ls-remote` confirmou o mesmo SHA. Este recibo e o fechamento do tracker seguem na mesma branch. Nenhum PR/merge em main.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (`agent/cleanframe-interface`), `.worktrees/native-home` (`agent/au8000-native-home`) e anteriores de state/platform/interface. Só o coordenador escreveu esta revisão; agentes foram revisores somente leitura.
 
