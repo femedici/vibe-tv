@@ -293,7 +293,7 @@
     detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. Home continua abrindo o Smart Hub.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.0.3', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.0.4', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');

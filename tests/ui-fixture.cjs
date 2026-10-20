@@ -31,7 +31,7 @@ fs.writeFileSync(path.join(root, 'test-native.js'), `
       }}; }
     },
     systeminfo: {getPropertyValue:function(name,success) {
-      success({connected:[{type:'HDMI',number:2}],disconnected:[]});
+      success({connected:[{type:'TV',number:1,signal:null}],disconnected:[{type:'HDMI',number:2,signal:null}]});
     }},
     tvwindow: {setSource:function(source,success) {
       document.body.setAttribute('data-test-source', source.type + source.number);

@@ -1,22 +1,22 @@
-# Validação do Vibe TV — 1.0.3
+# Validação do Vibe TV — 1.0.4
 
 Registro: 20/10/2026. As evidências abaixo distinguem navegador, simulação e Samsung física.
 
 ## Resultado atual
 
-- 1.0.3 assinada, instalada por atualização direta e aberta na Samsung UN50AU8000GXZD. O instalador retornou `install completed` e o launcher confirmou um novo processo.
+- 1.0.4 assinada, instalada por atualização direta e aberta na Samsung UN50AU8000GXZD. O instalador retornou `install completed` e o launcher confirmou um novo processo.
 - Na 1.0.2, o proprietário confirmou artes corretas e abertura perfeita do YouTube. Depois pediu controles no topo direito, ↓ direto para os apps e um seletor suave; esses ajustes compõem a 1.0.3.
-- O proprietário confirmou o novo seletor e a navegação, mas relatou falha na segunda abertura do YouTube. Diagnóstico em T016, causa ainda não confirmada.
+- O proprietário confirmou o novo seletor/navegação e depois informou abertura correta do YouTube. O relato anterior de falha na segunda abertura não foi reproduzido; ciclos consecutivos continuam pendentes em T016, sem correção especulativa.
 - Home continua com o Smart Hub, observado pelo proprietário e consistente com a documentação Samsung. Não foi implementada troca de sistema/launcher global.
 
 ## Verificação automatizada
 
-`node --test tests/*.test.cjs`: **44 passaram, zero falhas**.
+`node --test tests/*.test.cjs`: **45 passaram, zero falhas**.
 
 | Área | Testes | Escopo |
 |---|---:|---|
 | Estado | 13 | ordem inicial, cinco temas, persistência, corrupção, armazenamento bloqueado, favoritos e histórico |
-| Plataforma | 17 | inventário sanitizado, ID exato, erro/timeout, HDMI2, viewer, falha parcial e saída |
+| Plataforma | 18 | inventário sanitizado, ID exato, erro/timeout, HDMI2, viewer, falha parcial e saída |
 | Navegação | 9 | setas, overflow, Tab, nomes ambíguos, IDs observados, Spotify, HDMI/app homônimo, cartão largo |
 | Controlador | 3 | aviso de armazenamento permanece após sucesso; resposta assíncrona não rouba foco em sucesso/falha |
 | Ferramentas | 2 | servidor confinado, symlinks/métodos, arquivos do pacote |
@@ -26,7 +26,7 @@ RED/GREEN observados: cartão largo era ignorado ao subir; aliases duplicados se
 ## Pacote e preservação
 
 - `node tools/package-tizen.cjs`: 20 arquivos de runtime/assets.
-- `tz pack` com perfil Samsung local VibeTV: pacote 1.0.3 com duas assinaturas XML.
+- `tz pack` com perfil Samsung local VibeTV: pacote 1.0.4 com duas assinaturas XML.
 - ZIP/CRC, manifesto e assinaturas XML válidos; todos os 20 arquivos de runtime idênticos entre pacote não assinado e assinado. Entradas de diretório adicionadas pelo assinador não são arquivos de runtime.
 - Sem fixture, certificados privados ou credenciais no código/pacote-fonte. Pacote assinado fica em `dist/`, ignorado pelo Git.
 - Atualização por SDB push + `vd_appinstall`, sem comando de desinstalação. Somente o processo Vibe foi encerrado para abrir a versão nova. Nenhum reset, firmware ou dado de outro aplicativo foi alterado.
@@ -54,10 +54,10 @@ A fase local inicial também verificou reordenar/remover/adicionar, vazio/restau
 ## Samsung física
 
 - Developer Mode/Host PC IP configurados pelo proprietário; SDB reconheceu o modelo e plataforma 6.0. Endereço de rede mudou durante a tarefa e foi redescoberto somente por leitura.
-- Certificado Samsung concluído pelo proprietário após uma primeira tentativa de callback expirar. Perfil válido usado para assinar 1.0.0, 1.0.1, 1.0.2 e 1.0.3. Não há pendência de emissão.
+- Certificado Samsung concluído pelo proprietário após uma primeira tentativa de callback expirar. Perfil válido usado para assinar 1.0.0, 1.0.1, 1.0.2, 1.0.3 e 1.0.4. Não há pendência de emissão.
 - Web Inspector da 1.0.1 confirmou inventário e ícones: YouTube/HBO Max/TV Plus 117×117, Netflix 298×298, Disney+ 423×423, Spotify 170×170. Prime retornou `ERR_FILE_NOT_FOUND`. Isso motivou originais locais para marcas conhecidas.
 - Proprietário confirmou na 1.0.2: “tá correto, abre perfeito”, sobre artes e YouTube. Também confirmou Home abrindo Smart Hub e relatou o desvio do foco para Organizar.
-- 1.0.3: instalador e abertura confirmados por ferramenta; navegação e destaque aceitos pelo proprietário; reabertura do YouTube em investigação.
+- 1.0.3: instalador e abertura confirmados por ferramenta; navegação e destaque aceitos pelo proprietário; abertura do YouTube posteriormente confirmada pelo proprietário; repetição completa ainda não observada.
 - Autorun Last App foi ativado pelo proprietário. O ciclo de energia e o comportamento após usar outro app não foram verificados.
 
 Ferramentas: Node.js v25.8.1; extensão oficial Tizen VS Code 10.4.3, servidor arm64 10.4.5, SDB 4.2.36 e CLI `tz`.
@@ -68,6 +68,7 @@ Revisores somente leitura conferiram plataforma/limites, ícones e UI. Achados s
 
 ## Capturas
 
+- [1.0.4 PS5 — seleção sem sinal simulada](../../outputs/vibe-tv-1.0.4-ps5-simulated.png)
 - [1.0.3 escuro / foco no YouTube](../../outputs/vibe-tv-1.0.3-dark.png)
 - [1.0.3 claro](../../outputs/vibe-tv-1.0.3-light.png)
 - [1.0.3 PS5 — simulação explícita](../../outputs/vibe-tv-1.0.3-ps5-simulated.png)
@@ -79,5 +80,14 @@ Capturas salvas do navegador e inspecionadas, sem mockups. Não são fotos da TV
 
 Não verificados: todos os demais serviços/sessões, HDMI/PS5 físico, imagem/HDR/Game Mode/áudio/latência, ciclo de energia/autorun, saída/remoção física e restauração. Não há medição de FPS. Nenhum backup integral foi criado; o proprietário aceitou reset documentado como fallback, sabendo que apaga configurações e sessões e não restaura firmware antigo/danificado. Reset não foi executado. Histórico privado/retomada de episódios não está integrado; só há último lançamento pelo Vibe.
 
-## Novo relato do proprietário — após 1.0.3
-O proprietário confirmou navegação e destaque corretos, mas relatou que o YouTube abriu uma vez e não abriu na segunda tentativa. Reabertura em investigação em T016; causa ainda não comprovada. A instalação e a primeira abertura não validam ciclos consecutivos. O código e as evidências foram publicados com esse problema conhecido; T016 permanece aberto.
+## Correção de HDMI 2 — 1.0.4
+
+1. **RED físico:** leitura no Web Inspector retornou `connected: [TV 1]` e `disconnected: [AV 1, HDMI 1, HDMI 2, HDMI 3]`, todos com sinal desconhecido. Clique no PS5 mostrou “HDMI 2 não está disponível. Confira o cabo e ligue o PS5.”; `getSource()` permaneceu TV 1. A plataforma bloqueava antes de `setSource`.
+2. **RED automatizado:** 15/18 passaram; falharam seleção em connected sem sinal, seleção em disconnected e duplicidade entre listas. Nenhum teste foi removido para mascarar o resultado.
+3. **GREEN:** pesquisar ambas as listas e deixar a API decidir sobre a entrada sem sinal fez 18/18 de plataforma passarem. Suíte completa 45/45. Erros/timeout/objeto original/porta exata/viewer posterior preservados.
+4. **Navegador:** fixture atualizada com TV1 conectado e HDMI2 desconectado. Clique YouTube seguido de PS5 produziu `HDMI2`, depois `org.tizen.tv-viewer`, hero PS5, foco `favorite-ps5` e toast oculto. É simulação explícita, não CEC real. Captura 1.0.4 salva e inspecionada.
+5. **Pacote:** 20 arquivos idênticos entre unsigned e signed; CRC/XML/versão e duas assinaturas válidos, sintaxe dos scripts válida. Atualização direta completou, somente Vibe foi reiniciado; Inspector confirmou `appInfo.version === '1.0.4'`.
+6. **Teste físico pós-atualização:** clique no favorito PS5 acionado; Inspector desconectou antes de permitir ler o resultado. Pergunta ao proprietário sobre imagem/ligar PS5 enviada. Sem resposta registrada neste fechamento: não declarar wake, HDMI visível ou desempenho confirmados.
+7. **Revisão:** revisor independente conferiu o diff e 18 testes, sem achados acionáveis; coordenador leu todo o diff e executou a suíte. Nenhuma nova permissão, firmware, reset ou acesso a contas.
+
+Home foi reconferido nas fontes oficiais listadas em compatibility.md. Continua indisponível a troca global do Smart Hub por esse WGT. A condição de não haver sinal foi corrigida no código; o resultado físico completo ainda depende de evidência, registrado em T017/T009.

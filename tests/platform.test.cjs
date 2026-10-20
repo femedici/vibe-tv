@@ -180,20 +180,37 @@ test('missing HDMI2 and non-HDMI2 requests never select another source', async (
   assert.equal(mutations, 0);
 });
 
-test('disconnected or known no-signal HDMI2 is not claimed available', async () => {
-  const native = api();
-  native.systeminfo.getPropertyValue = (name, success) => success({ connected: [], disconnected: [{ type: 'HDMI', number: 2 }] });
-  const platform = load().create(native);
-  await assert.rejects(platform.launchInput(2), error => error.code === 'INPUT_UNAVAILABLE');
-  native.systeminfo.getPropertyValue = (name, success) => success({ connected: [{ type: 'HDMI', number: 2, signal: false }], disconnected: [] });
-  await assert.rejects(platform.launchInput(2), error => error.code === 'INPUT_UNAVAILABLE');
-});
+for (const list of ['connected', 'disconnected']) {
+  test('enumerated HDMI2 in ' + list + ' can be selected without a video signal', async () => {
+    const native = api();
+    const target = { type: 'HDMI', number: 2, signal: list === 'connected' ? false : null };
+    const sources = { connected: [{ type: 'TV', number: 1 }], disconnected: [] };
+    sources[list].push(target);
+    const calls = [];
+    native.systeminfo.getPropertyValue = (name, success) => success(sources);
+    native.tvwindow.setSource = (source, success, failure, type) => {
+      assert.equal(source, target);
+      assert.equal(type, 'MAIN');
+      calls.push('source');
+      success(source, type);
+    };
+    native.application.launch = (id, success) => { calls.push(id); success(); };
+    await load().create(native).launchInput(2);
+    assert.deepEqual(calls, ['source', 'org.tizen.tv-viewer']);
+  });
+}
 
 test('ambiguous HDMI2 and malformed source lists are rejected without selection', async () => {
   const native = api();
   const platform = load().create(native);
   native.systeminfo.getPropertyValue = (name, success) => success({ connected: [{ type: 'HDMI', number: 2 }, { type: 'HDMI', number: 2 }] });
   await assert.rejects(platform.launchInput(2), error => error.code === 'INPUT_UNAVAILABLE');
+  native.systeminfo.getPropertyValue = (name, success) => success({
+    connected: [{ type: 'HDMI', number: 2 }], disconnected: [{ type: 'HDMI', number: 2 }]
+  });
+  await assert.rejects(platform.launchInput(2), error => error.code === 'INPUT_UNAVAILABLE');
+  native.systeminfo.getPropertyValue = (name, success) => success({ connected: [], disconnected: {} });
+  await assert.rejects(platform.launchInput(2), error => error.code === 'INVALID_RESPONSE');
   native.systeminfo.getPropertyValue = (name, success) => success(null);
   await assert.rejects(platform.launchInput(2), error => error.stage === 'LIST_INPUTS');
 });

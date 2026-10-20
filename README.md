@@ -4,9 +4,9 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: versão 1.0.3 assinada, instalada e iniciada na Samsung AU8000.** Artes e abertura do YouTube confirmadas pelo proprietário na 1.0.2; navegação refinada e 44 testes aprovados na 1.0.3. Demais integrações físicas ainda não verificadas. O Vibe é um aplicativo Tizen independente. Home continua abrindo o Smart Hub.
+**Estado: versão 1.0.4 assinada, instalada e iniciada na Samsung AU8000.** Corrigido o bloqueio que impedia selecionar HDMI 2 sem sinal ativo. 45 testes passaram; o fluxo foi verificado no navegador com hardware simulado. A imagem física e o despertar do PS5 por HDMI-CEC ainda aguardam confirmação.
 
-**Problema conhecido em investigação:** o proprietário relatou que o YouTube abriu uma vez e não reabriu na segunda tentativa. Navegação/destaque da 1.0.3 foram aceitos; causa da reabertura ainda não capturada (T016).
+O proprietário confirmou artes, navegação e abertura do YouTube; um relato anterior de falha na reabertura não foi reproduzido, e depois ele informou abertura correta. Ciclos repetidos e demais serviços continuam no roteiro físico. **Home continua abrindo o Smart Hub:** não existe substituição global implementada por este aplicativo.
 
 ![Vibe TV — prévia local da versão 1.0.3](outputs/vibe-tv-1.0.3-dark.png)
 

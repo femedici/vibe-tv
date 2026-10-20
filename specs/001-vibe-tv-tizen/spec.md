@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv`
 **Created**: 2026-10-19
-**Status**: Signed app installed and launched on the TV; owner confirmed correct initial rendering; native icons and startup investigation in progress
+**Status**: 1.0.4 installed; HDMI no-signal precondition corrected; physical PS5 wake and global Home requirements remain unfulfilled/unverified
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -36,7 +36,7 @@ As the TV owner I want the largest area to show the last app successfully opened
 ### User Story 2 - Arrange apps and PS5 (Priority: P1)
 I want favorites in the requested order, remote-accessible rearrangement, addition/removal, and my PS5 artwork on HDMI 2.
 **Why this priority**: Makes the hub useful for the owner's existing setup.
-**Independent Test**: Reorder, remove and add an item; reload and verify order. PS5 uses supplied art and only selects HDMI 2 when an actual source is available.
+**Independent Test**: Reorder, remove and add an item; reload and verify order. PS5 uses supplied art and selects only the actual HDMI 2 object enumerated by the TV, including without an active video signal.
 **Acceptance Scenarios**:
 1. First run order: YouTube, PS5, Netflix, Prime Video, HBO Max, Samsung TV Plus, Disney+, Spotify.
 2. Reordering persists and every item remains reachable with directional navigation, including when overflowing the row.
@@ -74,7 +74,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-004** Use application-relevant art and the two supplied PS5 assets.
 - **FR-005** Provide initial order exactly as US2 specifies; support persistent reorder, add and remove.
 - **FR-006** Identify installed apps from the TV inventory; prevent ambiguous/unavailable targets from silent substitution.
-- **FR-007** Select verified HDMI 2 for PS5 and expose errors; preserve native video handling rather than claiming a game overlay is equivalent.
+- **FR-007** Select the unique actual HDMI 2 object enumerated in connected or disconnected sources, including absent/unknown video signal, and then open the native viewer. Expose API errors/timeouts and never substitute another port or invent a source. A successful source selection does not prove PS5 power-on: HDMI-CEC wake must be verified separately on the physical console.
 - **FR-008** Offer and persist dark, light, gray, pastel and wine themes.
 - **FR-009** Support directional navigation, OK and Back; preserve system Home/Power/Volume. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the item itself with a restrained 150 ms transform/opacity transition, without an external rectangular outline; reduced motion disables the transition.
 - **FR-010** Display unavailable integrations honestly; never fabricate episode names, watch progress or login transfer.
@@ -112,4 +112,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 38 automated checks passed, plus live Edge keyboard/pointer, five skins/reload, favorites/empty/overflow and 1920×1080/390×844 checks. A separate explicitly simulated fixture verified successful/failed launch history, exact extra app identity, HDMI2/viewer sequence and exit UI. The production preview never fabricates native capabilities. See `docs/vibe-tv/validation.md` for evidence and `tasks.md` for publication/hardware state. Physical installation, native inventory, artwork and YouTube opening have now been verified; startup, other provider sessions, physical HDMI behavior and full backup remain unverified. Latest focus/layout refinement is tracked in T014/T015.
 
 ## Refinement evidence (2026-10-20)
-44 automated checks passed. Browser Down from hero reaches the first app; Up returns to hero. Header controls and focus motion checked at 1280×720 and 390×844 plus desktop. Signed 1.0.3 installed by direct update and launched. Owner accepted the latest focus/navigation; first native YouTube opening is confirmed, but a second opening failed according to the owner and is being diagnosed in T016. See validation.md for exact limits.
+44 automated checks passed. Browser Down from hero reaches the first app; Up returns to hero. Header controls and focus motion checked at 1280×720 and 390×844 plus desktop. Signed 1.0.3 installed by direct update and launched. Owner accepted the latest focus/navigation; owner later reported correct YouTube opening after an earlier second-opening failure; no reproducible cause or code correction was established in T016. See validation.md for exact limits.
+
+## PS5 follow-up (2026-10-20)
+Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests global Home replacement. Actual TV inspection reproduced the Vibe precondition failure with HDMI2 in disconnected and source remaining TV1. Version 1.0.4 removes only that incorrect guard, retains native APIs/error handling, and passes 45 tests. Signed direct update and runtime version confirmed. Physical post-click image and wake await owner confirmation; Inspector disconnection alone is not success evidence. No supported public mechanism for global Home replacement was found in Samsung documentation; that requested outcome remains unmet, not silently removed from scope.

@@ -22,8 +22,8 @@ vibe_sdk="$HOME/.tizen-extension-platform/server/sdktools"
 "$vibe_sdk/data/tools/tizen-core/tz" pack -t wgt \
   -b "$PWD/dist/VibeTV-unsigned.wgt" -s VibeTV \
   -p "$vibe_sdk/sdk-data/profile/profiles.xml" \
-  -o "$PWD/dist/VibeTV-1.0.3.wgt"
-unzip -t dist/VibeTV-1.0.3.wgt
+  -o "$PWD/dist/VibeTV-1.0.4.wgt"
+unzip -t dist/VibeTV-1.0.4.wgt
 ```
 
 Além de CRC e XML válidos, confira que cada um dos 20 arquivos de runtime é idêntico ao pacote não assinado, com somente `author-signature.xml` e `signature1.xml` adicionados.
@@ -35,9 +35,9 @@ Use o dispositivo verificado em `sdb devices`. Defina `VIBE_TV_SERIAL` com o ser
 ```sh
 "$vibe_sdk/data/tools/sdb" devices
 "$vibe_sdk/data/tools/sdb" -s "$VIBE_TV_SERIAL" push \
-  "$PWD/dist/VibeTV-1.0.3.wgt" /home/owner/share/tmp/sdk_tools/VibeTV-1.0.3.wgt
+  "$PWD/dist/VibeTV-1.0.4.wgt" /home/owner/share/tmp/sdk_tools/VibeTV-1.0.4.wgt
 "$vibe_sdk/data/tools/sdb" -s "$VIBE_TV_SERIAL" shell 0 vd_appinstall \
-  VibeTV /home/owner/share/tmp/sdk_tools/VibeTV-1.0.3.wgt
+  VibeTV /home/owner/share/tmp/sdk_tools/VibeTV-1.0.4.wgt
 "$vibe_sdk/data/tools/tizen-core/tz" run \
   --serial "$VIBE_TV_SERIAL" --package-id VibeTV2026
 ```

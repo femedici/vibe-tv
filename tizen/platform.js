@@ -110,14 +110,16 @@
       return request('LIST_INPUTS', function (success, error) {
         tizenApi.systeminfo.getPropertyValue('VIDEOSOURCE', success, error);
       }).then(function (sources) {
-        if (!sources || !Array.isArray(sources.connected)) {
+        if (!sources || !Array.isArray(sources.connected) ||
+            (sources.disconnected !== undefined && !Array.isArray(sources.disconnected))) {
           throw failure('INVALID_RESPONSE', 'LIST_INPUTS', stages.LIST_INPUTS);
         }
-        var matches = sources.connected.filter(function (source) {
+        // A console in standby may have no signal and appear in disconnected.
+        var matches = sources.connected.concat(sources.disconnected || []).filter(function (source) {
           return source && source.type === 'HDMI' && source.number === number;
         });
-        if (matches.length !== 1 || matches[0].signal === false) {
-          throw failure('INPUT_UNAVAILABLE', 'LIST_INPUTS', 'HDMI 2 não está disponível. Confira o cabo e ligue o PS5.');
+        if (matches.length !== 1) {
+          throw failure('INPUT_UNAVAILABLE', 'LIST_INPUTS', 'Não foi possível identificar a entrada HDMI 2 com segurança.');
         }
         // Use the device's object; do not invent source IDs or choose another input.
         return request('SET_SOURCE', function (success, error) {

@@ -17,7 +17,7 @@ Browser globals and CommonJS exports for tests. ES2015 supported by Chromium 76;
 - `create(tizenApi)` -> `{native:boolean,listApps(),launchApp(appId),launchInput(number),exit()}`.
 - `listApps()` -> Promise of sanitized `{id,name,iconPath}` from getAppsInfo; no fixtures. No API: reject readable error.
 - `launchApp(appId)` -> resolves only success callback from application.launch. Input validation, exceptions and bounded timeout reject.
-- `launchInput(2)` -> enumerate VIDEOSOURCE, use actual matching HDMI number (unknown signal allowed), setSource(source,...,'MAIN'), then launch documented `org.tizen.tv-viewer`. Reject each failure with stage context; no claim of success if viewer fails after source changed.
+- `launchInput(2)` -> enumerate VIDEOSOURCE, use the unique actual HDMI 2 object across connected/disconnected (absent/unknown signal allowed), setSource(source,...,'MAIN'), then launch documented `org.tizen.tv-viewer`. Reject missing/ambiguous sources and each API failure with stage context; no claim of success if viewer fails after source changed, and no claim of CEC wake from the source callback alone.
 - `exit()` -> explicitly invokes current application's exit; no system app kill or reset.
 - No pairing, tokens, ADB, filesystem outside own app, fetch or device network code. Tizen privileges public only.
 
