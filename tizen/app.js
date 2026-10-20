@@ -9,9 +9,11 @@
   var inventory = [];
   var inventoryError = '';
   var loadingInventory = false;
+  var inventoryRequest = null;
   var inventoryNeedsRefresh = false;
   var inventoryRefreshQueued = false;
   var pending = null;
+  var launchCancelled = false;
   var panelType = null;
   var panelOpener = null;
   var addCandidates = [];
@@ -166,8 +168,6 @@
       if (appBrand.className === 'native-app-icon') tile.classList.add('tile-native');
       tile.appendChild(appBrand);
       button.appendChild(tile);
-      button.appendChild(element('span', 'app-label', item.name));
-      if (item.kind === 'input' || platform.native && !available) button.appendChild(element('span', 'app-kind', item.kind === 'input' ? 'HDMI 2' : 'Não encontrado'));
       row.appendChild(button);
       list.appendChild(row);
     });
@@ -186,6 +186,7 @@
   function openPanel(type, opener) {
     panelOpener = opener || document.activeElement.id;
     panelType = type;
+    if (type === 'add') refreshInventory();
     renderPanel();
     byId('panel-overlay').hidden = false;
     document.body.classList.add('panel-open');
@@ -281,12 +282,7 @@
     });
     container.appendChild(list);
     if (!addCandidates.length) container.appendChild(element('p', 'panel-empty', loadingInventory ? 'Consultando os aplicativos da TV…' : platform.native ? 'Nenhum outro aplicativo disponível para adicionar.' : 'Todos os atalhos iniciais já estão na sua prateleira.'));
-    if (platform.native) {
-      if (inventoryError) container.appendChild(element('p', 'panel-empty', inventoryError));
-      var refresh = actionButton('refresh-inventory', 'button quiet', 'refresh', loadingInventory ? 'Consultando…' : 'Atualizar aplicativos');
-      refresh.disabled = loadingInventory;
-      container.appendChild(refresh);
-    }
+    if (platform.native && inventoryError && !loadingInventory) container.appendChild(element('p', 'panel-empty', inventoryError));
   }
   function renderPanel() {
     var titles = { themes: 'Aparência', organize: 'Organizar aplicativos', add: 'Adicionar aplicativos', settings: 'Ajustes', about: 'Sobre o Vibe TV', exit: 'Sair do Vibe TV?' };
@@ -310,7 +306,7 @@
     detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. A configuração de início é independente do destino do botão Home.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.1.2', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.1.3', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');
@@ -318,25 +314,26 @@
       exitSection.appendChild(exit);
     }
   }
-  function refreshInventory(manual) {
-    if (!platform.native || loadingInventory) return;
+  function refreshInventory() {
+    if (!platform.native) return Promise.resolve(false);
+    if (loadingInventory) return inventoryRequest;
     loadingInventory = true;
     inventoryNeedsRefresh = false;
     inventoryRefreshQueued = false;
-    var refreshButton = byId('refresh-inventory');
-    if (refreshButton) refreshButton.textContent = 'Consultando…';
-    platform.listApps().then(function (apps) {
+    inventoryRequest = platform.listApps().then(function (apps) {
       inventory = apps;
       inventoryError = '';
-      if (manual) announce('Lista de aplicativos atualizada.');
+      return true;
     }, function (error) {
       inventoryError = error.message || 'Não foi possível consultar os aplicativos.';
-      if (manual) announce(inventoryError);
-    }).then(function () {
+      return false;
+    }).then(function (succeeded) {
       loadingInventory = false;
       render();
-      if (inventoryRefreshQueued && !document.hidden) refreshInventory(false);
+      if (inventoryRefreshQueued && !document.hidden) return refreshInventory();
+      return succeeded;
     });
+    return inventoryRequest;
   }
   function launch(item) {
     if (!item) return;
@@ -346,23 +343,37 @@
     }
     if (pending) { announce('Aguarde a confirmação da abertura em andamento.'); return; }
     var target = item.kind === 'app' && Navigation.resolveApp(item, inventory);
-    if (loadingInventory && item.kind === 'app' && !target) { announce('Aguarde a consulta dos aplicativos da TV.'); return; }
-    if (item.kind === 'app' && !target) { announce(item.name + ' não foi identificado com segurança nesta TV. Confira os aplicativos em Adicionar.'); return; }
     var opener = document.activeElement && document.activeElement.id;
     pending = item.id;
+    launchCancelled = false;
     if (byId(opener)) byId(opener).setAttribute('aria-busy', 'true');
-    announce('Abrindo ' + item.name + '…');
-    var request = item.kind === 'input' ? platform.launchInput(2) : platform.launchApp(target.id);
+    announce((item.kind === 'app' && !target ? 'Consultando ' : 'Abrindo ') + item.name + '…');
+    var request;
+    if (item.kind === 'input') request = platform.launchInput(2);
+    else if (target) request = platform.launchApp(target.id);
+    else request = refreshInventory().then(function (succeeded) {
+      if (launchCancelled || document.hidden) throw new Error('Abertura cancelada ao sair do Vibe TV. Selecione o aplicativo novamente.');
+      if (!succeeded) throw new Error(inventoryError);
+      var currentItem = itemById(item.id);
+      var resolved = currentItem && Navigation.resolveApp(currentItem, inventory);
+      if (!resolved) throw new Error(item.name + ' não foi identificado com segurança nesta TV. Confira os aplicativos em Adicionar.');
+      announce('Abrindo ' + item.name + '…');
+      return platform.launchApp(resolved.id);
+    });
     request.then(function () {
-      pending = null;
-      if (byId(opener)) byId(opener).removeAttribute('aria-busy');
+      finishLaunch(opener, item.id);
       if (commit(State.recordLaunch(state, item.id, Date.now()))) byId('toast').hidden = true;
       if (document.activeElement === document.body) focus(opener);
     }, function (error) {
-      pending = null;
-      if (byId(opener)) byId(opener).removeAttribute('aria-busy');
+      finishLaunch(opener, item.id);
       if (document.activeElement === document.body) focus(opener);
       announce(error.message || 'Não foi possível abrir ' + item.name + '.');
+    });
+  }
+  function finishLaunch(opener, id) {
+    pending = null;
+    [opener, 'favorite-' + id].forEach(function (target) {
+      if (byId(target)) byId(target).removeAttribute('aria-busy');
     });
   }
   function handleAction(button) {
@@ -401,8 +412,7 @@
       if (!added) return;
       commit(State.add(state, added), added.name + ' adicionado aos favoritos.');
       focus(addCandidates.length ? 'add-item-0' : 'panel-close');
-    } else if (action === 'refresh') refreshInventory(true);
-    else if (action === 'exit') platform.exit().catch(function (error) { announce(error.message || 'Não foi possível sair.'); });
+    } else if (action === 'exit') platform.exit().catch(function (error) { announce(error.message || 'Não foi possível sair.'); });
   }
   function focusable() {
     var scope = panelType ? byId('panel') : byId('hub');
@@ -471,6 +481,7 @@
   });
   function refreshWhenVisible() {
     if (document.hidden) {
+      if (pending) launchCancelled = true;
       inventoryNeedsRefresh = true;
       return;
     }
@@ -479,7 +490,7 @@
       if (inventoryNeedsRefresh) inventoryRefreshQueued = true;
       return;
     }
-    refreshInventory(false);
+    refreshInventory();
   }
   document.addEventListener('visibilitychange', refreshWhenVisible);
   window.addEventListener('focus', function (event) {
@@ -497,6 +508,6 @@
   render();
   clock();
   window.setInterval(clock, 60000);
-  refreshInventory(false);
+  refreshInventory();
   focus('hero-open');
 }());

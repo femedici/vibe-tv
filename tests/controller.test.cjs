@@ -10,19 +10,20 @@ const Platform = require(path.join(root, 'tizen/platform.js'));
 const source = fs.readFileSync(path.join(root, 'tizen/app.js'), 'utf8');
 
 function controller(blockedStorage = false, startup = false) {
-  let resolveLaunch, rejectLaunch, launchedId, resolveInventory, rejectInventory, inventoryCalls = 0;
+  let resolveLaunch, rejectLaunch, launchedId, resolveInventory, rejectInventory, inventoryCalls = 0, launchCalls = 0;
   const measurements = [];
   const scrolls = [];
   const nodes = {};
   const listeners = {};
   const windowListeners = {};
   const document = {
-    body: {}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
+    body: {classList:{add(){},remove(){}}}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
     getElementById(id) { return nodes[id] || null; }
   };
-  for (const id of ['toast', 'storage-note', 'hero-open', 'nav-settings', 'preview-badge', 'clock', ...State.catalog.map(item => 'favorite-' + item.id)]) {
+  for (const id of ['toast', 'storage-note', 'hero-open', 'nav-settings', 'preview-badge', 'clock', 'panel-close', 'panel-overlay', 'add-button', ...State.catalog.map(item => 'favorite-' + item.id)]) {
     nodes[id] = {
-      id, hidden: true, textContent: '', setAttribute() {}, removeAttribute() {},
+      id, hidden: true, textContent: '', attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; }, removeAttribute(name) { delete this.attributes[name]; },
       focus() { document.activeElement = this; }, scrollIntoView() { scrolls.push(id); },
       getBoundingClientRect() {
         measurements.push(id);
@@ -42,7 +43,7 @@ function controller(blockedStorage = false, startup = false) {
     },
     contains(node) { return node.id.startsWith('favorite-'); }
   };
-  nodes.hub = {querySelectorAll() { return ['hero-open', ...State.catalog.map(item => 'favorite-' + item.id)].map(id => nodes[id]); }};
+  nodes.hub = {setAttribute(){}, removeAttribute(){}, querySelectorAll() { return ['hero-open', ...State.catalog.map(item => 'favorite-' + item.id)].map(id => nodes[id]); }};
   document.activeElement = nodes['favorite-youtube'];
   const window = {
     innerWidth:1920, innerHeight:1080,
@@ -52,7 +53,7 @@ function controller(blockedStorage = false, startup = false) {
     localStorage: { getItem() { return null; }, setItem() { if (blockedStorage) throw new Error('blocked'); } },
     tizen: { application: {
       getAppsInfo(success, failure) { inventoryCalls++; resolveInventory = success; rejectInventory = failure; },
-      launch(id, success, failure) { launchedId = id; resolveLaunch = success; rejectLaunch = failure; }
+      launch(id, success, failure) { launchCalls++; launchedId = id; resolveLaunch = success; rejectLaunch = failure; }
     } },
     clearTimeout() {}, setTimeout() { return 1; }
   };
@@ -61,6 +62,7 @@ function controller(blockedStorage = false, startup = false) {
   // Keep real launch/commit/focus and state/platform logic; skip visual startup and rendering.
   vm.runInNewContext(source.slice(0, start) + `
     render = function () {};
+    renderPanel = function () {};
     inventory = ${startup ? '[]' : "[{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]"};
     window.review = {launch:launch, action:handleAction, refresh:refreshInventory,
       inventory:function (apps) { inventory = apps; },
@@ -79,8 +81,10 @@ function controller(blockedStorage = false, startup = false) {
       });
     },
     inventory: window.review.inventory,
-    refresh() { window.review.refresh(false); },
+    refresh() { window.review.refresh(); },
     inventoryCalls() { return inventoryCalls; },
+    launchCalls() { return launchCalls; },
+    addPanel() { window.review.action({id:'add-button',dataset:{action:'panel',panel:'add'}}); },
     visibility(hidden) { document.hidden = hidden; listeners.visibilitychange(); },
     windowFocus(target = window) { if (windowListeners.focus) windowListeners.focus({target}); },
     windowBlur() { if (windowListeners.blur) windowListeners.blur({target:window}); },
@@ -191,17 +195,16 @@ test('failed inventory refresh preserves a previously identified app', async () 
   await app.finish();
 });
 
-test('a fresh inventory removes an uninstalled target; initial pending lookup never guesses it', async () => {
+test('an unresolved favorite waits for inventory and never guesses an absent target', async () => {
   const app = controller();
   app.inventory([]);
   app.refresh();
   app.launch();
   assert.equal(app.launchedId(), undefined);
-  assert.match(app.nodes.toast.textContent, /Aguarde a consulta/);
   await app.finishInventory([]);
-  app.launch();
   assert.equal(app.launchedId(), undefined);
   assert.match(app.nodes.toast.textContent, /não foi identificado/);
+  assert.equal(app.state().last, null);
 });
 
 test('startup discovers installed apps without a manual refresh', async () => {
@@ -222,6 +225,7 @@ test('visible return and window focus share one in-flight inventory refresh', as
   assert.equal(app.inventoryCalls(), 1);
   await app.finishInventory([]);
   app.launch();
+  await app.finishInventory([]);
   assert.equal(app.launchedId(), undefined, 'a removed app is no longer launchable');
 });
 
@@ -286,3 +290,105 @@ test('a queued return waits while hidden again and retries after a failed older 
   await app.finishInventory([]);
   assert.equal(app.inventoryCalls(), 2, 'no refresh loop');
 });
+
+test('one activation waits for the initial lookup and launches once without stealing moved focus', async () => {
+  const app = controller(false, true);
+  app.launch();
+  app.launch();
+  app.nodes['nav-settings'].focus();
+  assert.equal(app.inventoryCalls(), 1);
+  assert.equal(app.launchCalls(), 0);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  assert.equal(app.launchCalls(), 1);
+  assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube');
+  await app.finish();
+  assert.equal(app.document.activeElement.id, 'nav-settings');
+});
+
+for (const outcome of ['found', 'missing', 'failed']) {
+  test(`unresolved activation starts one automatic lookup: ${outcome}`, async () => {
+    const app = controller();
+    app.inventory([]);
+    app.launch();
+    app.launch();
+    assert.equal(app.inventoryCalls(), 1);
+    await app.finishInventory(outcome === 'found' ? [{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}] : [], outcome === 'failed');
+    if (outcome === 'found') {
+      assert.equal(app.launchCalls(), 1);
+      await app.finish();
+      assert.equal(app.state().last.id, 'youtube');
+    } else {
+      assert.equal(app.launchCalls(), 0);
+      assert.equal(app.state().last, null);
+      assert.match(app.nodes.toast.textContent, outcome === 'failed' ? /Não foi possível consultar/ : /não foi identificado/);
+      app.launch();
+      assert.equal(app.inventoryCalls(), 2, 'a failed attempt releases pending for a new activation');
+      await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+      assert.equal(app.launchCalls(), 1);
+      await app.finish();
+    }
+  });
+}
+
+test('Add retries after a failed startup and shares any pending lookup', async () => {
+  const app = controller(false, true);
+  await app.finishInventory(null, true);
+  app.addPanel();
+  app.addPanel();
+  assert.equal(app.inventoryCalls(), 2);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  app.launch();
+  assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube');
+  await app.finish();
+});
+
+test('activation waits through a queued return instead of using an older missing snapshot', async () => {
+  const app = controller(false, true);
+  app.visibility(true);
+  app.visibility(false);
+  app.launch();
+  await app.finishInventory([]);
+  assert.equal(app.inventoryCalls(), 2);
+  assert.equal(app.launchCalls(), 0);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  assert.equal(app.launchCalls(), 1);
+  await app.finish();
+});
+
+test('removing the selected favorite during lookup never launches another item', async () => {
+  const app = controller(false, true);
+  app.launch();
+  app.setState(State.remove(app.state(), 'youtube'));
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  assert.equal(app.launchCalls(), 0);
+  assert.equal(app.state().last, null);
+  assert.match(app.nodes.toast.textContent, /não foi identificado/);
+});
+
+test('leaving the hub cancels a waiting activation even if the owner returns before lookup finishes', async () => {
+  const app = controller(false, true);
+  app.launch();
+  app.visibility(true);
+  app.visibility(false);
+  await app.finishInventory([]);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  assert.equal(app.launchCalls(), 0);
+  assert.equal(app.state().last, null);
+  assert.match(app.nodes.toast.textContent, /cancelada/);
+  app.launch();
+  assert.equal(app.launchCalls(), 1, 'a new explicit activation is still allowed');
+  await app.finish();
+});
+
+for (const failed of [false, true]) {
+  test(`hero launch clears a favorite busy marker rebuilt during lookup (${failed ? 'failure' : 'success'})`, async () => {
+    const app = controller(false, true);
+    app.nodes['hero-open'].focus();
+    app.launch();
+    app.nodes['favorite-youtube'].setAttribute('aria-busy', 'true');
+    await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+    await app.finish(failed);
+    assert.equal(app.nodes['hero-open'].attributes['aria-busy'], undefined);
+    assert.equal(app.nodes['favorite-youtube'].attributes['aria-busy'], undefined);
+  });
+}

@@ -1,6 +1,6 @@
 # CleanFrame e Home nativo na AU8000
 
-Data: 2026-10-20. Estado: UI 1.1.2 instalada e Home curto configurado para Vibe TV. Backup, aplicação, restauração e reaplicação foram verificados no aparelho; o proprietário confirmou Home curto após YouTube abrindo Vibe.
+Data: 2026-10-20. Estado: UI 1.1.3 instalada e Home curto configurado para Vibe TV. Backup, aplicação, restauração e reaplicação foram verificados no aparelho; o proprietário confirmou Home curto após YouTube abrindo Vibe.
 
 ## Referências verificadas
 

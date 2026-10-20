@@ -11,15 +11,24 @@ fs.writeFileSync(index, fs.readFileSync(index, 'utf8').replace('<script src="sta
 fs.writeFileSync(path.join(root, 'test-native.js'), `
 (function () {
   var launched = [];
+  var inventoryCalls = 0;
+  var retryScenario = location.search === '?inventory=retry';
   window.tizen = {
     application: {
-      getAppsInfo: function (success) { success([
+      getAppsInfo: function (success, failure) {
+        var call = ++inventoryCalls;
+        document.body.setAttribute('data-test-inventory-calls', String(call));
+        if (retryScenario && call === 1) return setTimeout(function () { failure({name:'UnknownError'}); }, 200);
+        var apps = [
         {id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube',iconPath:'/assets/brands/youtube.png'},
         {id:'com.samsung.tv.cobalt-yt',name:'Youtube'},
         {id:'test.netflix',name:'Netflix',iconPath:'/missing-test-icon.png'},
         {id:'test.plex',name:'Plex (teste)',iconPath:'/assets/icon.png'},
         {id:'test.ps5.app',name:'PlayStation 5',iconPath:'/missing-test-icon.png'}
-      ]); },
+        ];
+        if (retryScenario) setTimeout(function () { success(apps); }, 600);
+        else success(apps);
+      },
       launch: function (id, success, failure) {
         launched.push(id);
         document.body.setAttribute('data-test-calls', launched.join(','));

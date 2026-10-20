@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
-**Status**: CleanFrame-style 1.1.2 installed/launched; footer legend removed and automatic entry refresh validated in controller/browser tests; physical return/reopen confirmation pending; owner confirmed YouTube→short Home opens Vibe; consistent routing backup, apply, restore and reapply verified. Remote responsiveness code validated; physical improvement pending; HDMI/PS5 wake/startup pending.
+**Status**: 1.1.3 signed/direct-updated/launched. Owner approved immediate remote feedback in the physical no-transition comparison; it is now permanent. Icon-only favorites, five gradients and automatic inventory recovery validated locally (70 tests). Final YouTube→Home→YouTube feedback pending. Native short Home and routing restore previously verified; HDMI/PS5 wake/startup remain separate pending checks.
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -25,6 +25,7 @@
 - Keep supplied PS5 art, native launch APIs, preferences and five themes. Avoid rebuilding the app shelf on launch/theme changes or an unchanged inventory.
 - Owner confirmed native Home works and requested faster remote response. Favorite-row arrows must follow the saved order without measuring the whole hub; visible favorites must not trigger page scrolling. Previously identified apps remain launchable while the inventory refreshes, with native launch errors preserved. No new background service, root operation or Home-route change is part of this refinement.
 - Owner clarified that slowness concerns arrow navigation inside Vibe, then requested removal of the main-screen key legend and automatic installed-app refresh on every entry/return, without requiring a manual refresh click. Preserve physical key handling, favorite order and the lightweight input path.
+- Owner still reported lag in 1.1.2. A live AU8000 comparison disabled only CSS transitions/animations; the owner answered “perfeito! mantenhjaassim”. Keep this immediate feedback, superseding the earlier 150 ms motion preference. Requested icon-only favorites without the collective dock background, plus a distinct static background gradient for each theme.
 
 ### User Story 1 - Return to my last app (Priority: P1)
 As the TV owner I want the largest area to show the last app successfully opened through Vibe TV with relevant artwork and an honest available action.
@@ -46,11 +47,11 @@ I want favorites in the requested order, remote-accessible rearrangement, additi
 4. PS5 uses the supplied transparent logo and background; HDMI selection failure is visible and does not record a successful launch.
 
 ### User Story 3 - Choose a comfortable theme (Priority: P2)
-I want light, dark, medium gray, pastel and wine skins with readable focus and smooth restrained transitions.
+I want light, dark, medium gray, pastel and wine skins with readable, immediate focus and no animation delay.
 **Independent Test**: Select every theme, reload and verify persistence and remote navigation.
 **Acceptance Scenarios**:
 1. Theme selection updates the whole hub and persists after reload.
-2. Keyboard/remote focus is visible across skins; reduced-motion preference suppresses transitions.
+2. Keyboard/remote focus is visible across skins; transitions and animations are absent for all motion preferences.
 3. Main hub and controls remain usable in TV landscape and a narrow local preview.
 
 ### User Story 4 - Preserve my television and know what is tested (Priority: P1)
@@ -70,7 +71,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 
 ## Requirements
 ### Functional Requirements
-- **FR-001** Preserve original repository history/license and publish changes on agent/vibe-tv.
+- **FR-001** Preserve original repository history/license and publish the integrated changes on agent/vibe-tv-cleanframe.
 - **FR-002** Provide a signed Tizen hub and label local preview. Investigate native Home routing using the CleanFrame/Couchroot references for this exact TV; preserve Smart Hub as a recovery/settings destination. Owner confirmed physical short Home after YouTube opens Vibe; HDMI and boot are separate pending checks.
 - **FR-003** Largest hero reflects the last successful launch through Vibe TV; maintain an honest empty state.
 - **FR-004** Use application-relevant art and the two supplied PS5 assets.
@@ -78,7 +79,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-006** Identify installed apps from the TV inventory; prevent ambiguous/unavailable targets from silent substitution.
 - **FR-007** Select the unique actual HDMI 2 object enumerated in connected or disconnected sources, including absent/unknown video signal, and then open the native viewer. Expose API errors/timeouts and never substitute another port or invent a source. A successful source selection does not prove PS5 power-on: HDMI-CEC wake must be verified separately on the physical console.
 - **FR-008** Offer and persist dark, light, gray, pastel and wine themes.
-- **FR-009** Support directional navigation, OK and Back; preserve Power/Volume and long Home; short Home follows FR-002. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the item itself with a restrained 150 ms transform/opacity transition, without an external rectangular outline; reduced motion disables the transition.
+- **FR-009** Support directional navigation, OK and Back; preserve Power/Volume and long Home; short Home follows FR-002. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the icon itself immediately, without a collective rectangular plate. The earlier 150 ms transition is superseded by the owner-approved no-animation behavior in FR-020.
 - **FR-010** Display unavailable integrations honestly; never fabricate episode names, watch progress or login transfer.
 - **FR-011** Preserve system/settings/sessions by avoiding destructive commands and account/token access.
 - **FR-012** Honor the revised recovery decision: install the app with a valid Samsung certificate. The separately approved native test may change only short Home after verified identity/backup. Restore and verify the original route before removing Vibe; preserve all other system/apps/accounts. Factory reset is a documented fallback, never an automatic test. Do not claim an integral backup or preserved sessions after reset.
@@ -88,8 +89,10 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-015** Validate state at storage/inventory boundaries and recover gracefully from failures without losing previous valid state.
 - **FR-016** Clearly distinguish Home routing from boot autorun. Routing was applied and its database reversal verified; physical Home after YouTube is owner-confirmed; HDMI and boot remain separate unverified acceptance checks.
 
-- **FR-018** Favorite arrows follow saved order without whole-hub geometry reads; row boundaries perform no geometry queries. Scroll only to reveal an out-of-view favorite. Keep panels reachable and visual motion unchanged. An app resolved from the last successful in-memory inventory remains launchable while refreshing; retain that inventory on refresh failure, replace it on success, and never bypass identity resolution or native launch errors.
-- **FR-019** Remove the home-screen navigation legend below the apps. Refresh the actual installed-app inventory at startup and supported re-entry events; coalesce simultaneous requests and keep known app launches usable. This must not depend on pressing the optional refresh control. Keep native failure reporting and no hardware calls in preview.
+- **FR-018** Favorite arrows follow saved order without whole-hub geometry reads; row boundaries perform no geometry queries. Scroll only to reveal an out-of-view favorite. Keep panels reachable; visual feedback follows FR-020, which supersedes the prior motion-preservation constraint. An app resolved from the last successful in-memory inventory remains launchable while refreshing; retain that inventory on refresh failure, replace it on success, and never bypass identity resolution or native launch errors.
+- **FR-019** Remove the home-screen navigation legend below the apps. Refresh the actual installed-app inventory at startup and supported re-entry events; coalesce simultaneous requests and keep known app launches usable. This must not depend on a refresh control; FR-021 removes that control. Keep native failure reporting and no hardware calls in preview.
+- **FR-020** Use immediate focus feedback without CSS transitions/animations, matching the physically approved comparison. Favorites display only their original icons, preserving accessible names and native identities; remove visible names, input/status captions and the collective rectangular background. Keep focus visually unmistakable on the icon itself. Each existing theme has a distinct static gradient behind the last-access card.
+- **FR-021** Opening Add queries installed apps automatically. Activating a favorite without a resolved target waits for the shared lookup or starts one, then launches only a safely resolved native ID without a second click. Prevent duplicate activations, retain known-app availability, and report lookup/missing-target errors without guessing IDs or recording false history. Remove the manual-refresh dependency and control.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.
@@ -108,7 +111,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 
 ## Assumptions
 - The local phase is complete. Signed versions 1.0.0–1.0.2 were installed; the owner confirmed corrected artwork and native YouTube opening in 1.0.2. Remaining physical checks are tracked separately.
-- The TV's installed-app inventory, exact per-app launch behavior, native HDMI quality, startup and restoration require authorized hardware validation later.
+- The actual installed-app inventory and routing restore have been verified. Per-service sessions, HDMI/CEC quality and startup still require hardware validation; no integral account/system restoration has been demonstrated.
 - No provider has supplied an authorized continue-watching integration; the interface offers app opening without fabricated content.
 - Full backup/session restoration are not proven. The owner explicitly replaced this prerequisite with documented factory reset as a fallback.
 
@@ -135,3 +138,6 @@ Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests
 - CleanFrame presentation integrated and signed1.1.0 direct update launched. 48 application tests,14 Python transport/routing tests and38 C# assertions passed. UI screenshots are explicitly browser preview/fixture, not TV photos. SDK transfer is owner5001:100 while command execution is901:901; staging accounts for that difference and checks artifacts before root. Actual IDENTITY baseline→root→unmount→global hash checks→cleanup succeeded; no Home routing change during that proof.
 
 - Exact-device result: consistent private routing backup; APPLY→RESTORE→APPLY, post-operation SQLite snapshots match all three tables/rowids, notifications accepted, authentication hashes unchanged and temporary helpers/staging removed. Current short-Home target is Vibe. Physical YouTube→Home now confirmed by the owner; no claim of firmware replacement, complete backup or proven boot/CEC.
+
+## Immediate feedback and automatic recovery — 1.1.3
+The owner approved a CSS-only no-transition comparison on the physical AU8000. Arrow-event queue delay p95 was 321 ms over 79 baseline events and 6 ms over 39 no-transition events; these manual trials are not button-to-pixel latency or FPS measurements. Version 1.1.3 makes no-animation feedback permanent, removes shelf captions/material, adds five static gradients and resolves a single pending activation after automatic inventory recovery. 70/70 tests passed, signed/source/unsigned runtime bytes matched, and direct update plus normal launch completed. Final repeated native opening, HDMI/CEC and boot acceptance remain separately tracked.

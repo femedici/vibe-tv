@@ -140,3 +140,35 @@ Não habilitar background-support como atalho: a [Samsung exige disable para TV]
 - Confirmação física YouTube→Home→YouTube sem clique em atualizar foi solicitada após a instalação; ainda não recebida neste registro. Latência/FPS e demais pendências físicas continuam separados dos testes locais.
 
 A Samsung documenta [`visibilitychange` para retomada](https://developer.samsung.com/smarttv/develop/guides/fundamentals/multitasking.html). O fallback usa o [evento focus da janela](https://www.w3.org/TR/uievents/#event-type-focus). `appcontrol` exige configuração/solicitação específica e não foi adotado como evento genérico de Home ([documentação Tizen](https://github.com/Samsung/tizen-docs/blob/master/docs/application/web/guides/app-management/app-controls.md#prevent-page-reloads-for-incoming-requests)).
+
+
+## Resposta imediata, ícones e recuperação automática — 1.1.3, 20/10/2026
+
+### Comparação física na AU8000
+
+O Web Inspector conectou à versão 1.1.2 nesta sessão, diferente da tentativa malsucedida da 1.1.1. Runtime Tizen 6/Chromium 76, viewport 1920×1080. Uma consulta real retornou **397 aplicativos em 3.212 ms**; não houve timeout nessa consulta (limite existente de 5 s). Isso não prova que a lentidão das setas seja causada pelo inventário.
+
+Um probe temporário, somente em memória, observou eventos de seta confiáveis do controle. O proprietário primeiro navegou com o CSS original; depois foi desativada **somente** a animação/transição CSS e ele repetiu o teste.
+
+| Observação | CSS original, 79 setas | Sem transições, 39 setas |
+| --- | ---: | ---: |
+| Fila do evento até o listener — mediana / p95 / máximo | 15 / 321 / 398 ms | 4 / 6 / 7 ms |
+| Tempo do handler — mediana / p95 / máximo | 6,4 / 10,4 / 14,8 ms | 5,3 / 6,7 / 6,8 ms |
+| Próximo callback rAF — mediana / p95 / máximo | 9 / 16 / 40 ms | 6 / 8 / 8 ms |
+
+O proprietário respondeu **“perfeito! mantenhjaassim, com a alteração dos icones”**. São duas amostras manuais de tamanhos diferentes, com possível interferência de diagnóstico no ensaio inicial; não constituem benchmark controlado. `performance.now() - event.timeStamp` não mede botão físico→pixel; callback rAF não comprova apresentação de frame/FPS. A evidência sustenta a preferência aprovada pelo proprietário, sem promessa de latência universal. O probe não entrou no pacote e o reinício normal removeu a sessão de debug.
+
+### Código e testes
+
+- Removidas transições/animações, nomes/captions da fileira e material retangular coletivo. Mantidos os assets originais, proporção, nomes acessíveis e destaque imediato no próprio ícone. Cada tema recebeu um degradê estático; nenhuma imagem foi substituída/recomprimida.
+- `refreshInventory()` retorna a consulta compartilhada. Adicionar consulta automaticamente; um favorito ainda sem ID aguarda a consulta, revalida a identidade atual e abre uma vez. Apps já identificados continuam abrindo imediatamente. O botão manual foi removido.
+- A ativação ainda aguardando inventário é cancelada quando o usuário sai, antes de chamar a API nativa; remover o favorito durante a consulta não abre outro item. Erros não gravam histórico; busy é limpo também quando a fileira foi reconstruída. Não há polling, nova dependência ou mudança na API/timeout.
+- RED inicial: 6 falhas em 23 testes do controller (regra anterior e cinco cenários novos). A revisão encontrou intenção tardia após sair e busy residual: 3 novos RED em 28 testes. GREEN final: **28/28 controller e 70/70 totais**, sem exclusões. Revisor independente conferiu controller/plataforma e o coordenador revisou diff e executou a suíte completa.
+- Browser fixture: falha inicial, abertura por um único clique, nova consulta e lançamento simulado do ID observado do YouTube; somente duas consultas e uma abertura. Adicionar após falha mostra “Consultando…” sem erro antigo/botão manual e depois lista candidatos reais da fixture. São callbacks simulados, não evidência de abertura física.
+- Navegador: cinco temas e imagens conferidos com a aba visível; 1912×884, frames 1280×720/390×844. Sem captions visuais nem overflow horizontal da página; nomes acessíveis presentes; setas seguem ordem salva até Spotify e ↑ retorna ao hero. CSS computado de transição: 0 s. Algumas prévias de captura mostraram o hero vazio; a tela visível e as capturas finais mostraram o conteúdo completo. Uma divergência do visualizador foi confirmada por decodificação dos pixels salvos. Não foi estabelecido defeito no app nem aplicada correção especulativa de stacking.
+- `git diff --check`, sintaxe e pré-requisitos Spec Kit passaram. Pacotes unsigned/signed: CRC e XML válidos, versão/ID corretos, **24 arquivos iguais ao source**, extras somente assinaturas e diretórios.
+- Modelo reconfirmado via SDB; atualização direta 1.1.3 retornou `install completed`; encerramento apenas da instância Vibe anterior seguido de `was_execute` retornou `launched`. Sem desinstalação, root ou alteração da rota Home nesta revisão. Confirmação final YouTube→Home→YouTube solicitada após a atualização; pendente neste registro.
+
+Capturas da **prévia local**, não da TV: [escuro](../../outputs/immediate-icons-dark.jpg), [claro](../../outputs/immediate-icons-light.jpg), [cinza](../../outputs/immediate-icons-gray.jpg), [pastel](../../outputs/immediate-icons-pastel.jpg), [vinho](../../outputs/immediate-icons-wine.jpg).
+
+HDMI/CEC, outros serviços/sessões, menu Samsung, boot e tempo de abertura fria/quente continuam pendentes separadamente. A aprovação do teste de setas não encerra esses itens.
