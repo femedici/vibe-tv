@@ -1,4 +1,4 @@
-**Estado atual 1.1.1:** veja a seção de responsividade ao final. As seções anteriores preservam evidência histórica.
+**Estado atual 1.1.2:** veja a seção de atualização automática ao final. As seções anteriores preservam evidência histórica.
 
 # Validação do Vibe TV — 1.0.4
 
@@ -127,3 +127,16 @@ Esses números contam chamadas, **não** milissegundos, FPS ou reflows. Moviment
 - O Inspector anunciou uma porta, mas o navegador recebeu conexão recusada diretamente e reset pelo encaminhamento SDB. Não houve perfil de frames nem medição cold/warm na TV. O encaminhamento foi removido e Vibe foi aberto normalmente, sem debug. Confirmação física da melhora solicitada ao proprietário e ainda pendente.
 
 Não habilitar background-support como atalho: a [Samsung exige disable para TV](https://developer.samsung.com/smarttv/develop/faq/other-features.html). A retomada em memória varia com suporte/modelo conforme [multitasking](https://developer.samsung.com/smarttv/develop/guides/fundamentals/multitasking.html); não foi demonstrado se cada Home nesta TV reinicia o processo. O caminho de Home é uma rota nativa direta, sem helper em execução por tecla.
+
+
+## Atualização automática e rodapé — 1.1.2, 20/10/2026
+
+- Pedido: remover as indicações de setas/OK/Voltar abaixo dos apps e consultar a lista a cada entrada sem clique manual. Somente a legenda principal e seus estilos foram removidos; navegação do controle e ajuda de Voltar nos painéis permanecem.
+- Abertura inicial já consultava o inventário. Foi acrescentado retorno por foco da janela, além de `visibilitychange`; foco em botões não consulta. Um retorno ocorrido durante consulta antiga agenda uma consulta sequencial após ela terminar. Não há polling, nova permissão, dependência ou alteração da rota Home.
+- TDD: teste de retorno por foco falhou antes do listener, depois 57/57 passaram. Os dois testes de retorno durante consulta antiga falharam antes da fila; depois **60/60 passaram**, incluindo falha/ocultação e abertura com último inventário conhecido. O controller tem 18 testes. Sucesso vazio remove apps ausentes; erro mantém o último inventário em memória; na próxima entrada há nova tentativa.
+- Revisão independente sem achados impeditivos; coordenador inspecionou todo o diff e executou a suíte completa, sintaxe, `git diff --check` e pré-requisitos Spec Kit. Eventos sobrepostos compartilham a consulta pendente; eventos separados pela conclusão podem iniciar consultas sequenciais. Não se promete deduplicação temporal completa nem sucesso de API indisponível.
+- Navegador real: desktop 1912×794 sem legenda e sem imagens quebradas; hero↓ e→ mantêm foco nos apps. Fixture 1280×720/390×844 confirmou ordem salva (PS5 primeiro), abertura simulada de YouTube sem atualização manual e Escape retornando de Ajustes com a ajuda do painel preservada. [Captura desktop](../../outputs/automatic-refresh-desktop.jpg) e [layouts](../../outputs/automatic-refresh-layouts.jpg) são prévia/fixture, não fotos da TV.
+- Pacote assinado 1.1.2: CRC/XML/identidade/versão válidos, todos os 24 arquivos de runtime idênticos ao source/unsigned; extras somente assinaturas e diretórios. Modelo AU8000 reconfirmado no SDB. Atualização direta retornou `install completed`; somente a instância do Vibe foi encerrada e o lançamento normal retornou `launched`. Não houve desinstalação, novo root ou operação no roteamento.
+- Confirmação física YouTube→Home→YouTube sem clique em atualizar foi solicitada após a instalação; ainda não recebida neste registro. Latência/FPS e demais pendências físicas continuam separados dos testes locais.
+
+A Samsung documenta [`visibilitychange` para retomada](https://developer.samsung.com/smarttv/develop/guides/fundamentals/multitasking.html). O fallback usa o [evento focus da janela](https://www.w3.org/TR/uievents/#event-type-focus). `appcontrol` exige configuração/solicitação específica e não foi adotado como evento genérico de Home ([documentação Tizen](https://github.com/Samsung/tizen-docs/blob/master/docs/application/web/guides/app-management/app-controls.md#prevent-page-reloads-for-incoming-requests)).

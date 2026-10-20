@@ -4,7 +4,7 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: versão 1.1.1 assinada, instalada e iniciada na Samsung AU8000.** A apresentação foi reconstruída a partir do CleanFrame, preservando o cartão grande de último acesso, os favoritos, as artes PS5 e cinco temas. 54 testes da aplicação passaram. A atualização reduz medições/rolagens por seta e permite abrir apps já identificados durante a atualização do inventário.
+**Estado: versão 1.1.2 assinada, instalada e iniciada na Samsung AU8000.** A apresentação mantém o cartão grande, favoritos, artes PS5 e cinco temas. A legenda inferior foi removida; a lista de aplicativos é consultada automaticamente na abertura e no retorno, mantendo apps já identificados disponíveis durante a consulta. Os 60 testes da aplicação passaram.
 
 O método não oficial de Home usa um helper separado, exclusivo desta TV/firmware. O Home curto já está configurado para Vibe; backup de roteamento, aplicação, restauração e reaplicação passaram no aparelho. O proprietário confirmou YouTube → Home curto → Vibe; a resposta percebida da otimização 1.1.1 ainda aguarda confirmação. Evidências e reversão em [Home nativo](docs/vibe-tv/cleanframe-home.md). Nenhum resultado de navegador substitui o teste físico do Home, do HDMI-CEC ou do boot.
 
@@ -33,7 +33,8 @@ A prévia permite verificar aparência, foco, temas e organização. Abertura de
 - Favoritos editáveis e persistentes; apps adicionais dependem do inventário real da TV.
 - PS5 associado ao HDMI 2, com logo e fundo fornecidos pelo proprietário.
 - Temas escuro, claro, cinza, pastel e vinho; navegação por controle e redução de movimento.
-- Controles de organização e ajustes no topo direito; ↓ do cartão vai direto aos apps, com destaque suave de 150 ms no item.
+- Controles de organização e ajustes no topo direito; ↓ do cartão vai direto aos apps, com destaque suave de 150 ms no item. Sem legenda de teclas no rodapé.
+- Consulta automática dos aplicativos ao abrir/voltar ao hub. Não depende de clicar em atualizar; a opção manual em Adicionar continua disponível como alternativa.
 - Configurações nativas permanecem acessíveis pelo controle Samsung/Smart Hub.
 
 O histórico privado de Netflix, Prime e demais serviços não está disponível para esta aplicação. Não há retomada de episódio, progresso ou arte de conteúdo assistido inventados. A integração atual abre o app existente quando a plataforma a permite.

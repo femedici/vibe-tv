@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
-**Status**: CleanFrame-style 1.1.1 installed/launched; owner confirmed YouTube→short Home opens Vibe; consistent routing backup, apply, restore and reapply verified. Remote responsiveness code validated; physical improvement pending; HDMI/PS5 wake/startup pending.
+**Status**: CleanFrame-style 1.1.2 installed/launched; footer legend removed and automatic entry refresh validated in controller/browser tests; physical return/reopen confirmation pending; owner confirmed YouTube→short Home opens Vibe; consistent routing backup, apply, restore and reapply verified. Remote responsiveness code validated; physical improvement pending; HDMI/PS5 wake/startup pending.
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -24,6 +24,7 @@
 - Recent video/episode art is allowed only with a proven authorized provider integration. None exists currently; use app artwork without representing it as watched content.
 - Keep supplied PS5 art, native launch APIs, preferences and five themes. Avoid rebuilding the app shelf on launch/theme changes or an unchanged inventory.
 - Owner confirmed native Home works and requested faster remote response. Favorite-row arrows must follow the saved order without measuring the whole hub; visible favorites must not trigger page scrolling. Previously identified apps remain launchable while the inventory refreshes, with native launch errors preserved. No new background service, root operation or Home-route change is part of this refinement.
+- Owner clarified that slowness concerns arrow navigation inside Vibe, then requested removal of the main-screen key legend and automatic installed-app refresh on every entry/return, without requiring a manual refresh click. Preserve physical key handling, favorite order and the lightweight input path.
 
 ### User Story 1 - Return to my last app (Priority: P1)
 As the TV owner I want the largest area to show the last app successfully opened through Vibe TV with relevant artwork and an honest available action.
@@ -88,6 +89,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-016** Clearly distinguish Home routing from boot autorun. Routing was applied and its database reversal verified; physical Home after YouTube is owner-confirmed; HDMI and boot remain separate unverified acceptance checks.
 
 - **FR-018** Favorite arrows follow saved order without whole-hub geometry reads; row boundaries perform no geometry queries. Scroll only to reveal an out-of-view favorite. Keep panels reachable and visual motion unchanged. An app resolved from the last successful in-memory inventory remains launchable while refreshing; retain that inventory on refresh failure, replace it on success, and never bypass identity resolution or native launch errors.
+- **FR-019** Remove the home-screen navigation legend below the apps. Refresh the actual installed-app inventory at startup and supported re-entry events; coalesce simultaneous requests and keep known app launches usable. This must not depend on pressing the optional refresh control. Keep native failure reporting and no hardware calls in preview.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.

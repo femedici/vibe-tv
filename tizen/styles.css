@@ -105,9 +105,6 @@ button:active:not(:disabled) { transform: scale(.97); }
 .storage-note { color: var(--muted); font-size: .65rem; margin-top: .8rem; }
 .empty-favorites { color: var(--muted); background: var(--surface); padding: 2rem; border-radius: 1.2rem; font-size: .85rem; }
 .favorites:empty { display: none; }
-.footer { display: flex; align-items: center; justify-content: center; margin-top: 1.5vh; padding-bottom: 1rem; color: var(--muted); font-size: .5rem; }
-.remote-hints { display: flex; align-items: center; opacity: .75; }
-.remote-hints > span { margin: 0 .65rem; }
 kbd { font-family: inherit; font-size: inherit; font-weight: 600; padding: 0 .15rem; margin-right: .2rem; }
 
 /* Settings share the matte material and typography, with a single readable layer. */
@@ -201,7 +198,5 @@ kbd { font-family: inherit; font-size: inherit; font-weight: 600; padding: 0 .15
   .organize-row .icon-button { width: 2rem; height: 2rem; margin-left: .25rem; }
   .theme-preview { height: 6rem; }
   .toast { max-width: 90vw; bottom: 1rem; width: 90vw; font-size: .8rem; }
-  .footer { margin-top: 1rem; padding-bottom: 1rem; font-size: .55rem; }
-  .remote-hints > span { margin: 0 .35rem; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

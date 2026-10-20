@@ -9,6 +9,8 @@
   var inventory = [];
   var inventoryError = '';
   var loadingInventory = false;
+  var inventoryNeedsRefresh = false;
+  var inventoryRefreshQueued = false;
   var pending = null;
   var panelType = null;
   var panelOpener = null;
@@ -308,7 +310,7 @@
     detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. A configuração de início é independente do destino do botão Home.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.1.1', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.1.2', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');
@@ -319,6 +321,8 @@
   function refreshInventory(manual) {
     if (!platform.native || loadingInventory) return;
     loadingInventory = true;
+    inventoryNeedsRefresh = false;
+    inventoryRefreshQueued = false;
     var refreshButton = byId('refresh-inventory');
     if (refreshButton) refreshButton.textContent = 'Consultando…';
     platform.listApps().then(function (apps) {
@@ -331,6 +335,7 @@
     }).then(function () {
       loadingInventory = false;
       render();
+      if (inventoryRefreshQueued && !document.hidden) refreshInventory(false);
     });
   }
   function launch(item) {
@@ -464,8 +469,24 @@
   document.addEventListener('focusin', function (event) {
     if (panelType && !byId('panel').contains(event.target)) focus('panel-close');
   });
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) refreshInventory(false);
+  function refreshWhenVisible() {
+    if (document.hidden) {
+      inventoryNeedsRefresh = true;
+      return;
+    }
+    if (loadingInventory) {
+      // A return during an older lookup needs one fresh snapshot after it settles.
+      if (inventoryNeedsRefresh) inventoryRefreshQueued = true;
+      return;
+    }
+    refreshInventory(false);
+  }
+  document.addEventListener('visibilitychange', refreshWhenVisible);
+  window.addEventListener('focus', function (event) {
+    if (event.target === window) refreshWhenVisible();
+  });
+  window.addEventListener('blur', function (event) {
+    if (event.target === window) inventoryNeedsRefresh = true;
   });
   function clock() {
     var now = new Date();

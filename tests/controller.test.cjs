@@ -9,17 +9,18 @@ const Navigation = require(path.join(root, 'tizen/navigation.js'));
 const Platform = require(path.join(root, 'tizen/platform.js'));
 const source = fs.readFileSync(path.join(root, 'tizen/app.js'), 'utf8');
 
-function controller(blockedStorage = false) {
-  let resolveLaunch, rejectLaunch, launchedId, resolveInventory, rejectInventory;
+function controller(blockedStorage = false, startup = false) {
+  let resolveLaunch, rejectLaunch, launchedId, resolveInventory, rejectInventory, inventoryCalls = 0;
   const measurements = [];
   const scrolls = [];
   const nodes = {};
   const listeners = {};
+  const windowListeners = {};
   const document = {
     body: {}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
     getElementById(id) { return nodes[id] || null; }
   };
-  for (const id of ['toast', 'storage-note', 'hero-open', 'nav-settings', ...State.catalog.map(item => 'favorite-' + item.id)]) {
+  for (const id of ['toast', 'storage-note', 'hero-open', 'nav-settings', 'preview-badge', 'clock', ...State.catalog.map(item => 'favorite-' + item.id)]) {
     nodes[id] = {
       id, hidden: true, textContent: '', setAttribute() {}, removeAttribute() {},
       focus() { document.activeElement = this; }, scrollIntoView() { scrolls.push(id); },
@@ -45,10 +46,12 @@ function controller(blockedStorage = false) {
   document.activeElement = nodes['favorite-youtube'];
   const window = {
     innerWidth:1920, innerHeight:1080,
+    addEventListener(name, fn) { windowListeners[name] = fn; },
+    setInterval() {},
     VibeState: State, VibeNavigation: Navigation, VibePlatform: Platform,
     localStorage: { getItem() { return null; }, setItem() { if (blockedStorage) throw new Error('blocked'); } },
     tizen: { application: {
-      getAppsInfo(success, failure) { resolveInventory = success; rejectInventory = failure; },
+      getAppsInfo(success, failure) { inventoryCalls++; resolveInventory = success; rejectInventory = failure; },
       launch(id, success, failure) { launchedId = id; resolveLaunch = success; rejectLaunch = failure; }
     } },
     clearTimeout() {}, setTimeout() { return 1; }
@@ -58,12 +61,12 @@ function controller(blockedStorage = false) {
   // Keep real launch/commit/focus and state/platform logic; skip visual startup and rendering.
   vm.runInNewContext(source.slice(0, start) + `
     render = function () {};
-    inventory = [{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}];
+    inventory = ${startup ? '[]' : "[{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]"};
     window.review = {launch:launch, action:handleAction, refresh:refreshInventory,
       inventory:function (apps) { inventory = apps; },
       setState:function (next) { state = next; },
       state:function () { return state; }};
-  }());`, { window, document, Date, Promise });
+  ` + (startup ? source.slice(start) : '}());'), { window, document, Date, Promise });
   return {
     nodes, document, measurements, scrolls,
     key(key) { listeners.keydown({key,preventDefault(){}}); },
@@ -77,6 +80,10 @@ function controller(blockedStorage = false) {
     },
     inventory: window.review.inventory,
     refresh() { window.review.refresh(false); },
+    inventoryCalls() { return inventoryCalls; },
+    visibility(hidden) { document.hidden = hidden; listeners.visibilitychange(); },
+    windowFocus(target = window) { if (windowListeners.focus) windowListeners.focus({target}); },
+    windowBlur() { if (windowListeners.blur) windowListeners.blur({target:window}); },
     async finishInventory(apps, failed = false) {
       if (failed) rejectInventory({name:'UnknownError'}); else resolveInventory(apps);
       await new Promise(setImmediate);
@@ -195,4 +202,87 @@ test('a fresh inventory removes an uninstalled target; initial pending lookup ne
   app.launch();
   assert.equal(app.launchedId(), undefined);
   assert.match(app.nodes.toast.textContent, /não foi identificado/);
+});
+
+test('startup discovers installed apps without a manual refresh', async () => {
+  const app = controller(false, true);
+  assert.equal(app.inventoryCalls(), 1);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  app.launch();
+  assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube');
+  await app.finish();
+});
+
+test('visible return and window focus share one in-flight inventory refresh', async () => {
+  const app = controller();
+  app.visibility(true);
+  assert.equal(app.inventoryCalls(), 0);
+  app.visibility(false);
+  app.windowFocus();
+  assert.equal(app.inventoryCalls(), 1);
+  await app.finishInventory([]);
+  app.launch();
+  assert.equal(app.launchedId(), undefined, 'a removed app is no longer launchable');
+});
+
+test('return through window focus refreshes again without hidden-page or per-button requests', async () => {
+  const app = controller();
+  app.inventory([]);
+  app.document.hidden = true;
+  app.windowFocus();
+  assert.equal(app.inventoryCalls(), 0);
+  app.document.hidden = false;
+  app.windowFocus(app.nodes['favorite-youtube']);
+  assert.equal(app.inventoryCalls(), 0);
+  app.windowFocus();
+  assert.equal(app.inventoryCalls(), 1);
+  await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+  app.launch();
+  assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube');
+  await app.finish();
+  app.windowFocus();
+  assert.equal(app.inventoryCalls(), 2);
+  await app.finishInventory([]);
+});
+
+for (const path of ['visibility', 'window focus']) {
+  test(`return through ${path} queues one fresh lookup if an older lookup is still pending`, async () => {
+    const app = controller();
+    app.inventory([]);
+    app.refresh();
+    if (path === 'visibility') {
+      app.visibility(true);
+      app.visibility(false);
+    } else {
+      app.windowBlur();
+    }
+    app.windowFocus();
+    app.windowFocus();
+    assert.equal(app.inventoryCalls(), 1, 'no concurrent native lookups');
+    await app.finishInventory([]);
+    assert.equal(app.inventoryCalls(), 2, 'return must not be lost behind the previous lookup');
+    await app.finishInventory([{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}]);
+    assert.equal(app.inventoryCalls(), 2, 'one follow-up, not a refresh loop');
+    app.launch();
+    assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube');
+    await app.finish();
+  });
+}
+
+test('a queued return waits while hidden again and retries after a failed older lookup', async () => {
+  const app = controller();
+  app.refresh();
+  app.visibility(true);
+  app.visibility(false);
+  app.visibility(true);
+  await app.finishInventory(null, true);
+  assert.equal(app.inventoryCalls(), 1, 'no hidden-page follow-up');
+  app.visibility(false);
+  app.windowFocus();
+  assert.equal(app.inventoryCalls(), 2, 'the next return retries automatically');
+  app.launch();
+  assert.equal(app.launchedId(), '9Ur5IzDKqV.TizenYouTube', 'last identified target remains usable');
+  await app.finish();
+  await app.finishInventory([]);
+  assert.equal(app.inventoryCalls(), 2, 'no refresh loop');
 });
