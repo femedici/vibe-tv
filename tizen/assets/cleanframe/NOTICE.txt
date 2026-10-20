@@ -1,0 +1,23 @@
+CleanFrame visual adaptation
+
+Source: https://github.com/nthnclrk/CleanFrame
+Pinned revision: fa537d1892b71d2de2bf94c24cbff3812e9f70d5
+Copyright (c) 2026 Nathan Clark
+License: MIT; complete permission and disclaimer in LICENSE.txt.
+
+Vibe TV adapts the quiet top-right utilities, shared rounded dock, restrained
+focus plate and matte surface treatment from app/style.css. Its responsive
+layout keeps the Vibe TV last-successful-app card, five existing themes and
+native application controller. No CleanFrame device helpers, private fonts,
+wallpapers, catalogues or Art Mode functionality are included.
+
+Manrope font
+Source file: app/assets/manrope.woff2 at the pinned revision above.
+Copied unchanged to manrope.woff2.
+SHA-256: e310b55a7fd9677f5e3555e6c6c4d064fa1f1d24393f0ddbe217cea12a8c432f
+Copyright 2018 The Manrope Project Authors
+https://github.com/googlefonts/manrope
+SIL Open Font License 1.1; complete terms in manrope-OFL.txt.
+
+Other original Vibe TV assets and third-party service marks retain the
+attribution and terms recorded in ../ATTRIBUTION.txt.
