@@ -129,7 +129,7 @@ Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências
 
 Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch de integração: **agent/vibe-tv-cleanframe**. [Repositório/branch](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. O registro anterior terminou em `c683b96`. A atualização 1.1.1 será publicada na mesma branch após as verificações registradas; conferir o estado remoto antes de declarar essa etapa concluída. Não houve PR, merge em main ou limpeza de worktrees.
+Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. O registro anterior terminou em `c683b96`. A implementação 1.1.1 foi publicada no commit `654730b5efad173d0120f3690579fb1e72c8dd69`; `git ls-remote` confirmou o mesmo SHA. Este registro de publicação segue na mesma branch. Não houve PR, merge em main ou limpeza de worktrees.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (agent/cleanframe-interface), `.worktrees/native-home` (agent/au8000-native-home) e as anteriores state/platform/interface. Nenhuma limpeza automática ou PR.
 
