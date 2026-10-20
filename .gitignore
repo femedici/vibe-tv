@@ -9,3 +9,16 @@ out/
 
 # macOS
 .DS_Store
+
+# Vibe TV local artifacts and device secrets
+.worktrees/
+dist/
+node_modules/
+*.log
+.env*
+*.p12
+*.pem
+*.key
+*.wgt
+.author-signature.xml
+.dev/
