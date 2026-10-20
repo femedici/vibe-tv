@@ -88,7 +88,7 @@ Tracker único: `specs/001-vibe-tv-tizen/tasks.md`; coordenador é o único edit
 | T021 Home nativo | in_progress | YouTube→Home confirmado; faltam HDMI→Home e menu Samsung |
 | T022 responsividade | in_progress | Otimização da 1.1.1 mantida na 1.1.2; falta validar melhora física |
 | T023 revisão de desempenho | done | Auditorias e comparação reproduzida pelo coordenador |
-| T024 atualização automática/rodapé | in_progress | Código, 60 testes, browser e atualização 1.1.2 verificados; publicar branch |
+| T024 atualização automática/rodapé | done | Código, 60 testes, browser, atualização 1.1.2 e publicação verificados |
 | T009 hardware geral | in_progress | Sessões, configurações, boot e desempenho físico |
 | T016 YouTube repetido | pending | Dois ciclos abrir/voltar/reabrir; usuário relatou abertura correta, sem causa anterior reproduzida |
 | T017 PS5 | in_progress | Confirmar imagem HDMI2 e despertar CEC separadamente |
@@ -135,7 +135,7 @@ Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências
 
 Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch de integração: **agent/vibe-tv-cleanframe**. [Repositório/branch](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. O registro anterior terminou em `c683b96`. A implementação 1.1.1 foi publicada no commit `654730b5efad173d0120f3690579fb1e72c8dd69`; `git ls-remote` confirmou o mesmo SHA. Base desta continuação: 67fed5542be4668db98457f712ef167cbf2ec53a. A publicação 1.1.2 está pendente de commit/push neste ponto do registro. Não houve PR, merge em main ou limpeza de worktrees.
+Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. O registro anterior terminou em `c683b96`. A implementação 1.1.1 foi publicada no commit `654730b5efad173d0120f3690579fb1e72c8dd69`; `git ls-remote` confirmou o mesmo SHA. Base desta continuação: 67fed5542be4668db98457f712ef167cbf2ec53a. A implementação, documentação e capturas da 1.1.2 foram publicadas no commit `594c7a10bfc2af3b53450859ac1303cb22aa6e30`; `git ls-remote` confirmou o mesmo SHA. Este recibo e o fechamento de T024 seguem na mesma branch. Não houve PR, merge em main ou limpeza de worktrees.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (agent/cleanframe-interface), `.worktrees/native-home` (agent/au8000-native-home) e as anteriores state/platform/interface. Nenhuma limpeza automática ou PR.
 
