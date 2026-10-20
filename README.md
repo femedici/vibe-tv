@@ -4,7 +4,7 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: desenvolvimento e validação local. Não instalado nem validado na TV.** O Smart Hub original não é substituído. O backup integral do sistema e dos logins ainda não foi obtido; a instalação está bloqueada por esse requisito.
+**Estado: fase local implementada, testada e publicada em `agent/vibe-tv`. Não instalado nem validado na TV.** O Smart Hub original não é substituído. O backup integral do sistema e dos logins ainda não foi obtido; a instalação está bloqueada por esse requisito.
 
 ![Vibe TV — prévia local](outputs/vibe-tv-dark.jpg)
 

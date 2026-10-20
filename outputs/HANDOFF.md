@@ -19,7 +19,7 @@ Criar `femedici/vibe-tv` a partir de `simbasjungles/free-my-tv`, preservar o his
 
 ## Estado atual
 
-Fase local implementada e validada: hub com último acesso, favoritos editáveis, cinco temas, artes PS5, adaptação ao controle, adaptador Tizen, prévia local e pacote não assinado. Publicação da branch está em andamento nesta revisão do documento. O tracker autoritativo é `specs/001-vibe-tv-tizen/tasks.md`.
+Fase local implementada e validada: hub com último acesso, favoritos editáveis, cinco temas, artes PS5, adaptação ao controle, adaptador Tizen, prévia local e pacote não assinado. Fonte, capturas e documentação publicadas na branch `agent/vibe-tv`, com push e igualdade do SHA remoto verificados. O tracker autoritativo é `specs/001-vibe-tv-tizen/tasks.md`.
 
 A prévia principal está rodando em http://127.0.0.1:4173 e foi deixada aberta no Edge. Nenhum requisito de hardware foi marcado como concluído.
 
@@ -36,7 +36,7 @@ A prévia principal está rodando em http://127.0.0.1:4173 e foi deixada aberta 
 | T005 | Ferramentas e recuperação documentada | done | root / T001 |
 | T006 | Integração, testes e capturas | done | root / T002–T005 |
 | T007 | Revisão independente/convergência | done | root + revisores / T006 |
-| T008 | Handoff, commit e push final | in_progress | root / T007 |
+| T008 | Handoff, commit e push final | done | root / T007 |
 | T009 | Backup e validação física | blocked | root + usuário / T008 e recuperação |
 | T010 | HDMI não oculta app homônimo | done | root / T004 |
 | T011 | Foco preservado após abertura | done | root / T006 |
@@ -53,7 +53,7 @@ T009 é a única frente física. Próxima ação: decisão de recuperação ante
 - Fixture separada, marcada SIMULADO, verificou último acesso após sucesso, falha preservando o anterior, ID de app extra, HDMI2/viewer e saída. Fixture encerrada; não é teste de hardware.
 - RED/GREEN adicional: app chamado PlayStation5 oculto por HDMI e foco perdido após sucesso; corrigidos e revalidados. Revisão independente final sem achados pendentes.
 - Redução de movimento: regra CSS carregada/inspecionada; preferência do sistema não alterada e comportamento físico pendente.
-- Convergência: 16 requisitos, 6 critérios, 14 cenários de aceitação, 7 decisões de arquitetura e 5 princípios revisados; sem lacunas locais de implementação. Publicação é T008; original físico é T009.
+- Convergência: 16 requisitos, 6 critérios, 14 cenários de aceitação, 7 decisões de arquitetura e 5 princípios revisados; sem lacunas locais de implementação. T008 registra a publicação concluída; o objetivo físico original permanece em T009.
 
 Veja [validação completa](../docs/vibe-tv/validation.md), [tema escuro](vibe-tv-dark.jpg), [claro](vibe-tv-light.jpg), [temas](vibe-tv-themes.jpg), [organização](vibe-tv-organize.jpg), [tela estreita](vibe-tv-narrow.jpg) e [histórico em simulação explícita](vibe-tv-simulated-last-access.jpg).
 
@@ -85,7 +85,9 @@ O código Android original continua em `app/` com seu `build.sh` e README em `RE
 
 ## Git e worktrees
 
-Repositório: https://github.com/femedici/vibe-tv
+Repositório: [femedici/vibe-tv — branch entregue](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv)
+
+Commit de implementação validada e publicado: `5beaa78321e959cc205417774c797eb4e85e532a`. `git ls-remote origin refs/heads/agent/vibe-tv` coincidiu com o HEAD local. A revisão documental que contém este fechamento vem em seguida na mesma branch; não houve PR, merge em main ou deploy.
 
 Diretório local: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 

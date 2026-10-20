@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv`
 **Created**: 2026-10-19
-**Status**: Local implementation verified; branch publication in progress; TV installation blocked
+**Status**: Local implementation verified and published on agent/vibe-tv; TV installation blocked
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications

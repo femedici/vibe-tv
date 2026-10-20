@@ -25,8 +25,8 @@ Single authoritative tracker. Coordinator alone updates status after inspecting 
   - status: done; owner: root; dependencies: T002,T003,T004,T005; acceptance: tests/package pass, keyboard and pointer flows, five themes, reload, no fake launches, desktop and narrow screenshots; verification: 38/38 tests, syntax/XML/hash checks, live Edge at 1920x1080/390x844, five themes/reload/edit/empty/overflow and isolated simulated callbacks; screenshots saved; blockers: physical checks T009; next: final review.
 - [x] T007 Independently review/converge implementation against spec in `specs/001-vibe-tv-tizen/` and remediate verified gaps.
   - status: done; owner: root + independent reviewer; dependencies: T006; acceptance: no unresolved local-scope correctness findings, device limits explicitly retained; verification: independent review fixes T010/T011 accepted; fresh 38/38 tests; spec/plan/constitution comparison has no open local implementation gaps; blockers: T009 remains separate; next: T008 publication.
-- [ ] T008 Publish reviewed task branch and complete `outputs/HANDOFF.md` with evidence and local run instructions.
-  - status: in_progress; owner: root; dependencies: T007; acceptance: no secrets/serial in tracked files, handoff accurate, commit and push verified, local preview running; verification: git diff --check, git status, git ls-remote comparison; blockers: none; next: deliver local phase.
+- [x] T008 Publish reviewed task branch and complete `outputs/HANDOFF.md` with evidence and local run instructions.
+  - status: done; owner: root; dependencies: T007; acceptance: no secrets/serial in tracked files, handoff accurate, commit and push verified, local preview running; verification: diff/privacy checks passed; source commit 5beaa78321e959cc205417774c797eb4e85e532a pushed and remote SHA matched; handoff and screenshots present; preview active; blockers: none for local phase; next: hardware remains T009 blocked.
 
 ## Phase 6: Physical TV (original goal, explicitly blocked)
 - [ ] T009 Validate backup/recovery, authorize installation, then verify physical TV integrations and startup.
