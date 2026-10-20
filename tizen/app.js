@@ -96,6 +96,20 @@
     var target = byId(id);
     if (!target || target.disabled || target === document.activeElement) return;
     target.focus({ preventScroll: true });
+    if (panelType) {
+      target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+      return;
+    }
+    var rect = target.getBoundingClientRect();
+    var list = byId('favorites');
+    if (list.contains(target)) {
+      var dock = list.getBoundingClientRect();
+      if (rect.left < dock.left) list.scrollLeft += rect.left - dock.left;
+      else if (rect.right > dock.right) list.scrollLeft += rect.right - dock.right;
+      // The TV dock is already on screen; only narrow previews may need vertical scrolling.
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) return;
+    } else if (rect.left >= 0 && rect.right <= window.innerWidth &&
+               rect.top >= 0 && rect.bottom <= window.innerHeight) return;
     target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
   }
   function commit(nextState, message) {
@@ -294,7 +308,7 @@
     detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. A configuração de início é independente do destino do botão Home.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.1.0', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.1.1', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');
@@ -312,7 +326,6 @@
       inventoryError = '';
       if (manual) announce('Lista de aplicativos atualizada.');
     }, function (error) {
-      inventory = [];
       inventoryError = error.message || 'Não foi possível consultar os aplicativos.';
       if (manual) announce(inventoryError);
     }).then(function () {
@@ -327,8 +340,8 @@
       return;
     }
     if (pending) { announce('Aguarde a confirmação da abertura em andamento.'); return; }
-    if (loadingInventory && item.kind === 'app') { announce('Aguarde a consulta dos aplicativos da TV.'); return; }
     var target = item.kind === 'app' && Navigation.resolveApp(item, inventory);
+    if (loadingInventory && item.kind === 'app' && !target) { announce('Aguarde a consulta dos aplicativos da TV.'); return; }
     if (item.kind === 'app' && !target) { announce(item.name + ' não foi identificado com segurança nesta TV. Confira os aplicativos em Adicionar.'); return; }
     var opener = document.activeElement && document.activeElement.id;
     pending = item.id;
@@ -419,10 +432,21 @@
     var direction = directions[key] || directions[code];
     if (direction) {
       event.preventDefault();
-      if (!panelType && direction === 'down' && document.activeElement.id === 'hero-open') {
-        var firstFavorite = State.items(state)[0];
-        focus(firstFavorite ? 'favorite-' + firstFavorite.id : 'add-button');
-        return;
+      if (!panelType) {
+        var currentId = document.activeElement.id;
+        if (direction === 'down' && currentId === 'hero-open') {
+          focus(state.order.length ? 'favorite-' + state.order[0] : 'add-button');
+          return;
+        }
+        var favoriteIndex = currentId.indexOf('favorite-') === 0 ? state.order.indexOf(currentId.slice(9)) : -1;
+        if (favoriteIndex !== -1) {
+          if (direction === 'up') focus('hero-open');
+          else if (direction === 'left' || direction === 'right') {
+            var nextIndex = favoriteIndex + (direction === 'left' ? -1 : 1);
+            if (nextIndex >= 0 && nextIndex < state.order.length) focus('favorite-' + state.order[nextIndex]);
+          }
+          return;
+        }
       }
       var scope = panelType ? byId('panel') : byId('hub');
       buttons = Array.prototype.slice.call(scope.querySelectorAll('button:not([disabled])'));

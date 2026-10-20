@@ -4,9 +4,9 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: versão 1.1.0 assinada, instalada e iniciada na Samsung AU8000.** A apresentação foi reconstruída a partir do CleanFrame, preservando o cartão grande de último acesso, os favoritos, as artes PS5 e cinco temas. 48 testes da aplicação passaram.
+**Estado: versão 1.1.1 assinada, instalada e iniciada na Samsung AU8000.** A apresentação foi reconstruída a partir do CleanFrame, preservando o cartão grande de último acesso, os favoritos, as artes PS5 e cinco temas. 54 testes da aplicação passaram. A atualização reduz medições/rolagens por seta e permite abrir apps já identificados durante a atualização do inventário.
 
-O método não oficial de Home usa um helper separado, exclusivo desta TV/firmware. O Home curto já está configurado para Vibe; backup de roteamento, aplicação, restauração e reaplicação passaram no aparelho. Falta confirmar o botão do controle físico. Evidências e reversão em [Home nativo](docs/vibe-tv/cleanframe-home.md). Nenhum resultado de navegador substitui o teste físico do Home, do HDMI-CEC ou do boot.
+O método não oficial de Home usa um helper separado, exclusivo desta TV/firmware. O Home curto já está configurado para Vibe; backup de roteamento, aplicação, restauração e reaplicação passaram no aparelho. O proprietário confirmou YouTube → Home curto → Vibe; a resposta percebida da otimização 1.1.1 ainda aguarda confirmação. Evidências e reversão em [Home nativo](docs/vibe-tv/cleanframe-home.md). Nenhum resultado de navegador substitui o teste físico do Home, do HDMI-CEC ou do boot.
 
 O proprietário já confirmou artes, navegação e abertura nativa do YouTube nas versões anteriores. O histórico de episódios permanece dentro dos apps; o Vibe registra apenas suas próprias aberturas bem-sucedidas.
 

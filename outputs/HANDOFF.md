@@ -1,26 +1,28 @@
-# Handoff — Vibe TV 1.1.0 / CleanFrame e Home nativo
+# Handoff — Vibe TV 1.1.1 / resposta do controle
 
 20/10/2026 · Samsung UN50AU8000GXZD · coordenador Codex `/root`.
 
 ## Resultado entregue e estado atual
 
 - Interface reformulada com base no CleanFrame: cartão grande de último acesso, dock, controles no topo direito, marcas proporcionais, artes PS5, cinco temas e foco suave. O desvio de ↓ após rolar o dock foi corrigido.
-- Versão **1.1.0 assinada, atualizada diretamente e aberta na TV**. Identidade do app e armazenamento preservados; nenhum outro aplicativo foi removido.
+- Versão **1.1.1 assinada, atualizada diretamente e aberta na TV**. Setas seguem a ordem dos favoritos sem medir todo o hub; rolagem ocorre só quando necessária; apps já identificados podem abrir enquanto a lista é atualizada. Identidade/armazenamento preservados; nenhum outro aplicativo foi removido.
 - **Home curto está configurado para Vibe TV**, por um helper nativo separado do WGT. Na própria AU8000, identidade root temporária, backup consistente, aplicação, restauração e reaplicação passaram. Snapshots confirmaram todas as três tabelas/rowids esperadas; notificações aceitas, autenticação global inalterada e staging removido.
-- **Ainda falta confirmação do botão físico.** Pergunta pendente ao proprietário: abrir YouTube e pressionar Home curto retorna ao Vibe? Não tratar o sucesso do banco como resposta desse teste. Home desde HDMI, menu Samsung, PS5/CEC e boot também permanecem pendentes.
-- 48 testes Node, 16 testes Python e 38 asserções C# passaram. Prévia local está rodando em [127.0.0.1:4173](http://127.0.0.1:4173).
+- **O proprietário confirmou YouTube → Home curto → Vibe**, mas relatou lentidão. A otimização 1.1.1 está instalada; a melhora percebida no controle ainda aguarda resposta. Home desde HDMI, menu Samsung, PS5/CEC e boot também permanecem pendentes.
+- Nesta revisão, **54/54 testes Node** passaram. A revisão nativa anterior passou 16 testes Python e 38 asserções C#; esses componentes não mudaram nesta atualização. Prévia local está rodando em [127.0.0.1:4173](http://127.0.0.1:4173).
 
 Esta é uma mudança de interface e roteamento sobre o Tizen existente. Não houve troca de firmware, remoção do Smart Hub, reset, extração de contas ou instalação de root persistente.
 
-![Interface CleanFrame — fixture no navegador, sem TV](cleanframe-ps5-1920.jpg)
+![Vibe 1.1.1 — prévia local no navegador, sem TV](responsiveness-desktop.jpg)
 
-As capturas `cleanframe-*` são do navegador real, explicitamente prévia/fixture. Não são fotos da televisão. [Ajustes 1.1.0](cleanframe-settings-1.1.0-1920.jpg) · [foco390](cleanframe-navigation-fixed-390.jpg) · [claro](cleanframe-light-1280.jpg) · [vinho](cleanframe-themes-wine.jpg).
+As capturas `responsiveness-*` e `cleanframe-*` são do navegador real, explicitamente prévia/fixture. [Teste 1280/390](responsiveness-layouts.jpg). Não são fotos da televisão. [Ajustes 1.1.0](cleanframe-settings-1.1.0-1920.jpg) · [foco390](cleanframe-navigation-fixed-390.jpg) · [claro](cleanframe-light-1280.jpg) · [vinho](cleanframe-themes-wine.jpg).
 
 ## Pedido original e pedido otimizado
 
 Original: clonar Free My TV no GitHub de Felipe como vibe-tv, reconstruir a interface da Samsung preservando apps, configurações e logins; destacar último acesso e conteúdo real; PS5 no HDMI2 com imagens fornecidas; favoritos na ordem YouTube, PS5, Netflix, Prime, HBO Max, Samsung TV Plus, Disney+, Spotify; permitir organização e temas; documentar, capturar telas e publicar. Depois solicitou substituir o comportamento de Home e refazer a partir dos exemplos de Nathan Clark/CleanFrame.
 
-**Pedido otimizado:** reconstruir o Vibe com a apresentação CleanFrame e o cartão grande aprovado; manter integrações/identidades/preferências existentes; investigar e implementar na AU8000 o Home nativo usando exclusivamente o teste limitado autorizado de root temporário, com identidade, backup consistente e reversão verificados antes de deixar a rota aplicada. Separar evidência de banco/notificação da resposta do controle físico, HDMI-CEC e boot; preservar Smart Hub para configurações e recuperação.
+**Pedido atual:** Home abriu, mas o usuário considera a resposta do controle lenta e quer um hub leve e rápido.
+
+**Pedido otimizado:** reduzir o atraso do controle no Vibe TV, preservando o visual, os apps e o Home confirmado. Identificar trabalho/bloqueios desnecessários, corrigir com testes e atualizar a TV; distinguir contagem de operações local de latência física. A autorização anterior do teste nativo continua limitada e não foi reutilizada nesta correção.
 
 ## Decisões e limites aprovados
 
@@ -38,7 +40,7 @@ App estático sem backend/dependências novas de runtime. `state.js` mantém `vi
 
 PS5 continua usando o objeto real HDMI2 enumerado em connected ou disconnected, `setSource`, depois `org.tizen.tv-viewer`. Seleção sem sinal foi corrigida na 1.0.4; não há comando próprio de ligar console. CEC ainda não confirmado.
 
-Ajustes 1.1.0 oferece **Abrir menu Samsung** na TV, chamando o destino original `com.samsung.tv.csfs` sem registrar histórico. Testes de sucesso/falha passaram; acesso físico ainda pendente.
+Ajustes 1.1.1 oferece **Abrir menu Samsung** na TV, chamando o destino original `com.samsung.tv.csfs` sem registrar histórico. Testes de sucesso/falha passaram; acesso físico ainda pendente.
 
 `tools/native-home/` é separado do app:
 
@@ -80,31 +82,34 @@ Tracker único: `specs/001-vibe-tv-tizen/tasks.md`; coordenador é o único edit
 | T018 pesquisa/compatibilidade | done | Evidência integrada |
 | T019 apresentação CleanFrame | done | Código/capturas integrados |
 | T020 integração/publicação | done | Código, capturas e handoff publicados; SHA remoto conferido |
-| T021 Home nativo | in_progress | Receber teste físico YouTube→Home; depois HDMI→Home e menu Samsung |
+| T021 Home nativo | in_progress | YouTube→Home confirmado; faltam HDMI→Home e menu Samsung |
+| T022 responsividade | in_progress | Código validado e 1.1.1 instalada; falta retorno físico da melhora |
+| T023 revisão de desempenho | done | Auditorias e comparação reproduzida pelo coordenador |
 | T009 hardware geral | in_progress | Sessões, configurações, boot e desempenho físico |
 | T016 YouTube repetido | pending | Dois ciclos abrir/voltar/reabrir; usuário relatou abertura correta, sem causa anterior reproduzida |
 | T017 PS5 | in_progress | Confirmar imagem HDMI2 e despertar CEC separadamente |
 
-Dependências: T018 sustenta T021; T019→T020. T021 tem implementação e reversão técnica verificadas, mas seu aceite físico não está concluído. Não marcar tarefa done pelo relato de banco.
+Dependências: T018 sustenta T021; T019→T020→T022; T023 revisa a base e o diff de T022. T021 tem implementação/reversão e Home após YouTube verificados; demais cenários físicos ainda não concluídos.
 
-Próxima ação: incorporar a resposta já solicitada ao proprietário, sem reiniciar o app ou repetir root enquanto ele testa. Se Home ainda abrir Smart Hub, reproduzir e diagnosticar o roteamento no estado atual; não voltar a copiar um script de outra TV nem adicionar boot relay automaticamente.
+Próxima ação: receber a resposta sobre ←/→ e abertura de YouTube na 1.1.1, já solicitada. Não reiniciar enquanto o proprietário testa. Se só Home continuar demorado, medir nova inicialização versus retorno usando contextId/timeOrigin em Inspector funcional; não confundir transição visual 150 ms com tempo até primeiro feedback. Não repetir root nem alterar roteamento por hipótese de desempenho. O Inspector desta sessão anunciou porta mas recusou/resetou conexão; o encaminhamento foi removido e a TV ficou em execução normal.
 
 ## Arquivos desta continuação
 
-- `tizen/index.html`, `styles.css`, `app.js`, `config.xml`: apresentação, foco, versão 1.1.0, botão Samsung.
+- Nesta revisão: `tizen/app.js`, `config.xml`: navegação direta/rolagem sob demanda, inventário anterior mantido em memória, versão 1.1.1. `index.html/styles.css` permanecem como na apresentação aprovada.
 - `tizen/assets/cleanframe/`, `assets/fonts/`: Manrope/OFL e atribuição MIT, sem fontes privadas da referência.
-- `tests/controller.test.cjs`: menu Samsung e ↓ após rolagem.
+- `tests/controller.test.cjs`: seis casos adicionais de navegação/refresh, com cinco falhas RED antes da correção e todos verdes depois.
 - `tools/preview.cjs`: MIME das fontes; servidor somente loopback.
 - `tools/native-home/{transport.py,preflight.py,run.py,apply.sql,restore.sql,namespace/,control/}`: operação exata/restrita e selftest; duas licenças de origem.
 - `tests/native_*_test.py`: guardas, backup, SQL, transporte e resíduos.
 - `specs/001-vibe-tv-tizen/`, `.specify/memory/constitution.md`, `docs/plans/2026-10-20-cleanframe-design.md`: contrato vivo e tarefas.
 - `README.md`, `docs/vibe-tv/`: instalação, backup, compatibilidade, fontes e evidência real.
-- `outputs/cleanframe-*`, este handoff: capturas e continuidade.
+- `outputs/responsiveness-{desktop,layouts}.jpg`, capturas anteriores `cleanframe-*` e este handoff: evidência e continuidade.
 
 ## Validações executadas
 
 ```sh
-node --test tests/*.test.cjs                 # 48/48
+node --test tests/*.test.cjs                 # 54/54 nesta revisão
+# Validação nativa anterior (componentes inalterados):
 python3 -m unittest discover -s tests -p 'native*_test.py'  # 16/16
 dotnet run --project tools/native-home/control/selftest/SelfTest.csproj -c Release # 38 assertions
 node tools/package-tizen.cjs
@@ -112,9 +117,11 @@ git diff --check
 SPECIFY_FEATURE_DIRECTORY=specs/001-vibe-tv-tizen .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
 ```
 
-Assinatura/CRC/XML/versão válidos; 24 arquivos de runtime iguais ao unsigned, duas assinaturas e entradas de diretório do assinador. Direct update `vd_appinstall` completou e `tz run` confirmou lançamento. Não usar `tz install`, cujo wrapper observado tenta desinstalar primeiro.
+Assinatura/CRC/XML/versão válidos; 24 arquivos de runtime iguais ao unsigned, duas assinaturas e entradas de diretório do assinador. Direct update `vd_appinstall` 1.1.1 completou e `was_execute` confirmou lançamento normal. Foi encerrada apenas a instância anterior do Vibe antes de reabrir. Não usar `tz install`, cujo wrapper observado tenta desinstalar primeiro.
 
-Navegador: 1920×1080,1280×720,390×844, cinco temas/reload/organização/overflow/falhas/foco. Coordenador inspecionou código/capturas e testou navegação; revisor independente conferiu helpers e transportes. Todos os achados de código foram corrigidos e revalidados.
+Nesta revisão: desktop, frames 1280×720/390×844, hero/dock, overflow completo, ordem personalizada, Tab/painel/Back e foco depois de abertura simulada. Coordenador inspecionou diff/capturas; revisor independente não encontrou problemas. VM com 14 botões: 14 movimentos reduziram 196→28 leituras de geometria e 14→0 scrollIntoView; 100 repetições na borda reduziram 1.400→0 leituras. Ambos mantiveram 14 mudanças de foco e zero render/storage. Esses números não são FPS, latência ou contagem de reflows. Não houve perfil físico da TV.
+
+A validação anterior da apresentação cobriu 1920×1080,1280×720,390×844 e cinco temas. Estilos, imagens e animação 150 ms foram preservados. `background-support=disable` também permanece conforme requisito Samsung; não há garantia de warm-resume neste modelo.
 
 Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências privadas/markers e comparações lidas pelo coordenador. A primeira tentativa parou no upload (não executou helper); a primeira limpeza de backup parou no journal inativo (inspecionado e limpo). Não mascarar essas falhas como sucesso inicial.
 
@@ -122,7 +129,7 @@ Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências
 
 Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
 Branch de integração: **agent/vibe-tv-cleanframe**. [Repositório/branch](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
-Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. Este registro de publicação segue na mesma branch. Não houve PR, merge em main ou limpeza de worktrees.
+Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Commit de implementação/documentação `be10857d103c625b2b91a3388df6f30293db8feb` enviado; `git ls-remote` confirmou o mesmo SHA. O registro anterior terminou em `c683b96`. A atualização 1.1.1 será publicada na mesma branch após as verificações registradas; conferir o estado remoto antes de declarar essa etapa concluída. Não houve PR, merge em main ou limpeza de worktrees.
 
 Worktrees preservadas: `.worktrees/cleanframe-ui` (agent/cleanframe-interface), `.worktrees/native-home` (agent/au8000-native-home) e as anteriores state/platform/interface. Nenhuma limpeza automática ou PR.
 

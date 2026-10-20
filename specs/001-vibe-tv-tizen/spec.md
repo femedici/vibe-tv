@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
-**Status**: CleanFrame-style 1.1.0 installed/launched; native short-Home route applied; consistent backup, apply, restore and reapply verified; physical Home/PS5 wake/startup pending.
+**Status**: CleanFrame-style 1.1.1 installed/launched; owner confirmed YouTube→short Home opens Vibe; consistent routing backup, apply, restore and reapply verified. Remote responsiveness code validated; physical improvement pending; HDMI/PS5 wake/startup pending.
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -23,6 +23,7 @@
 - Show original local brand assets without stretching. Device inspection found low-resolution square icons (several 117×117) and a missing Prime icon, so use bundled official artwork for the known brands. Unknown apps use their installed icon, or a neutral app symbol and their real name if unavailable.
 - Recent video/episode art is allowed only with a proven authorized provider integration. None exists currently; use app artwork without representing it as watched content.
 - Keep supplied PS5 art, native launch APIs, preferences and five themes. Avoid rebuilding the app shelf on launch/theme changes or an unchanged inventory.
+- Owner confirmed native Home works and requested faster remote response. Favorite-row arrows must follow the saved order without measuring the whole hub; visible favorites must not trigger page scrolling. Previously identified apps remain launchable while the inventory refreshes, with native launch errors preserved. No new background service, root operation or Home-route change is part of this refinement.
 
 ### User Story 1 - Return to my last app (Priority: P1)
 As the TV owner I want the largest area to show the last app successfully opened through Vibe TV with relevant artwork and an honest available action.
@@ -69,7 +70,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 ## Requirements
 ### Functional Requirements
 - **FR-001** Preserve original repository history/license and publish changes on agent/vibe-tv.
-- **FR-002** Provide a signed Tizen hub and label local preview. Investigate native Home routing using the CleanFrame/Couchroot references for this exact TV; preserve Smart Hub as a recovery/settings destination. Native Home replacement remains unmet until validated on the physical remote.
+- **FR-002** Provide a signed Tizen hub and label local preview. Investigate native Home routing using the CleanFrame/Couchroot references for this exact TV; preserve Smart Hub as a recovery/settings destination. Owner confirmed physical short Home after YouTube opens Vibe; HDMI and boot are separate pending checks.
 - **FR-003** Largest hero reflects the last successful launch through Vibe TV; maintain an honest empty state.
 - **FR-004** Use application-relevant art and the two supplied PS5 assets.
 - **FR-005** Provide initial order exactly as US2 specifies; support persistent reorder, add and remove.
@@ -84,7 +85,9 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-017** Use bundled original brand artwork for known favorites and accessible installed icons for other apps, preserving aspect ratio and the user's PS5 artwork. Unknown apps with an unavailable icon use a neutral app symbol. Resolve known duplicate app labels using IDs observed on the TV and still present in the inventory; never invent an installed app.
 - **FR-014** Document build/package, device prerequisites, recovery limits and hardware test procedure; publish handoff.
 - **FR-015** Validate state at storage/inventory boundaries and recover gracefully from failures without losing previous valid state.
-- **FR-016** Clearly distinguish Home routing from boot autorun. Routing was applied and its database reversal verified; physical Home and boot remain separate unverified acceptance checks.
+- **FR-016** Clearly distinguish Home routing from boot autorun. Routing was applied and its database reversal verified; physical Home after YouTube is owner-confirmed; HDMI and boot remain separate unverified acceptance checks.
+
+- **FR-018** Favorite arrows follow saved order without whole-hub geometry reads; row boundaries perform no geometry queries. Scroll only to reveal an out-of-view favorite. Keep panels reachable and visual motion unchanged. An app resolved from the last successful in-memory inventory remains launchable while refreshing; retain that inventory on refresh failure, replace it on success, and never bypass identity resolution or native launch errors.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.
@@ -129,4 +132,4 @@ Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests
 
 - CleanFrame presentation integrated and signed1.1.0 direct update launched. 48 application tests,14 Python transport/routing tests and38 C# assertions passed. UI screenshots are explicitly browser preview/fixture, not TV photos. SDK transfer is owner5001:100 while command execution is901:901; staging accounts for that difference and checks artifacts before root. Actual IDENTITY baseline→root→unmount→global hash checks→cleanup succeeded; no Home routing change during that proof.
 
-- Exact-device result: consistent private routing backup; APPLY→RESTORE→APPLY, post-operation SQLite snapshots match all three tables/rowids, notifications accepted, authentication hashes unchanged and temporary helpers/staging removed. Current short-Home target is Vibe. Physical YouTube→Home question pending; no claim of firmware replacement, complete backup or proven boot/CEC.
+- Exact-device result: consistent private routing backup; APPLY→RESTORE→APPLY, post-operation SQLite snapshots match all three tables/rowids, notifications accepted, authentication hashes unchanged and temporary helpers/staging removed. Current short-Home target is Vibe. Physical YouTube→Home now confirmed by the owner; no claim of firmware replacement, complete backup or proven boot/CEC.

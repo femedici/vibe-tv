@@ -10,7 +10,7 @@
 | Retomar episódio | Indisponível sem integração autorizada do provedor | Não há progresso ou episódio fictício |
 | PS5 HDMI 2 | Fonte HDMI real enumerada, inclusive sem sinal, setSource e viewer nativo | Seleção física e wake por CEC aguardam confirmação; HDR, Game Mode e latência não testados |
 | Configurações Samsung | Controle e Smart Hub nativos preservados | Não é prometido acesso programático a todos os menus |
-| Home / início | Rota nativa separada aplicada | Home → Vibe configurado; controle físico e boot ainda pendentes |
+| Home / início | Rota nativa separada aplicada | YouTube → Home → Vibe confirmado pelo proprietário; HDMI e boot pendentes |
 | Logins | Abrir apps instalados sem acessar seus dados | Preservação física e restauração integral ainda não verificadas |
 | Recuperação | Reset oficial aceito pelo proprietário em substituição ao backup integral | Não recupera necessariamente sessões nem firmware anterior; não será executado como teste |
 
@@ -60,4 +60,4 @@ Home foi reconferido no checklist CO-GE-07 e na [FAQ de interação, Q7](https:/
 
 ## Atualização nativa 1.1.0
 
-O método específico da AU8000 usou root temporário em namespace privado, backup consistente e mudança apenas da rota de Home curto. Aplicação→restauração→reaplicação passaram, incluindo comparação de todas as linhas/rowids e notificações. Estado atual: destino Vibe; confirmação física Home/app/HDMI pendente. Não houve troca de firmware, remoção do Smart Hub ou acesso a sessões. [Evidências e limites de recuperação](cleanframe-home.md).
+O método específico da AU8000 usou root temporário em namespace privado, backup consistente e mudança apenas da rota de Home curto. Aplicação→restauração→reaplicação passaram, incluindo comparação de todas as linhas/rowids e notificações. Estado atual: destino Vibe; Home após YouTube confirmado pelo proprietário; Home após HDMI pendente. Não houve troca de firmware, remoção do Smart Hub ou acesso a sessões. [Evidências e limites de recuperação](cleanframe-home.md).

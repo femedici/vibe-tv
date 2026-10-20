@@ -1,6 +1,6 @@
 # CleanFrame e Home nativo na AU8000
 
-Data: 2026-10-20. Estado: UI 1.1.0 instalada e Home curto configurado para Vibe TV. Backup, aplicação, restauração e reaplicação foram verificados no aparelho; confirmação do controle físico ainda pendente.
+Data: 2026-10-20. Estado: UI 1.1.1 instalada e Home curto configurado para Vibe TV. Backup, aplicação, restauração e reaplicação foram verificados no aparelho; o proprietário confirmou Home curto após YouTube abrindo Vibe.
 
 ## Referências verificadas
 
@@ -74,7 +74,7 @@ A prova seguinte passou na AU8000: baseline5001:100, depois root0:0, ambos conte
 
 O SQLite desta TV deixa journals PERSIST de snapshots temporários. A primeira limpeza recusou a sobra, corretamente. Foi confirmado cabeçalho zerado em um journal de 512 bytes; só esse arquivo inativo foi removido. A limpeza agora reconhece exclusivamente os dois journals dos snapshots, recusando arquivos ativos, não regulares ou links. RED/GREEN inclui a recusa de FIFO. Os nomes e conteúdos do banco de sistema nunca entram nessa limpeza.
 
-Esses resultados comprovam as operações e a reversão **no banco/gerenciador de contexto**. A pergunta ao proprietário para abrir YouTube e apertar Home curto está pendente. Home físico a partir de app/HDMI, acesso ao menu Samsung, despertar PS5/CEC e ciclo de energia ainda não foram confirmados nesta versão. Não declarar troca de firmware ou recuperação integral.
+Esses resultados comprovam as operações e a reversão **no banco/gerenciador de contexto**. O proprietário confirmou que YouTube → Home curto abre Vibe e relatou lentidão. A atualização 1.1.1 trata o processamento de setas e o bloqueio durante atualização do inventário, sem nova alteração nativa. Home a partir de HDMI, acesso ao menu Samsung, despertar PS5/CEC e ciclo de energia ainda não foram confirmados. Não declarar troca de firmware ou recuperação integral.
 
 ### Recuperar antes de remover o app
 

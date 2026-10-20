@@ -1,4 +1,4 @@
-**Estado atual 1.1.0:** veja a seção CleanFrame ao final. As seções anteriores preservam evidência histórica.
+**Estado atual 1.1.1:** veja a seção de responsividade ao final. As seções anteriores preservam evidência histórica.
 
 # Validação do Vibe TV — 1.0.4
 
@@ -101,6 +101,29 @@ Home foi reconferido nas fontes oficiais listadas em compatibility.md. Continua 
 - Pacote1.1.0: CRC/XML/versão, 24 arquivos de runtime idênticos ao unsigned e duas assinaturas XML; o assinador acrescenta também entradas de diretório. `vd_appinstall` concluiu atualização direta; comando nativo confirmou lançamento. Nenhum app foi desinstalado.
 - AU8000/T-NKLAUABC-2310.0: prova de identidade root temporária passou. BACKUP via SQLite e transferência SHA/integridade passaram. APPLY→RESTORE→APPLY tiveram notificações aceitas e snapshots consistentes correspondentes às três tabelas/rowids esperadas. Auth original, ausência de helpers e limpeza confirmados em cada operação concluída.
 - O diagnóstico de transporte distinguiu execução SDK901 de transferência5001:100. Cleanup inicial recusou journal PERSIST residual inativo, inspecionado e removido; a guarda foi testada e usada nas operações posteriores.
-- Estado final: rota curta Home aponta para Vibe. Teste do botão físico após YouTube foi solicitado ao proprietário e permanece pendente, assim como Home desde HDMI, PS5/CEC, acesso real ao menu Samsung, demais sessões, HDR/áudio/Game Mode/latência e ciclo de energia. Não há medição de FPS nem backup integral. [Detalhes do método](cleanframe-home.md).
+- Estado final: rota curta Home aponta para Vibe. Proprietário confirmou Home físico após YouTube; permanecem pendentes Home desde HDMI, PS5/CEC, acesso real ao menu Samsung, demais sessões, HDR/áudio/Game Mode/latência e ciclo de energia. Não há medição de FPS nem backup integral. [Detalhes do método](cleanframe-home.md).
 
 Capturas atuais: [PS5 1920](../../outputs/cleanframe-ps5-1920.jpg), [claro1280](../../outputs/cleanframe-light-1280.jpg), [vinho](../../outputs/cleanframe-themes-wine.jpg), [foco390](../../outputs/cleanframe-navigation-fixed-390.jpg), [Ajustes1.1.0](../../outputs/cleanframe-settings-1.1.0-1920.jpg).
+
+## Responsividade 1.1.1 — 20/10/2026
+
+O proprietário confirmou Home curto após YouTube abrindo Vibe, mas relatou resposta lenta. Duas causas de trabalho/bloqueio desnecessários foram reproduzidas: cada seta da fileira media todos os botões e chamava scrollIntoView; um app já identificado não podia abrir enquanto getAppsInfo estava pendente. Isso não estabelece qual parcela explica o atraso físico relatado.
+
+- RED: 5 falhas novas em 12 testes do controller; GREEN: 12/12 e suíte completa **54/54**. Cobertura: ordem alterada, repetição na borda, overflow, rolagem vertical em tela estreita, abertura durante refresh, falha de refresh e inventário atualizado vazio. Apps só abrem com ID previamente observado e resolvido; callback/erro nativo permanecem obrigatórios.
+- Medição reproduzida pelo coordenador e por auditor em VM, com o mesmo DOM de 14 botões, contra `c683b96`:
+
+| Operação | Antes | 1.1.1 |
+| --- | ---: | ---: |
+| Leituras de geometria em 14 movimentos horizontais | 196 | 28 |
+| scrollIntoView nesses movimentos | 14 | 0 |
+| Leituras em 100 repetições adicionais na borda | 1.400 | 0 |
+| Mudanças de foco nos 14 movimentos | 14 | 14 |
+| Renderizações / gravações durante as setas | 0 / 0 | 0 / 0 |
+
+Esses números contam chamadas, **não** milissegundos, FPS ou reflows. Movimento/opacity continuam com 150 ms; os estilos e imagens foram preservados. Painéis mantêm a rolagem anterior; a otimização de rolagem é restrita ao hub.
+
+- Navegador real: hero↓→primeiro favorito, setas pelos oito apps, ↑→hero, ordem personalizada e foco após sucesso simulado. Frames 1280×720 e 390×844 confirmados por innerWidth/innerHeight; Spotify alcançável no fim do overflow e retorno ao primeiro favorito. Tab/painel/Back mantêm foco visível. Capturas: [desktop](../../outputs/responsiveness-desktop.jpg), [layouts fixos](../../outputs/responsiveness-layouts.jpg). São prévia/fixture, sem conexão da página à TV.
+- Revisão independente final sem achados; `git diff --check`, sintaxe JS, CRC/XML/versão e identidade dos 24 arquivos do pacote passaram. Perfil existente assinou 1.1.1; atualização direta retornou `install completed`; `was_execute` confirmou `launched` após encerrar somente a instância anterior do Vibe. Sem desinstalação ou mudança na rota Home.
+- O Inspector anunciou uma porta, mas o navegador recebeu conexão recusada diretamente e reset pelo encaminhamento SDB. Não houve perfil de frames nem medição cold/warm na TV. O encaminhamento foi removido e Vibe foi aberto normalmente, sem debug. Confirmação física da melhora solicitada ao proprietário e ainda pendente.
+
+Não habilitar background-support como atalho: a [Samsung exige disable para TV](https://developer.samsung.com/smarttv/develop/faq/other-features.html). A retomada em memória varia com suporte/modelo conforme [multitasking](https://developer.samsung.com/smarttv/develop/guides/fundamentals/multitasking.html); não foi demonstrado se cada Home nesta TV reinicia o processo. O caminho de Home é uma rota nativa direta, sem helper em execução por tecla.
