@@ -31,7 +31,7 @@ PASS before and after design: side-by-side Tizen approach; no device mutation, n
 - `outputs/`: real captures and handoff, no credentials/device serial.
 
 ## Execution
-T001 governance/contracts baseline. T002 state and T003 platform run in isolated worktrees in parallel with T004 coordinator UI. Tests precede nontrivial logic. Integrate each agent branch separately and rerun tests. T005 validate UI/package and document. T006 independent review/convergence and remediate. T007 commit/push/handoff. T008 hardware installation remains blocked.
+T001 governance/contracts baseline. T002 state, T003 platform and T004 interface run in isolated worktrees; T005 tooling/docs stays with the coordinator. Tests precede nontrivial logic. T006 integrates each branch separately, reruns checks and validates the live UI/package with screenshots. T007 performs independent review/convergence and remediation. T008 commits, pushes and completes the handoff. T009 physical TV work remains blocked by recovery prerequisites.
 
 ## Complexity Tracking
 No runtime dependencies, server-side application, provider integration scaffold or speculative abstraction. The two small modules isolate pure state and actual hardware calls for testing.

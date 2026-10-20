@@ -339,7 +339,7 @@
     var target = item.kind === 'app' && Navigation.resolveApp(item, inventory);
     if (item.kind === 'app' && !target) { announce(item.name + ' não foi identificado com segurança nesta TV. Confira os aplicativos em Adicionar.'); return; }
     pending = item.id;
-    renderShelf();
+    render();
     announce('Abrindo ' + item.name + '…');
     var request = item.kind === 'input' ? platform.launchInput(2) : platform.launchApp(target.id);
     request.then(function () {

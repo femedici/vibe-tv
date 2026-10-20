@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv`
 **Created**: 2026-10-19
-**Status**: Approved for local development; TV installation blocked
+**Status**: Local implementation verified; branch publication in progress; TV installation blocked
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -95,3 +95,7 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - The TV's installed-app inventory, exact per-app launch behavior, native HDMI quality, startup and restoration require authorized hardware validation later.
 - No provider has supplied an authorized continue-watching integration; the interface offers app opening without fabricated content.
 - Factory full backup and session restore remain unresolved external prerequisites, not a task to bypass.
+
+## Verified local implementation
+
+38 automated checks passed, plus live Edge keyboard/pointer, five skins/reload, favorites/empty/overflow and 1920×1080/390×844 checks. A separate explicitly simulated fixture verified successful/failed launch history, exact extra app identity, HDMI2/viewer sequence and exit UI. The production preview never fabricates native capabilities. See `docs/vibe-tv/validation.md` for evidence and `tasks.md` for publication/hardware state. Native hardware, startup, sessions and full backup remain unverified.

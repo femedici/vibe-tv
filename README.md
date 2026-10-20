@@ -6,6 +6,8 @@ Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv),
 
 **Estado: desenvolvimento e validação local. Não instalado nem validado na TV.** O Smart Hub original não é substituído. O backup integral do sistema e dos logins ainda não foi obtido; a instalação está bloqueada por esse requisito.
 
+![Vibe TV — prévia local](outputs/vibe-tv-dark.jpg)
+
 ## Rodar localmente
 
 Node.js 22 ou superior e `zip`/`unzip` para o pacote. Sem `npm install`.
@@ -52,4 +54,4 @@ A tecla Home e a inicialização do Smart Hub continuam pertencendo à Samsung. 
 
 ## Origem e licenças
 
-Código original sob [MIT](LICENSE), de Free My TV. Os novos arquivos desta adaptação seguem a mesma licença. A fonte e os ícones herdados conservam suas licenças nos assets; as duas imagens PS5 foram fornecidas pelo usuário. Marcas e nomes pertencem aos respectivos titulares; este projeto não é afiliado à Samsung, Sony ou aos serviços de streaming.
+Código original sob [MIT](LICENSE), de Free My TV. Os novos arquivos desta adaptação seguem a mesma licença. A fonte e os assets herdados conservam suas licenças; as duas imagens PS5 fornecidas pelo usuário não são relicenciadas por este projeto. Consulte `tizen/assets/ATTRIBUTION.txt`. Marcas e nomes pertencem aos respectivos titulares; este projeto não é afiliado à Samsung, Sony ou aos serviços de streaming.

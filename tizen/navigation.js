@@ -39,7 +39,7 @@
   }
 
   function resolveApp(item, inventory) {
-    if (!item || !Array.isArray(inventory)) return null;
+    if (!item || item.kind === 'input' || !Array.isArray(inventory)) return null;
     var aliases = (item.aliases || [item.name]).map(normalize);
     var matches = inventory.filter(function (app) {
       return item.appId ? app.id === item.appId : aliases.indexOf(normalize(app.name)) !== -1;

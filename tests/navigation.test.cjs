@@ -42,3 +42,8 @@ test('custom apps resolve their actual identity rather than a similar label', ()
   assert.equal(nav.resolveApp(custom, [{id: 'wrong', name: 'Cinema'}]), null);
   assert.equal(nav.resolveApp(custom, [{id: 'actual', name: 'Cinema TV'}]).id, 'actual');
 });
+
+test('HDMI shortcut never represents an installed app with the same name', () => {
+  const ps5 = {id:'ps5',name:'PS5',kind:'input',aliases:['PS5','PlayStation 5']};
+  assert.equal(nav.resolveApp(ps5, [{id:'native.ps5.app',name:'PlayStation 5'}]), null);
+});
