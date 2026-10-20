@@ -288,12 +288,13 @@
       return;
     }
     detail(content, 'Último acesso', 'Mostra o último aplicativo aberto com sucesso pelo Vibe TV. Acessos feitos pelo Smart Hub ou por outros atalhos não entram neste histórico.');
-    detail(content, 'Configurações da Samsung', 'Use Home no controle para acessar o Smart Hub e as configurações da TV: imagem, som, Wi-Fi, conexões e contas. Home, volume e energia continuam sob controle da Samsung.');
+    var samsungSettings = detail(content, 'Configurações da Samsung', 'Imagem, som, Wi-Fi, conexões e contas continuam no menu original da TV.');
+    if (platform.native) samsungSettings.appendChild(actionButton('samsung-home', 'button quiet', 'samsung-home', 'Abrir menu Samsung'));
     detail(content, 'Seus aplicativos e acessos', 'O Vibe TV abre os aplicativos existentes. Não lê suas senhas, não migra contas e não altera as configurações dos serviços. A preservação das sessões ainda precisa ser validada na TV.');
-    detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. Home continua abrindo o Smart Hub.');
+    detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. A configuração de início é independente do destino do botão Home.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
     if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
-    detail(content, 'Vibe TV 1.0.4', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
+    detail(content, 'Vibe TV 1.1.0', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');
@@ -355,6 +356,14 @@
     } else if (action === 'panel') openPanel(button.dataset.panel, button.id);
     else if (action === 'close') closePanel();
     else if (action === 'launch') launch(item);
+    else if (action === 'samsung-home') {
+      if (pending) { announce('Aguarde a abertura em andamento.'); return; }
+      announce('Abrindo menu Samsung…');
+      // This is the stock Home target observed in this TV's routing database.
+      platform.launchApp('com.samsung.tv.csfs').then(function () {
+        byId('toast').hidden = true;
+      }, function (error) { announce(error.message || 'Não foi possível abrir o menu Samsung. Use o controle da TV.'); });
+    }
     else if (action === 'theme') {
       commit(State.setTheme(state, button.dataset.theme));
       focus('theme-' + state.theme);
@@ -410,6 +419,11 @@
     var direction = directions[key] || directions[code];
     if (direction) {
       event.preventDefault();
+      if (!panelType && direction === 'down' && document.activeElement.id === 'hero-open') {
+        var firstFavorite = State.items(state)[0];
+        focus(firstFavorite ? 'favorite-' + firstFavorite.id : 'add-button');
+        return;
+      }
       var scope = panelType ? byId('panel') : byId('hub');
       buttons = Array.prototype.slice.call(scope.querySelectorAll('button:not([disabled])'));
       var rectangles = buttons.map(function (button) {

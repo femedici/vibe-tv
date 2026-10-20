@@ -1,6 +1,6 @@
 # CleanFrame e Home nativo na AU8000
 
-Data: 2026-10-20. Estado: pesquisa e transações testadas **somente localmente**; nenhum Home alterado na TV.
+Data: 2026-10-20. Estado: UI 1.1.0 instalada e Home curto configurado para Vibe TV. Backup, aplicação, restauração e reaplicação foram verificados no aparelho; confirmação do controle físico ainda pendente.
 
 ## Referências verificadas
 
@@ -12,7 +12,7 @@ A pesquisa anterior sobre APIs públicas Samsung não cobria esse mecanismo nati
 
 ## Evidência real desta TV
 
-Modelo UN50AU8000GXZD; firmware **T-NKLAUABC-2310.0**; Tizen 6.0, armv7. Consultas HTTP/SDB e cópias normais de arquivos foram somente leituras; nenhum helper remoto foi executado neste preflight.
+Modelo UN50AU8000GXZD; firmware **T-NKLAUABC-2310.0**; Tizen 6.0, armv7. Consultas HTTP/SDB, cópias normais e um script de diagnóstico em UID901 foram executados. O script apenas leu pré-requisitos e removeu seu próprio arquivo temporário. Nenhuma elevação de privilégios nesse diagnóstico.
 
 | Arquivo/estado | Resultado |
 | --- | --- |
@@ -23,7 +23,7 @@ Modelo UN50AU8000GXZD; firmware **T-NKLAUABC-2310.0**; Tizen 6.0, armv7. Consult
 | Home curto | Uma regra Samsung: XF86Home, launch, package:com.samsung.tv.csfs, entry_point:smarthub_key. Home longo usa outra regra, preservada. |
 | Vibe gerenciado | Nenhum registro managed_app preexistente para VibeTV2026.VibeTV. |
 
-As cópias do aparelho estão apenas em `.dev/cleanframe-preflight/`, privado/ignorado. Não publicar banco, identificadores, certificados ou dados de autenticação. Um pull do banco em uso é uma amostra para investigação, **não backup consistente nem integral**. A leitura de um caminho presumido de runtime falhou; a versão instalada de .NET ainda precisa ser identificada. Arquivos binários iguais não provam capabilities/xattrs, SMACK ou comportamento de namespace iguais.
+As cópias do aparelho estão apenas em `.dev/cleanframe-preflight/`, privado/ignorado. Não publicar banco, identificadores, certificados ou dados de autenticação. Um pull do banco em uso é uma amostra para investigação, **não backup consistente nem integral**. O diagnóstico SDK confirmou .NET 3.1.3, dotnet com cap_setgid/cap_sys_admin herdáveis/efetivos no arquivo e tarlauncher com cap_setgid/cap_setuid. O processo SDK tem UID/GID901, contexto System e capabilities efetivas zero. O owner real tem UID5001/GID100. Esses dados não provam que a elevação funcionará. O primeiro transporte foi recusado pela proteção UEP antes de executar o script; o arquivo foi removido com confirmação. O transporte via stdin documentado pelo CleanFrame executou o diagnóstico e confirmou a própria limpeza.
 
 ## Proposta limitada para o botão Home
 
@@ -51,3 +51,31 @@ python3 -m unittest discover -s tests -p native_home_test.py
 O proprietário autorizou expressamente o teste limitado com root temporário após esta explicação, conforme seção 13 das suas regras. A autorização cobre identidade, backup consistente, exclusivamente Home curto e restauração. A finalidade é roteamento Home, mas falha pode prejudicar a navegação e exigir recuperação técnica. A restauração proposta depende de acesso SDB e permissões suficientes; **não há garantia de que reset de fábrica resolva qualquer falha desse método**. Prosseguir somente com as verificações e limites aprovados, abortando antes da alteração se faltarem pré-requisitos.
 
 A UI baseada no CleanFrame foi aprovada separadamente, com o cartão grande do Vibe, e pode ser desenvolvida/testada independentemente desse risco.
+
+## Implementação revisada
+
+A UI CleanFrame preserva estado/adapter, usa Manrope OFL, marcas locais e estilo compatível com Chromium76. A versão 1.1.0 foi assinada, atualizada sem desinstalar e abriu pelo comando nativo (PID14072). 48 testes Node passaram; 16 testes Python validam SQL, transporte, identidade do backup e recusa de resultados incompletos. Capturas reais do navegador em outputs/cleanframe-* são prévia/fixture explicitamente rotuladas, não fotografias da TV.
+
+O runner aceita somente identity/backup/apply/restore, não repete operações automaticamente, fixa identidade física/firmware/hashes e preserva evidências privadas. Usa cópia consistente SQLite antes e depois da mudança; um pull direto do banco vivo não é usado como comprovação. Alterações no esquema, referências desconhecidas, falha de notificação ou término não comprovado bloqueiam sucesso. A revisão incluiu watchdog no filho root, timeout da drenagem, notificação de inversão relida e schema validado em toda transação.
+
+### Prova real de identidade
+
+A primeira tentativa parou antes do helper: o SDB retornou exit0 junto de erro de cópia. O diagnóstico comprovou transferência como owner5001:100 e execução SDK901:901. O transporte agora recusa `error:` mesmo com exit0 e copia de uma entrada temporária para arquivos SDK644, removendo a entrada antes da execução.
+
+A prova seguinte passou na AU8000: baseline5001:100, depois root0:0, ambos contexto SMACK User. `IDENTITY_RESULT=root`, `AUTH_VIEWS=restored`, `NAMESPACE_EXIT=0`; verificação externa confirmou os hashes originais, ausência de helpers e remoção do staging. Isso comprova a elevação temporária e a limpeza dessa execução, ainda não a alteração/reversão de Home.
+
+## Resultado real do teste limitado
+
+- **IDENTITY:** baseline owner 5001:100 → root 0:0; visões privadas desmontadas, hashes globais iguais, nenhum helper ativo, staging removido.
+- **BACKUP:** API SQLite produziu cópia consistente das três tabelas, integridade `ok`, hash de transferência verificado e vínculo à identidade/firmware da TV. Permissões originais 0:0/0644 e SMACK `_` registrados. A cópia ficou privada neste Mac, fora do Git. Não inclui contas, firmware ou configurações gerais.
+- **APPLY:** Home curto passou para `package:VibeTV2026.VibeTV`; notificação aceita. Snapshot consistente posterior corresponde exatamente à transformação esperada nas três tabelas e rowids.
+- **RESTORE:** notificação aceita e snapshot consistente corresponde exatamente às três tabelas/rowids do backup original. Não foi feita substituição integral do banco.
+- **APPLY final:** o mesmo procedimento passou novamente. **Estado deixado na TV: rota curta Home → Vibe TV.** Todos os helpers encerrados, arquivos temporários removidos e hashes originais de autenticação preservados.
+
+O SQLite desta TV deixa journals PERSIST de snapshots temporários. A primeira limpeza recusou a sobra, corretamente. Foi confirmado cabeçalho zerado em um journal de 512 bytes; só esse arquivo inativo foi removido. A limpeza agora reconhece exclusivamente os dois journals dos snapshots, recusando arquivos ativos, não regulares ou links. RED/GREEN inclui a recusa de FIFO. Os nomes e conteúdos do banco de sistema nunca entram nessa limpeza.
+
+Esses resultados comprovam as operações e a reversão **no banco/gerenciador de contexto**. A pergunta ao proprietário para abrir YouTube e apertar Home curto está pendente. Home físico a partir de app/HDMI, acesso ao menu Samsung, despertar PS5/CEC e ciclo de energia ainda não foram confirmados nesta versão. Não declarar troca de firmware ou recuperação integral.
+
+### Recuperar antes de remover o app
+
+Preserve `.dev/native-home/backup-cb19e4cb6a134983/` e `device.json` neste Mac. O guia privado `.dev/native-home/RECOVERY.md` contém o comando exato com o endereço observado. Use `run.py restore` com o backup verificado, confira sucesso/limpeza e o Home original antes de desinstalar Vibe. Qualquer falha ou resultado incerto exige inspeção, sem repetir automaticamente. O acesso SDB e o firmware compatível continuam sendo pré-requisitos de recuperação.

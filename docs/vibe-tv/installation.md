@@ -1,6 +1,6 @@
 # Instalação e atualização na AU8000
 
-O Vibe é um app Tizen com ID `VibeTV2026.VibeTV`, pacote `VibeTV2026`. Não substitui firmware ou Smart Hub. A instalação no aparelho do proprietário foi expressamente autorizada após a decisão de recuperação documentada em [recovery.md](recovery.md).
+O Vibe é um app Tizen com ID `VibeTV2026.VibeTV`, pacote `VibeTV2026`. Não substitui firmware. O Smart Hub é preservado; o teste de roteamento do Home é separado do pacote e está descrito em [cleanframe-home.md](cleanframe-home.md). A instalação no aparelho do proprietário foi expressamente autorizada após a decisão de recuperação documentada em [recovery.md](recovery.md).
 
 ## Ambiente já preparado
 
@@ -15,18 +15,18 @@ node --test tests/*.test.cjs
 node tools/package-tizen.cjs
 ```
 
-Produz 20 arquivos de runtime/assets em `dist/VibeTV-unsigned.wgt`; a fixture não é incluída. Assinatura local com o perfil já criado:
+Produz 24 arquivos de runtime/assets em `dist/VibeTV-unsigned.wgt`; a fixture não é incluída. Assinatura local com o perfil já criado:
 
 ```sh
 vibe_sdk="$HOME/.tizen-extension-platform/server/sdktools"
 "$vibe_sdk/data/tools/tizen-core/tz" pack -t wgt \
   -b "$PWD/dist/VibeTV-unsigned.wgt" -s VibeTV \
   -p "$vibe_sdk/sdk-data/profile/profiles.xml" \
-  -o "$PWD/dist/VibeTV-1.0.4.wgt"
-unzip -t dist/VibeTV-1.0.4.wgt
+  -o "$PWD/dist/VibeTV-1.1.0.wgt"
+unzip -t dist/VibeTV-1.1.0.wgt
 ```
 
-Além de CRC e XML válidos, confira que cada um dos 20 arquivos de runtime é idêntico ao pacote não assinado, com somente `author-signature.xml` e `signature1.xml` adicionados.
+Além de CRC e XML válidos, confira que cada um dos 24 arquivos de runtime é idêntico ao pacote não assinado, com somente `author-signature.xml`, `signature1.xml` e entradas de diretório adicionadas pelo assinador.
 
 ## Atualização direta, preservando os dados do app
 
@@ -35,9 +35,9 @@ Use o dispositivo verificado em `sdb devices`. Defina `VIBE_TV_SERIAL` com o ser
 ```sh
 "$vibe_sdk/data/tools/sdb" devices
 "$vibe_sdk/data/tools/sdb" -s "$VIBE_TV_SERIAL" push \
-  "$PWD/dist/VibeTV-1.0.4.wgt" /home/owner/share/tmp/sdk_tools/VibeTV-1.0.4.wgt
+  "$PWD/dist/VibeTV-1.1.0.wgt" /home/owner/share/tmp/sdk_tools/VibeTV-1.1.0.wgt
 "$vibe_sdk/data/tools/sdb" -s "$VIBE_TV_SERIAL" shell 0 vd_appinstall \
-  VibeTV /home/owner/share/tmp/sdk_tools/VibeTV-1.0.4.wgt
+  VibeTV /home/owner/share/tmp/sdk_tools/VibeTV-1.1.0.wgt
 "$vibe_sdk/data/tools/tizen-core/tz" run \
   --serial "$VIBE_TV_SERIAL" --package-id VibeTV2026
 ```
@@ -48,6 +48,6 @@ Se uma instância antiga do Vibe ainda estiver aberta, encerre somente `VibeTV20
 
 ## Home, início e retorno
 
-Home permanece com a Samsung, conforme a [checklist oficial CO-GE-07](https://developer.samsung.com/smarttv/develop/development-checklist/common.html). O proprietário ativou “Execução Automática do Último Aplicativo”; isso depende do último app e do suporte da TV e não redefine Home. O ciclo de energia ainda precisa de verificação física.
+O comportamento público oficial é Home → Smart Hub, conforme a [checklist CO-GE-07](https://developer.samsung.com/smarttv/develop/development-checklist/common.html). O método nativo não oficial é um teste separado, com estado real e recuperação em [cleanframe-home.md](cleanframe-home.md). O proprietário ativou “Execução Automática do Último Aplicativo”; isso depende do último app e do suporte da TV e não redefine Home. O ciclo de energia ainda precisa de verificação física.
 
-O retorno mais simples ao uso anterior é fechar/remover somente Vibe. Reset de fábrica é um fallback destrutivo documentado, não foi executado e não recupera sessões ou uma versão antiga de firmware.
+Se a rota nativa estiver alterada, restaure e verifique primeiro o Home original; só depois feche/remova Vibe. Sem alteração de rota, o retorno mais simples é fechar/remover somente Vibe. Reset de fábrica é um fallback destrutivo documentado, não foi executado e não recupera sessões ou uma versão antiga de firmware.

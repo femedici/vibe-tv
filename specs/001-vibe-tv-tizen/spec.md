@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv-cleanframe`
 **Created**: 2026-10-19
-**Status**: 1.0.4 installed; HDMI no-signal precondition corrected; physical PS5 wake and global Home requirements remain unfulfilled/unverified
+**Status**: CleanFrame-style 1.1.0 installed/launched; native short-Home route applied; consistent backup, apply, restore and reapply verified; physical Home/PS5 wake/startup pending.
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -55,7 +55,7 @@ I want light, dark, medium gray, pastel and wine skins with readable focus and s
 I want existing apps, sessions and factory controls preserved, and an accurate record of local versus hardware validation.
 **Independent Test**: Inspect behavior/configuration and documentation for zero system resets, disable commands or credential handling; verify local preview cannot send device commands.
 **Acceptance Scenarios**:
-1. Home/Power/Volume remain system-owned. Native settings continue through the Samsung remote/Smart Hub.
+1. Power/Volume remain system-owned. Only short Home may use the separately authorized exact-device route. Preserve Smart Hub and expose its settings destination from Vibe; physical access must be verified.
 2. Local preview has an explicit preview label; clicks cannot claim real TV launch success.
 3. Build/package output is clearly an unsigned local artifact when no certificate exists; no install script runs automatically.
 4. Documentation states startup, provider resume, physical HDMI performance, sessions and recovery are unverified until hardware checks.
@@ -76,15 +76,15 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-006** Identify installed apps from the TV inventory; prevent ambiguous/unavailable targets from silent substitution.
 - **FR-007** Select the unique actual HDMI 2 object enumerated in connected or disconnected sources, including absent/unknown video signal, and then open the native viewer. Expose API errors/timeouts and never substitute another port or invent a source. A successful source selection does not prove PS5 power-on: HDMI-CEC wake must be verified separately on the physical console.
 - **FR-008** Offer and persist dark, light, gray, pastel and wine themes.
-- **FR-009** Support directional navigation, OK and Back; preserve system Home/Power/Volume. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the item itself with a restrained 150 ms transform/opacity transition, without an external rectangular outline; reduced motion disables the transition.
+- **FR-009** Support directional navigation, OK and Back; preserve Power/Volume and long Home; short Home follows FR-002. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the item itself with a restrained 150 ms transform/opacity transition, without an external rectangular outline; reduced motion disables the transition.
 - **FR-010** Display unavailable integrations honestly; never fabricate episode names, watch progress or login transfer.
 - **FR-011** Preserve system/settings/sessions by avoiding destructive commands and account/token access.
-- **FR-012** Honor the revised recovery decision: install only the separate app with a valid Samsung certificate; preserve the existing system and use removal of only Vibe as the first rollback. Factory reset is a documented fallback, never an automatic test. Do not claim an integral backup or preserved sessions after reset.
+- **FR-012** Honor the revised recovery decision: install the app with a valid Samsung certificate. The separately approved native test may change only short Home after verified identity/backup. Restore and verify the original route before removing Vibe; preserve all other system/apps/accounts. Factory reset is a documented fallback, never an automatic test. Do not claim an integral backup or preserved sessions after reset.
 - **FR-013** Provide local run, focused automated checks, responsive checks, reduced-motion handling and screenshots.
 - **FR-017** Use bundled original brand artwork for known favorites and accessible installed icons for other apps, preserving aspect ratio and the user's PS5 artwork. Unknown apps with an unavailable icon use a neutral app symbol. Resolve known duplicate app labels using IDs observed on the TV and still present in the inventory; never invent an installed app.
 - **FR-014** Document build/package, device prerequisites, recovery limits and hardware test procedure; publish handoff.
 - **FR-015** Validate state at storage/inventory boundaries and recover gracefully from failures without losing previous valid state.
-- **FR-016** Clearly distinguish Home routing from boot autorun. Neither is proven on the AU8000; do not promise success before exact-device validation.
+- **FR-016** Clearly distinguish Home routing from boot autorun. Routing was applied and its database reversal verified; physical Home and boot remain separate unverified acceptance checks.
 
 ### Key Entities
 - Favorite: stable identity, display name, kind (application/input), associated art and platform target when verified.
@@ -126,3 +126,7 @@ Owner requests HDMI 2 selection to wake PS5 as Smart Hub did, and again requests
 - Earlier public-API findings remain correct but are insufficient to rule out undocumented native routing. Existing requirements saying Home remains system-owned describe the current implementation, not removal of the owner’s replacement goal.
 
 - Subsequent explicit approval: owner authorizes the bounded temporary-root test, identity and consistent backup first, only short-Home change and restore. No firmware, boot relay, other application changes or global authentication-file changes. Abort on guard/backup failure; preserve uncertain outcomes instead of retrying.
+
+- CleanFrame presentation integrated and signed1.1.0 direct update launched. 48 application tests,14 Python transport/routing tests and38 C# assertions passed. UI screenshots are explicitly browser preview/fixture, not TV photos. SDK transfer is owner5001:100 while command execution is901:901; staging accounts for that difference and checks artifacts before root. Actual IDENTITY baseline→root→unmount→global hash checks→cleanup succeeded; no Home routing change during that proof.
+
+- Exact-device result: consistent private routing backup; APPLY→RESTORE→APPLY, post-operation SQLite snapshots match all three tables/rowids, notifications accepted, authentication hashes unchanged and temporary helpers/staging removed. Current short-Home target is Vibe. Physical YouTube→Home question pending; no claim of firmware replacement, complete backup or proven boot/CEC.

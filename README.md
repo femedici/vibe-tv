@@ -4,11 +4,13 @@ Um hub pessoal de TV, com seus aplicativos, seu PS5 e suas cores.
 
 Fork de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv), com o histórico e a licença MIT preservados. O projeto original é Android; esta adaptação é um **aplicativo Web Tizen separado** para estudo na Samsung AU8000, com prévia local.
 
-**Estado: versão 1.0.4 assinada, instalada e iniciada na Samsung AU8000.** Corrigido o bloqueio que impedia selecionar HDMI 2 sem sinal ativo. 45 testes passaram; o fluxo foi verificado no navegador com hardware simulado. A imagem física e o despertar do PS5 por HDMI-CEC ainda aguardam confirmação.
+**Estado: versão 1.1.0 assinada, instalada e iniciada na Samsung AU8000.** A apresentação foi reconstruída a partir do CleanFrame, preservando o cartão grande de último acesso, os favoritos, as artes PS5 e cinco temas. 48 testes da aplicação passaram.
 
-O proprietário confirmou artes, navegação e abertura do YouTube; um relato anterior de falha na reabertura não foi reproduzido, e depois ele informou abertura correta. Ciclos repetidos e demais serviços continuam no roteiro físico. **Home continua abrindo o Smart Hub:** não existe substituição global implementada por este aplicativo.
+O método não oficial de Home usa um helper separado, exclusivo desta TV/firmware. O Home curto já está configurado para Vibe; backup de roteamento, aplicação, restauração e reaplicação passaram no aparelho. Falta confirmar o botão do controle físico. Evidências e reversão em [Home nativo](docs/vibe-tv/cleanframe-home.md). Nenhum resultado de navegador substitui o teste físico do Home, do HDMI-CEC ou do boot.
 
-![Vibe TV — prévia local da versão 1.0.3](outputs/vibe-tv-1.0.3-dark.png)
+O proprietário já confirmou artes, navegação e abertura nativa do YouTube nas versões anteriores. O histórico de episódios permanece dentro dos apps; o Vibe registra apenas suas próprias aberturas bem-sucedidas.
+
+![Vibe TV com estilo CleanFrame — fixture no navegador, sem TV](outputs/cleanframe-ps5-1920.jpg)
 
 ## Rodar localmente
 
@@ -54,8 +56,8 @@ O código em `app/` e `build.sh` pertence ao projeto Android original. **Não us
 - [Spec viva](specs/001-vibe-tv-tizen/spec.md) · [Tarefas](specs/001-vibe-tv-tizen/tasks.md)
 - [Handoff](outputs/HANDOFF.md)
 
-A tecla Home e a inicialização do Smart Hub continuam pertencendo à Samsung. A opção do sistema “Executar último aplicativo automaticamente”, quando disponível, não torna o Vibe TV o launcher obrigatório. Um app que acabou de ser usado pode ser escolhido pelo sistema no próximo início.
+O roteamento nativo de Home e o início automático são mecanismos separados. A opção Samsung “Executar último aplicativo automaticamente” depende do último app usado e ainda requer teste de energia. O Smart Hub é preservado para acesso às configurações e reversão.
 
 ## Origem e licenças
 
-Código original sob [MIT](LICENSE), de Free My TV. Os novos arquivos desta adaptação seguem a mesma licença. A fonte e os assets herdados conservam suas licenças; as duas imagens PS5 fornecidas pelo usuário não são relicenciadas por este projeto. Consulte `tizen/assets/ATTRIBUTION.txt` e [origem das marcas](docs/vibe-tv/brand-assets.md). Marcas e nomes pertencem aos respectivos titulares; este projeto não é afiliado à Samsung, Sony ou aos serviços de streaming.
+Código original sob [MIT](LICENSE), de Free My TV. A apresentação referencia CleanFrame, com licença MIT preservada e fonte Manrope sob OFL; consulte `tizen/assets/cleanframe/`. Os novos arquivos desta adaptação seguem a mesma licença. A fonte e os assets herdados conservam suas licenças; as duas imagens PS5 fornecidas pelo usuário não são relicenciadas por este projeto. Consulte `tizen/assets/ATTRIBUTION.txt` e [origem das marcas](docs/vibe-tv/brand-assets.md). Marcas e nomes pertencem aos respectivos titulares; este projeto não é afiliado à Samsung, Sony ou aos serviços de streaming.

@@ -1,3 +1,5 @@
+**Estado atual 1.1.0:** veja a seção CleanFrame ao final. As seções anteriores preservam evidência histórica.
+
 # Validação do Vibe TV — 1.0.4
 
 Registro: 20/10/2026. As evidências abaixo distinguem navegador, simulação e Samsung física.
@@ -91,3 +93,14 @@ Não verificados: todos os demais serviços/sessões, HDMI/PS5 físico, imagem/H
 7. **Revisão:** revisor independente conferiu o diff e 18 testes, sem achados acionáveis; coordenador leu todo o diff e executou a suíte. Nenhuma nova permissão, firmware, reset ou acesso a contas.
 
 Home foi reconferido nas fontes oficiais listadas em compatibility.md. Continua indisponível a troca global do Smart Hub por esse WGT. A condição de não haver sinal foi corrigida no código; o resultado físico completo ainda depende de evidência, registrado em T017/T009.
+
+## CleanFrame 1.1.0 e Home nativo — 20/10/2026
+
+- Coordenador revisou o diff da UI e os helpers. **48/48 Node**, **16/16 Python** e **38 assertions C#** passaram. Regressões RED/GREEN cobrem Down após rolagem, abertura Samsung sem mudar histórico, erros SDB com exit0, resultado parcial, backup vinculado ao aparelho, lançamento exato e recusa de journal ativo/FIFO. Não foram escritos testes para detalhes cosméticos triviais.
+- Navegador real: 1920×1080, 1280×720 e 390×844; cinco temas, reload, favoritos/overflow, foco/Back/Tab e falhas simuladas. Sem imagens quebradas/overflow de página. Down após rolar até Spotify retorna ao YouTube. Capturas em `outputs/cleanframe-*`, inspecionadas pelo coordenador, marcadas como prévia/fixture. Não são fotos da TV.
+- Pacote1.1.0: CRC/XML/versão, 24 arquivos de runtime idênticos ao unsigned e duas assinaturas XML; o assinador acrescenta também entradas de diretório. `vd_appinstall` concluiu atualização direta; comando nativo confirmou lançamento. Nenhum app foi desinstalado.
+- AU8000/T-NKLAUABC-2310.0: prova de identidade root temporária passou. BACKUP via SQLite e transferência SHA/integridade passaram. APPLY→RESTORE→APPLY tiveram notificações aceitas e snapshots consistentes correspondentes às três tabelas/rowids esperadas. Auth original, ausência de helpers e limpeza confirmados em cada operação concluída.
+- O diagnóstico de transporte distinguiu execução SDK901 de transferência5001:100. Cleanup inicial recusou journal PERSIST residual inativo, inspecionado e removido; a guarda foi testada e usada nas operações posteriores.
+- Estado final: rota curta Home aponta para Vibe. Teste do botão físico após YouTube foi solicitado ao proprietário e permanece pendente, assim como Home desde HDMI, PS5/CEC, acesso real ao menu Samsung, demais sessões, HDR/áudio/Game Mode/latência e ciclo de energia. Não há medição de FPS nem backup integral. [Detalhes do método](cleanframe-home.md).
+
+Capturas atuais: [PS5 1920](../../outputs/cleanframe-ps5-1920.jpg), [claro1280](../../outputs/cleanframe-light-1280.jpg), [vinho](../../outputs/cleanframe-themes-wine.jpg), [foco390](../../outputs/cleanframe-navigation-fixed-390.jpg), [Ajustes1.1.0](../../outputs/cleanframe-settings-1.1.0-1920.jpg).

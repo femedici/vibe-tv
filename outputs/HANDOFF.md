@@ -1,124 +1,135 @@
-# Handoff — Vibe TV 1.0.4
+# Handoff — Vibe TV 1.1.0 / CleanFrame e Home nativo
 
-20/10/2026 · Samsung UN50AU8000GXZD · Codex `/root`.
+20/10/2026 · Samsung UN50AU8000GXZD · coordenador Codex `/root`.
 
-## Entrega e pendências
+## Resultado entregue e estado atual
 
-**1.0.4 assinada, instalada por atualização direta e aberta na TV.** Corrigido o bloqueio que impedia selecionar HDMI 2 quando o PS5 não fornecia sinal: agora o Vibe consulta também as entradas enumeradas como desconectadas. A fonte continua sendo o objeto real da TV, com confirmação da API antes de abrir o viewer nativo. Não há comando próprio de ligar o PS5.
+- Interface reformulada com base no CleanFrame: cartão grande de último acesso, dock, controles no topo direito, marcas proporcionais, artes PS5, cinco temas e foco suave. O desvio de ↓ após rolar o dock foi corrigido.
+- Versão **1.1.0 assinada, atualizada diretamente e aberta na TV**. Identidade do app e armazenamento preservados; nenhum outro aplicativo foi removido.
+- **Home curto está configurado para Vibe TV**, por um helper nativo separado do WGT. Na própria AU8000, identidade root temporária, backup consistente, aplicação, restauração e reaplicação passaram. Snapshots confirmaram todas as três tabelas/rowids esperadas; notificações aceitas, autenticação global inalterada e staging removido.
+- **Ainda falta confirmação do botão físico.** Pergunta pendente ao proprietário: abrir YouTube e pressionar Home curto retorna ao Vibe? Não tratar o sucesso do banco como resposta desse teste. Home desde HDMI, menu Samsung, PS5/CEC e boot também permanecem pendentes.
+- 48 testes Node, 16 testes Python e 38 asserções C# passaram. Prévia local está rodando em [127.0.0.1:4173](http://127.0.0.1:4173).
 
-- 45 testes passaram; regressão HDMI passou de RED 15/18 para GREEN 18/18.
-- Fluxo de interface verificado localmente com HDMI2 sem sinal simulado: viewer chamado, hero PS5 e foco preservado.
-- Runtime instalado confirmou versão 1.0.4. O clique físico no PS5 foi acionado, mas o Inspector desconectou antes de ler o resultado. **Imagem HDMI e despertar por CEC aguardam confirmação do proprietário. Desconexão não é prova de sucesso.**
-- O proprietário informou que o YouTube abriu corretamente após o relato anterior. Nenhuma causa da falha de reabertura foi reproduzida; não foi aplicada correção especulativa. Ciclos consecutivos ainda precisam de verificação.
-- **Home continua abrindo Smart Hub. Substituição global solicitada não foi implementada:** não há mecanismo público documentado para promover esse aplicativo Tizen a launcher/Home nessa TV. Autorun Last App não remapeia o botão.
+Esta é uma mudança de interface e roteamento sobre o Tizen existente. Não houve troca de firmware, remoção do Smart Hub, reset, extração de contas ou instalação de root persistente.
 
-Prévia disponível em [127.0.0.1:4173](http://127.0.0.1:4173). A captura abaixo é de uma fixture explicitamente simulada, com serviços ausentes e apps extras de teste; não é fotografia da televisão.
+![Interface CleanFrame — fixture no navegador, sem TV](cleanframe-ps5-1920.jpg)
 
-![PS5 — fluxo local simulado 1.0.4](vibe-tv-1.0.4-ps5-simulated.png)
+As capturas `cleanframe-*` são do navegador real, explicitamente prévia/fixture. Não são fotos da televisão. [Ajustes 1.1.0](cleanframe-settings-1.1.0-1920.jpg) · [foco390](cleanframe-navigation-fixed-390.jpg) · [claro](cleanframe-light-1280.jpg) · [vinho](cleanframe-themes-wine.jpg).
 
 ## Pedido original e pedido otimizado
 
-Original: clonar `simbasjungles/free-my-tv` em `femedici/vibe-tv`, reconstruir a interface, preservar configurações e contas, último app em destaque, artes/ações reais, PS5 HDMI2 com imagens fornecidas, favoritos editáveis na ordem YouTube, PS5, Netflix, Prime, HBO Max, Samsung TV Plus, Disney+, Spotify; temas claro/escuro/cinza/pastel/vinho, fluidez, capturas, documentação e publicação. Depois pediu logos originais, remoção de textos supérfluos, controles no topo e foco suave. Último pedido: PS5 deve selecionar HDMI2 e ligar como no Smart Hub; Home deve abrir Vibe sem depender do hub Samsung.
+Original: clonar Free My TV no GitHub de Felipe como vibe-tv, reconstruir a interface da Samsung preservando apps, configurações e logins; destacar último acesso e conteúdo real; PS5 no HDMI2 com imagens fornecidas; favoritos na ordem YouTube, PS5, Netflix, Prime, HBO Max, Samsung TV Plus, Disney+, Spotify; permitir organização e temas; documentar, capturar telas e publicar. Depois solicitou substituir o comportamento de Home e refazer a partir dos exemplos de Nathan Clark/CleanFrame.
 
-**Pedido otimizado:** corrigir o atalho PS5 para reproduzir o comportamento do HDMI 2 da Samsung, incluindo ligar o console quando possível, e verificar o que seria necessário para Home abrir o Vibe TV, preservando apps, contas e configurações. Separar evidência de seleção da entrada, imagem e despertar por CEC; registrar o limite público de Home sem fingir substituição do sistema.
+**Pedido otimizado:** reconstruir o Vibe com a apresentação CleanFrame e o cartão grande aprovado; manter integrações/identidades/preferências existentes; investigar e implementar na AU8000 o Home nativo usando exclusivamente o teste limitado autorizado de root temporário, com identidade, backup consistente e reversão verificados antes de deixar a rota aplicada. Separar evidência de banco/notificação da resposta do controle físico, HDMI-CEC e boot; preservar Smart Hub para configurações e recuperação.
 
-## Decisões e autorizações
+## Decisões e limites aprovados
 
-- Spec Kit v1.0.3 já inicializado/aprovado; constituição existente. Não perguntar novamente nem atualizar a ferramenta automaticamente.
-- Upstream é Android; usuário aprovou um app Tizen separado e o melhor resultado suportado. O pedido posterior de Home global permanece registrado como não atendido, sem execução de firmware/root.
-- Backup integral inicialmente exigido foi dispensado expressamente em favor do reset oficial como fallback, após explicar perda de sessões/configurações e impossibilidade de garantir recuperação/downgrade de firmware. **Backup não existe; reset não executado.**
-- Developer Mode, conexão, certificado, instalação/atualização exclusiva do Vibe e testes de apps/HDMI autorizados. Certificado Samsung já criado pelo proprietário; não recriar nem pedir senhas.
-- Commit e push da branch autorizados. Sem PR, merge/main, force push ou limpeza de worktrees.
-- Não resetar a TV/Smart Hub, limpar apps, extrair tokens, desativar componentes ou substituir firmware como atalho.
+- Spec Kit v1.0.3 inicializado e autorizado; constituição 1.2.0. Não reinstalar, atualizar ou perguntar de novo.
+- Modelo/firmware real: UN50AU8000GXZD, T-NKLAUABC-2310.0, ARMv7/Tizen 6.0/Chromium76; runtime .NET3.1.3.
+- Usuário escolheu manter o hero de último acesso no estilo CleanFrame.
+- Backup integral inicialmente exigido foi dispensado em favor do reset oficial como fallback, com limitações explicadas. **Não existe backup integral e reset não foi executado.** Posteriormente autorizou explicitamente o teste root limitado sabendo que reset não garante recuperar falhas desse método.
+- Autorização nativa: identidade, backup consistente do roteamento, somente Home curto e restauração. Exclui firmware, boot relay, root persistente, mudanças globais em passwd/chave, remoção de apps, partições e outros ajustes.
+- Instalação/atualização do Vibe, certificado existente, commit e push da branch estão autorizados. Não abrir PR sem pedido, não integrar em main, force push ou limpar worktrees.
+- Histórico privado, episódios e progresso de serviços não estão acessíveis ao Vibe. Só aberturas bem-sucedidas feitas pelo hub entram em seu histórico. Não prometer preservação de todas as sessões sem teste físico; nenhuma foi lida/copiada.
 
-## Arquitetura e causa verificada
+## Arquitetura e fluxo
 
-App estático HTML/CSS/JS, sem backend/dependências de runtime. Chromium 76 / Tizen 6.0. Privilégios públicos existentes: `application.launch` e `tv.window`.
+App estático sem backend/dependências novas de runtime. `state.js` mantém `vibe-tv.preferences.v1`; `app.js` renderiza hero/dock/painéis e registra somente sucesso; `navigation.js` resolve foco e inventário; `platform.js` encapsula APIs Tizen com timeout e erros explícitos. ID `VibeTV2026.VibeTV`, pacote `VibeTV2026`. Assinatura usa perfil local VibeTV, fora do Git.
 
-- `state.js`: preferências próprias em `vibe-tv.preferences.v1` (tema/ordem/favoritos/último lançamento). Sem credenciais.
-- `app.js`: hero, marcas, painéis, foco e cache de renderização; hero/favorito passam pelo mesmo `launch()`. PS5 chama `platform.launchInput(2)`. Só sucesso registra histórico.
-- `navigation.js`: geometria por bordas; inventário real e aliases/IDs observados, rejeitando ambiguidades.
-- `platform.js`: callbacks Tizen em Promises com timeout de 5 s; erro de etapa preservado. HDMI2 enumera `VIDEOSOURCE`, encontra o único objeto nas listas connected/disconnected, chama `setSource(..., 'MAIN')` e depois `org.tizen.tv-viewer`. Falha após troca informa `SOURCE_CHANGED`.
-- `preview.cjs`: loopback, somente arquivos de `tizen/`; sem ações reais da TV.
-- `package-tizen.cjs`: 20 arquivos de runtime/assets em WGT não assinado; assinatura separada com perfil local VibeTV.
+PS5 continua usando o objeto real HDMI2 enumerado em connected ou disconnected, `setSource`, depois `org.tizen.tv-viewer`. Seleção sem sinal foi corrigida na 1.0.4; não há comando próprio de ligar console. CEC ainda não confirmado.
 
-**Reprodução física anterior à correção:** `connected` continha apenas TV1; `disconnected` continha AV1/HDMI1/HDMI2/HDMI3, todos com sinal desconhecido. O Vibe procurava apenas em connected e também rejeitava signal false. O clique mostrou indisponibilidade; getSource permaneceu TV1. Era um bloqueio do próprio adaptador antes de chamar a Samsung.
+Ajustes 1.1.0 oferece **Abrir menu Samsung** na TV, chamando o destino original `com.samsung.tv.csfs` sem registrar histórico. Testes de sucesso/falha passaram; acesso físico ainda pendente.
 
-A correção não promete CEC: ausência de vídeo não torna a porta inexistente, mas aceitar setSource também não prova ligar o console. Nenhum endpoint privado ou permissão adicional foi introduzido.
+`tools/native-home/` é separado do app:
 
-## Trabalho anterior preservado
+1. `transport.py` exige identidade física previamente fixada, modelo, Developer Mode e host correto; callback/token/deadline, sem retry. Detecta `error:` mesmo com exit0 do SDB.
+2. `run.py` aceita somente identity/backup/apply/restore, serializa operações e compila um único modo. Upload usa UID5001:100; execução SDK usa 901:901. Copia arquivos recebidos para destinos SDK 644, confere hashes e elimina entrada gravável antes de elevar privilégios.
+3. `namespace/`: montagens privadas temporárias, baseline owner5001:100, depois root 0:0; sem alteração global de passwd/chave; watchdog/timeout e hash após desmontagem.
+4. `control/`: SQLite backup API; SHA do backup compilado no APPLY; schema e linhas guardados dentro da transação; notificação vconf e inversão conservadora em falha. Snapshot consistente posterior para comparar as três tabelas. Artifacts privados5001:100/0600 para transferência.
+5. SQL altera exclusivamente a regra curta XF86Home e registro managed_app do Vibe. A regra Samsung registradora, Home longo e outras linhas permanecem. Restore recusa dependências desconhecidas.
+6. Limpeza exige auth original, ausência de helpers e apenas nomes conhecidos. Journals PERSIST dos snapshots só são removidos com cabeçalho zerado e arquivo regular; arquivos ativos/links/FIFO são recusados.
 
-Grande cartão do último lançamento pelo Vibe; primeiro favorito como Acesso rápido sem histórico fictício; sete marcas originais locais e ícones nativos/fallback neutro para apps extras; artes PS5 fornecidas; cinco temas; favoritos editáveis. Controles no topo direito, ↓ do hero para apps, ↑ retorna, destaque por transform/opacity de 150 ms sem retângulo externo. As imagens/histórico de episódios permanecem privados aos provedores; nenhuma integração de retomada existe.
+CleanFrame original usa outro método em The Frame 2024/Tizen 9. A AU8000 não tem o símbolo `aul_get_default_app`; adaptação segue o caminho QN90A/Tizen 6 do Couchroot com guardas próprias. Referências fixadas e licenças em [cleanframe-home.md](../docs/vibe-tv/cleanframe-home.md).
 
-## Tracker único e dependências
+## Recuperação — fazer antes de desinstalar
 
-`specs/001-vibe-tv-tizen/tasks.md` é a fonte de verdade; somente coordenador atualiza.
+**Não remova o Vibe enquanto Home apontar para ele.** Primeiro restaure/verifique a rota Samsung com o helper e o backup local.
 
-- T001–T008/T010–T015: fase local, artes, foco, documentação/publicação e investigação Home concluídos nos respectivos escopos.
-- T009: validação física parcial em andamento. Demais serviços/sessões, PS5/CEC, HDR/áudio/Game Mode/latência e autorun pendentes.
-- T016: pending; usuário informou abertura correta, mas sequência repetida de abrir/retornar/reabrir não observada integralmente. Sem causa reproduzida ou código alterado por hipótese.
-- T017: in_progress, depende T014. Correção/testes/revisão/assinatura/instalação feitos; resultado físico PS5 ainda depende da resposta do proprietário.
+Preserve neste Mac, fora do Git:
 
-Pesquisa independente de Home e revisão da correção foram somente leitura. Root integrou as mudanças sequencialmente; não houve outro agente escritor nesta continuação.
+- `.dev/native-home/backup-cb19e4cb6a134983/`: original consistente, SHA e metadados verificados.
+- `.dev/native-home/device.json`: identidade confirmada usada pelo runner.
+- `.dev/native-home/RECOVERY.md`: comando exato com o endereço observado, que pode mudar por DHCP.
+- Evidências de operações `.dev/native-home/{identity,backup,apply,restore}-*/`.
 
-## Arquivos alterados nesta continuação
+Forma do comando, executada somente dentro do escopo de recuperação solicitado:
 
-- `tizen/platform.js`: seleção de HDMI2 enumerado sem exigir sinal ativo.
-- `tizen/app.js`, `config.xml`: versão 1.0.4.
-- `tests/platform.test.cjs`: regressões de entrada desconectada/sem sinal e ambiguidade entre listas.
-- `tests/ui-fixture.cjs`: simula a enumeração observada na TV sem se conectar ao aparelho.
-- `specs/001-vibe-tv-tizen/{spec.md,plan.md,tasks.md,contracts/modules.md}`: contrato vivo, execução e estado real.
-- `README.md`, `docs/vibe-tv/{compatibility,installation,validation}.md`: causa, atualização e limites.
-- `outputs/vibe-tv-1.0.4-ps5-simulated.png` e este handoff: evidência e continuidade.
+```sh
+python3 tools/native-home/run.py restore --host "$VIBE_TV_HOST" \
+  --backup .dev/native-home/backup-cb19e4cb6a134983
+```
 
-`dist/` e `.dev/` ignorados/privados. Não publicar pacotes assinados, certificados, senhas, DUID, IP ou serial do aparelho.
+A reversão já foi testada com comparação integral das três tabelas/rowids. Ela depende de TV acessível por SDB, identidade/firmware compatíveis e guardas satisfeitas. **Não garante recuperar qualquer falha e não restaura logins/firmware/configurações gerais.** Em erro/resultado incerto, inspecione o estado e os logs privados antes de tentar novamente; não apague evidências como atalho.
 
-## Validação executada
+## Tarefas e continuidade
 
-- `node --test tests/platform.test.cjs`: RED 15/18 (3 falhas), depois GREEN 18/18.
-- `node --test tests/*.test.cjs`: 45/45, zero falhas. Estado13, plataforma18, navegação9, controlador3, ferramentas2.
-- Sintaxe dos scripts, `git diff --check` e prerequisites Spec Kit passaram.
-- Navegador real na fixture: YouTube→PS5; `data-test-source=HDMI2`, chamada `org.tizen.tv-viewer`, hero PS5, foco `favorite-ps5`, toast oculto. Captura salva e inspecionada.
-- ZIP/CRC/XML/versão válidos; 20 arquivos iguais entre unsigned e signed; somente duas assinaturas XML adicionadas, além de entradas de diretório.
-- Atualização por SDB push + `vd_appinstall`: `install completed`. Só Vibe reiniciado; novo processo e versão 1.0.4 confirmados no Inspector.
-- Revisor independente: sem achados acionáveis, 18 testes e casos adicionais de objetos congelados/duplicatas passaram. Coordenador leu todo o diff e executou suas próprias verificações.
-- Cliques físicos finais: resultado visual pendente. Não afirmar wake, imagem/HDR/latência ou preservação de todas as sessões a partir de teste simulado.
+Tracker único: `specs/001-vibe-tv-tizen/tasks.md`; coordenador é o único editor de status.
 
-## Git e publicação
+| Tarefa | Estado | Próxima ação |
+| --- | --- | --- |
+| T018 pesquisa/compatibilidade | done | Evidência integrada |
+| T019 apresentação CleanFrame | done | Código/capturas integrados |
+| T020 integração/publicação | in_progress | Finalizar commit/push e registrar verificação remota |
+| T021 Home nativo | in_progress | Receber teste físico YouTube→Home; depois HDMI→Home e menu Samsung |
+| T009 hardware geral | in_progress | Sessões, configurações, boot e desempenho físico |
+| T016 YouTube repetido | pending | Dois ciclos abrir/voltar/reabrir; usuário relatou abertura correta, sem causa anterior reproduzida |
+| T017 PS5 | in_progress | Confirmar imagem HDMI2 e despertar CEC separadamente |
 
-Repo: [femedici/vibe-tv, branch agent/vibe-tv](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv).
+Dependências: T018 sustenta T021; T019→T020. T021 tem implementação e reversão técnica verificadas, mas seu aceite físico não está concluído. Não marcar tarefa done pelo relato de banco.
 
-Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`. Branch de integração `agent/vibe-tv`; origin fork e upstream original preservados. Base desta continuação: `9597ae2dabedd500e490c2a6e68f86fd5ca4b96f`. Código Android, histórico e licença MIT mantidos.
+Próxima ação: incorporar a resposta já solicitada ao proprietário, sem reiniciar o app ou repetir root enquanto ele testa. Se Home ainda abrir Smart Hub, reproduzir e diagnosticar o roteamento no estado atual; não voltar a copiar um script de outra TV nem adicionar boot relay automaticamente.
 
-Publicação 1.0.4: commit `709d72f7dc51f402f3d52120117f6c361cf04f1f` enviado; `git ls-remote` confirmou o mesmo SHA de HEAD. Este registro de evidência segue na mesma branch. A publicação não declara concluídas as pendências físicas T017/T009 nem a troca global de Home.
+## Arquivos desta continuação
 
-Worktrees mantidas: `.worktrees/state` (agent/vibe-tv-state), `.worktrees/platform` (agent/vibe-tv-platform), `.worktrees/interface` (agent/vibe-tv-interface). Nenhuma limpeza automática. Base comum original c084d09.
+- `tizen/index.html`, `styles.css`, `app.js`, `config.xml`: apresentação, foco, versão 1.1.0, botão Samsung.
+- `tizen/assets/cleanframe/`, `assets/fonts/`: Manrope/OFL e atribuição MIT, sem fontes privadas da referência.
+- `tests/controller.test.cjs`: menu Samsung e ↓ após rolagem.
+- `tools/preview.cjs`: MIME das fontes; servidor somente loopback.
+- `tools/native-home/{transport.py,preflight.py,run.py,apply.sql,restore.sql,namespace/,control/}`: operação exata/restrita e selftest; duas licenças de origem.
+- `tests/native_*_test.py`: guardas, backup, SQL, transporte e resíduos.
+- `specs/001-vibe-tv-tizen/`, `.specify/memory/constitution.md`, `docs/plans/2026-10-20-cleanframe-design.md`: contrato vivo e tarefas.
+- `README.md`, `docs/vibe-tv/`: instalação, backup, compatibilidade, fontes e evidência real.
+- `outputs/cleanframe-*`, este handoff: capturas e continuidade.
 
-## Como retomar e testar
+## Validações executadas
+
+```sh
+node --test tests/*.test.cjs                 # 48/48
+python3 -m unittest discover -s tests -p 'native*_test.py'  # 16/16
+dotnet run --project tools/native-home/control/selftest/SelfTest.csproj -c Release # 38 assertions
+node tools/package-tizen.cjs
+git diff --check
+SPECIFY_FEATURE_DIRECTORY=specs/001-vibe-tv-tizen .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
+```
+
+Assinatura/CRC/XML/versão válidos; 24 arquivos de runtime iguais ao unsigned, duas assinaturas e entradas de diretório do assinador. Direct update `vd_appinstall` completou e `tz run` confirmou lançamento. Não usar `tz install`, cujo wrapper observado tenta desinstalar primeiro.
+
+Navegador: 1920×1080,1280×720,390×844, cinco temas/reload/organização/overflow/falhas/foco. Coordenador inspecionou código/capturas e testou navegação; revisor independente conferiu helpers e transportes. Todos os achados de código foram corrigidos e revalidados.
+
+Hardware: IDENTITY, BACKUP, APPLY, RESTORE, APPLY final completaram; evidências privadas/markers e comparações lidas pelo coordenador. A primeira tentativa parou no upload (não executou helper); a primeira limpeza de backup parou no journal inativo (inspecionado e limpo). Não mascarar essas falhas como sucesso inicial.
+
+## Git e execução local
+
+Raiz: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
+Branch de integração: **agent/vibe-tv-cleanframe**. [Repositório/branch](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv-cleanframe).
+Base: 855d7e4. UI 6e36200, capturas 6cff9b3/4d62e19 e helpers 46875c9/875fe86 integrados sequencialmente. Publicação final ainda será registrada após confirmar o remoto.
+
+Worktrees preservadas: `.worktrees/cleanframe-ui` (agent/cleanframe-interface), `.worktrees/native-home` (agent/au8000-native-home) e as anteriores state/platform/interface. Nenhuma limpeza automática ou PR.
 
 ```sh
 cd /Users/felipemedici/Documents/quadro-branco/vibe-tv
 git status --short
-node --test tests/*.test.cjs
 node tools/preview.cjs
 ```
 
-Reutilizar o servidor 4173 se já estiver ativo. Para teste de integração isolado, `node tests/ui-fixture.cjs` serve 4175 com aviso explícito de simulação; sem npm install.
-
-```sh
-node tools/package-tizen.cjs
-SPECIFY_FEATURE_DIRECTORY=specs/001-vibe-tv-tizen .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
-```
-
-Próxima ação concreta: receber a resposta à pergunta já enviada — PS5 ligou e mostrou imagem, foi para HDMI2 sem ligar ou permaneceu no Vibe/erro. Não reiniciar novamente o app/TV enquanto o proprietário verifica a tela. Se falhou, capturar a etapa/erro real e distinguir seleção de fonte versus wake, antes de nova alteração.
-
-Ferramentas oficiais já estão em `~/.tizen-extension-platform/server/sdktools/`, perfil VibeTV pronto. Conferir `sdb devices`/modelo porque DHCP mudou. Seguir [instalação](../docs/vibe-tv/installation.md); evitar `tz install`, cujo wrapper observado desinstala primeiro. Atualizar diretamente com vd_appinstall; preservar dados. Porta e página do Inspector são temporárias. CUA é o meio de interação com navegador/Inspector; não acessar sessões privadas.
-
-## Fontes dos limites
-
-- [SystemInfo / entradas e sinal](https://developer.samsung.com/smarttv/develop/api-references/tizen-web-device-api-references/systeminfo-api.html).
-- [TVWindow 6.0 / setSource](https://github.com/Samsung/tizen-docs/blob/master/docs/application/web/api/6.0/device_api/tv/tizen/tvwindow.html).
-- [Viewer nativo, FAQ Q12](https://developer.samsung.com/smarttv/develop/faq/other-features.html).
-- [Home — checklist CO-GE-07](https://developer.samsung.com/smarttv/develop/development-checklist/common.html) e [teclas da plataforma — FAQ Q7](https://developer.samsung.com/smarttv/develop/faq/user-interaction.html).
-
-Não transformar a referência Android ou o autorun em promessa de Home global na Samsung. [Validação detalhada](../docs/vibe-tv/validation.md), [compatibilidade](../docs/vibe-tv/compatibility.md) e [recuperação](../docs/vibe-tv/recovery.md) distinguem evidências e pendências.
+Reutilize o servidor 4173 já ativo. Fixture 4175 encerrada. `.dev/`, `dist/`, certificados, chaves, pacotes assinados, IP, DUID e número de série ficam fora do Git. Não extrair/publicar contas nem ampliar este teste para firmware, reset, boot persistente ou outras alterações sem nova autorização específica.

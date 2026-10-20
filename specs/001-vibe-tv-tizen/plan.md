@@ -1,6 +1,6 @@
 # Implementation Plan: Vibe TV Tizen local phase
 
-**Branch**: `agent/vibe-tv` | **Date**: 2026-10-19 | **Spec**: [spec.md](spec.md)
+**Branch**: `agent/vibe-tv-cleanframe` | **Date**: 2026-10-19 | **Spec**: [spec.md](spec.md)
 
 ## Summary
 Build an independent Tizen Web hub and the identical local browser preview, retaining upstream Android code. Use no runtime dependencies or backend. The separate device installation is now authorized; all integrations fail honestly outside Tizen.
@@ -17,7 +17,7 @@ Build an independent Tizen Web hub and the identical local browser preview, reta
 **Scale/Scope**: one owner, eight initial favorites, expandable favorite shelf, five skins.
 
 ## Constitution Check
-PASS for the completed local design: side-by-side Tizen approach, no invented content, all requested controls and unresolved requirements documented. Constitution 1.1.0 records the subsequent installation authorization and revised recovery decision. Local demo status remains visible outside Tizen. Immutable upstream history/license retained; all changes on work branch.
+PASS for the completed local design: side-by-side Tizen approach, no invented content, all requested controls and unresolved requirements documented. Constitution 1.2.0 records the subsequent installation authorization and revised recovery decision. Local demo status remains visible outside Tizen. Immutable upstream history/license retained; all changes on work branch.
 
 ## Project Structure
 - `tizen/index.html`, `styles.css`, `app.js`: semantic TV UI, remote focus, panels, integration.
@@ -47,3 +47,5 @@ T017 addresses a reproduced physical failure: the TV enumerates HDMI2 in disconn
 Branch agent/vibe-tv-cleanframe from 855d7e4. Use the owner-selected hybrid: CleanFrame-inspired dock/materials/utility controls plus the Vibe last-success hero. Preserve platform.js/state.js/navigation.js and current identities/contracts; replace the visual layer with old-engine-compatible HTML/CSS. No new dependency required. Root owns native investigation and integration; tv_interface writes disjoint UI files in an ignored isolated worktree; audit_platform_recovery reviews native source read-only.
 
 T018 records source/actual-device compatibility and exact-method risks. T019 writes tizen/index.html/styles.css and only necessary app.js presentational changes, asset notices and scoped local assets. Verify native APIs/state unaffected, all 45 existing tests, package integrity, 1920x1080/1280x720/390x844, focus hero→first app, all themes/panels/reload, and no broken images. T020 integrates, performs those checks, prepares a signed direct-update package, captures actual preview and updates source/docs/handoff. TV installation is already authorized; use only existing certificate/profile and direct update preserving data, then report physical checks separately. T021 covers native Home adaptation after compatibility/baseline/rollback are concrete; root execution remains gated by an explicit informed decision. No generic exploit, firmware flash, reset, Samsung-app removal or unattended boot relay.
+
+The owner explicitly approved the bounded temporary-root test. The native writer used an isolated branch/worktree; root reviewed and integrated helpers, wrote/reviewed host transport and alone operated hardware. Root identity, backup and apply/restore/reapply passed; short Home is configured for Vibe. No persistent root or firmware change. Restore before uninstall; physical remote/HDMI/startup acceptance remains pending.

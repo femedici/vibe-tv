@@ -10,7 +10,7 @@
 | Retomar episódio | Indisponível sem integração autorizada do provedor | Não há progresso ou episódio fictício |
 | PS5 HDMI 2 | Fonte HDMI real enumerada, inclusive sem sinal, setSource e viewer nativo | Seleção física e wake por CEC aguardam confirmação; HDR, Game Mode e latência não testados |
 | Configurações Samsung | Controle e Smart Hub nativos preservados | Não é prometido acesso programático a todos os menus |
-| Inicialização | App separado | Não substitui Home nem garante abrir em todo boot |
+| Home / início | Rota nativa separada aplicada | Home → Vibe configurado; controle físico e boot ainda pendentes |
 | Logins | Abrir apps instalados sem acessar seus dados | Preservação física e restauração integral ainda não verificadas |
 | Recuperação | Reset oficial aceito pelo proprietário em substituição ao backup integral | Não recupera necessariamente sessões nem firmware anterior; não será executado como teste |
 
@@ -23,7 +23,7 @@ A AU8000 de 2021 é da família Tizen 6.0, engine Chromium 76. As fontes evitam 
 3. Inventário real e ambiguidades conferidos. YouTube e arte corrigida confirmados pelo proprietário na 1.0.2; demais lançamentos físicos pendentes.
 4. Abrir cada serviço e confirmar que a sessão preexistente continua utilizável; não solicitar senhas pelo chat.
 5. Confirmar HDMI 2/PS5 e retorno ao sinal nativo; comparar imagem, áudio, HDR, Game Mode e latência. Se o viewer falhar após troca de fonte, a interface deve informar a alteração parcial.
-6. Testar setas/OK/Voltar no Vibe; Home/Volume/Power continuam nativos. Reabrir Vibe pelo Smart Hub após usar outro app.
+6. Testar setas/OK/Voltar no Vibe; Volume/Power permanecem nativos. Validar Home curto → Vibe a partir de um app e HDMI; o destino foi configurado pelo helper separado. Testar Ajustes → Abrir menu Samsung.
 7. Testar encerramento e início frio, persistência, corte/reconexão de rede e a opção de último app do sistema, quando disponível. Não afirmar autorun universal.
 8. Testar saída e remoção exclusivamente do Vibe, confirmando sistema/apps/configurações. Não usar reset Smart Hub/factory reset.
 
@@ -56,4 +56,8 @@ A 1.0.4 usa o objeto HDMI 2 único das duas listas e deixa a API confirmar ou re
 
 Isso não equivale a emitir um comando de ligar o PS5. Não foi encontrada API pública documentada de envio CEC equivalente ao Smart Hub. O callback de fonte, a imagem HDMI e o despertar do console precisam de evidências separadas. Após a atualização, o clique foi acionado, mas o Inspector desconectou; isso não comprova o resultado visual.
 
-Home foi reconferido no checklist CO-GE-07 e na [FAQ de interação, Q7](https://developer.samsung.com/smarttv/develop/faq/user-interaction.html): teclas controladas pela plataforma não devem ser registradas pelo app. Autorun não remapeia Home durante YouTube, HDMI ou outros apps. Substituição global solicitada permanece não atendida; nenhuma alteração de firmware/root foi feita.
+Home foi reconferido no checklist CO-GE-07 e na [FAQ de interação, Q7](https://developer.samsung.com/smarttv/develop/faq/user-interaction.html): teclas controladas pela plataforma não devem ser registradas pelo app. Autorun não remapeia Home durante YouTube, HDMI ou outros apps. Esse era o limite do WGT público. A investigação posterior de CleanFrame/Couchroot resultou no método nativo separado e autorizado descrito abaixo.
+
+## Atualização nativa 1.1.0
+
+O método específico da AU8000 usou root temporário em namespace privado, backup consistente e mudança apenas da rota de Home curto. Aplicação→restauração→reaplicação passaram, incluindo comparação de todas as linhas/rowids e notificações. Estado atual: destino Vibe; confirmação física Home/app/HDMI pendente. Não houve troca de firmware, remoção do Smart Hub ou acesso a sessões. [Evidências e limites de recuperação](cleanframe-home.md).

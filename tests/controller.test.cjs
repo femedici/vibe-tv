@@ -10,25 +10,30 @@ const Platform = require(path.join(root, 'tizen/platform.js'));
 const source = fs.readFileSync(path.join(root, 'tizen/app.js'), 'utf8');
 
 function controller(blockedStorage = false) {
-  let resolveLaunch, rejectLaunch;
+  let resolveLaunch, rejectLaunch, launchedId;
   const nodes = {};
+  const listeners = {};
   const document = {
-    body: {}, activeElement: null, addEventListener() {},
+    body: {}, activeElement: null, addEventListener(name, fn) { listeners[name] = fn; },
     getElementById(id) { return nodes[id] || null; }
   };
-  for (const id of ['toast', 'storage-note', 'favorite-youtube', 'nav-settings']) {
+  for (const id of ['toast', 'storage-note', 'favorite-youtube', 'favorite-samsung', 'hero-open', 'nav-settings']) {
     nodes[id] = {
       id, hidden: true, textContent: '', setAttribute() {}, removeAttribute() {},
       focus() { document.activeElement = this; }, scrollIntoView() {}
     };
   }
+  nodes['hero-open'].getBoundingClientRect = () => ({left:0,top:0,width:350,height:300});
+  nodes['favorite-youtube'].getBoundingClientRect = () => ({left:-700,top:330,width:130,height:90});
+  nodes['favorite-samsung'].getBoundingClientRect = () => ({left:0,top:330,width:130,height:90});
+  nodes.hub = {querySelectorAll() { return ['hero-open','favorite-youtube','favorite-samsung'].map(id => nodes[id]); }};
   document.activeElement = nodes['favorite-youtube'];
   const window = {
     VibeState: State, VibeNavigation: Navigation, VibePlatform: Platform,
     localStorage: { getItem() { return null; }, setItem() { if (blockedStorage) throw new Error('blocked'); } },
     tizen: { application: {
       getAppsInfo() {},
-      launch(id, success, failure) { resolveLaunch = success; rejectLaunch = failure; }
+      launch(id, success, failure) { launchedId = id; resolveLaunch = success; rejectLaunch = failure; }
     } },
     clearTimeout() {}, setTimeout() { return 1; }
   };
@@ -38,11 +43,14 @@ function controller(blockedStorage = false) {
   vm.runInNewContext(source.slice(0, start) + `
     render = function () {};
     inventory = [{id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube'}];
-    window.review = {launch:launch, state:function () { return state; }};
+    window.review = {launch:launch, action:handleAction, state:function () { return state; }};
   }());`, { window, document, Date, Promise });
   return {
     nodes, document,
+    key(key) { listeners.keydown({key,preventDefault(){}}); },
     state: window.review.state,
+    samsungHome() { window.review.action({dataset:{action:"samsung-home"}}); },
+    launchedId() { return launchedId; },
     launch() { window.review.launch(State.catalog[0]); },
     async finish(failed = false) {
       if (failed) rejectLaunch({ name: 'NotFoundError' }); else resolveLaunch();
@@ -71,3 +79,21 @@ for (const failed of [false, true]) {
     assert.equal(app.state().last && app.state().last.id, failed ? null : 'youtube');
   });
 }
+
+for (const failed of [false, true]) {
+  test(`Samsung menu ${failed ? 'failure is visible' : 'opens the observed system app'} without changing history`, async () => {
+    const app = controller();
+    app.samsungHome();
+    assert.equal(app.launchedId(), 'com.samsung.tv.csfs');
+    await app.finish(failed);
+    assert.equal(app.state().last, null);
+    if (failed) assert.equal(app.nodes.toast.hidden, false);
+  });
+}
+
+test('Down from hero reaches the first favorite even after the dock is scrolled', () => {
+  const app = controller();
+  app.nodes['hero-open'].focus();
+  app.key('ArrowDown');
+  assert.equal(app.document.activeElement.id, 'favorite-youtube');
+});
