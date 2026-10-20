@@ -3,6 +3,7 @@
 - `ps5-background.png` and `ps5-logo.png`: supplied by the project owner for the PS5 shortcut; copied unchanged from the two request attachments. They are not licensed by this project's MIT license. PlayStation and PS5 marks belong to their respective owner; no affiliation is implied.
 - `fonts/InterVariable.ttf`: reused unchanged from the upstream `app/assets/fonts/InterVariable.ttf`. SIL Open Font License is included as `fonts/OFL.txt`.
 - `icon.png`: reused unchanged from upstream `docs/assets/icon-512.png` in `simbasjungles/free-my-tv`, under its MIT license (repository `LICENSE`). This inherited package icon is not a newly created Vibe logo.
-- Other interface symbols are small inline SVG controls authored in `index.html`. Application identities are text labels; they do not imply provider endorsement or an authenticated session.
+- `brands/`: original YouTube, Netflix, Prime Video, HBO Max, Samsung TV Plus, Disney+ and Spotify assets from official brand portals or provider sites. These third-party trademarks/artworks are NOT covered by the code MIT license. Exact source URLs, dimensions and SHA-256 hashes are documented in `docs/vibe-tv/brand-assets.md` in the source repository. No provider endorsement or authenticated session is implied.
+- Other interface symbols are small inline SVG controls authored in `index.html`. Additional installed apps use the public native iconPath when readable, otherwise a neutral app symbol.
 
 The application loads these assets locally. No remote artwork or provider data is requested.

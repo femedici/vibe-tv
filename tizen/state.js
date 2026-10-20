@@ -6,19 +6,21 @@
 
   var key = 'vibe-tv.preferences.v1';
   var catalog = [
-    {id: 'youtube', name: 'YouTube', kind: 'app', aliases: ['YouTube']},
+    {id: 'youtube', name: 'YouTube', kind: 'app', aliases: ['YouTube'], preferredAppIds: ['9Ur5IzDKqV.TizenYouTube'], excludedAppIds: ['com.samsung.tv.cobalt-yt']},
     {id: 'ps5', name: 'PS5', kind: 'input', input: 2, aliases: ['PS5', 'PlayStation 5']},
     {id: 'netflix', name: 'Netflix', kind: 'app', aliases: ['Netflix']},
-    {id: 'prime', name: 'Prime Video', kind: 'app', aliases: ['Prime Video', 'Amazon Prime Video']},
+    {id: 'prime', name: 'Prime Video', kind: 'app', aliases: ['Prime Video', 'Amazon Prime Video'], preferredAppIds: ['org.tizen.primevideo'], excludedAppIds: ['org.tizen.primevideo-dummy']},
     {id: 'max', name: 'HBO Max', kind: 'app', aliases: ['HBO Max', 'Max']},
     {id: 'samsung', name: 'Samsung TV Plus', kind: 'app', aliases: ['Samsung TV Plus', 'TV Plus']},
     {id: 'disney', name: 'Disney+', kind: 'app', aliases: ['Disney+', 'Disney Plus']},
-    {id: 'spotify', name: 'Spotify', kind: 'app', aliases: ['Spotify']}
+    {id: 'spotify', name: 'Spotify', kind: 'app', aliases: ['Spotify', 'Spotify - Music and Podcasts']}
   ];
   var themes = Object.freeze(['dark', 'light', 'gray', 'pastel', 'wine']);
   var byId = Object.create(null);
   catalog.forEach(function (item) {
     Object.freeze(item.aliases);
+    if (item.preferredAppIds) Object.freeze(item.preferredAppIds);
+    if (item.excludedAppIds) Object.freeze(item.excludedAppIds);
     byId[item.id] = Object.freeze(item);
   });
   Object.freeze(catalog);

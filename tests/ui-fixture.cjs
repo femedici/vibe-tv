@@ -14,10 +14,11 @@ fs.writeFileSync(path.join(root, 'test-native.js'), `
   window.tizen = {
     application: {
       getAppsInfo: function (success) { success([
-        {id:'test.youtube',name:'YouTube'},
-        {id:'test.netflix',name:'Netflix'},
-        {id:'test.plex',name:'Plex (teste)'},
-        {id:'test.ps5.app',name:'PlayStation 5'}
+        {id:'9Ur5IzDKqV.TizenYouTube',name:'YouTube',iconPath:'/assets/brands/youtube.png'},
+        {id:'com.samsung.tv.cobalt-yt',name:'Youtube'},
+        {id:'test.netflix',name:'Netflix',iconPath:'/missing-test-icon.png'},
+        {id:'test.plex',name:'Plex (teste)',iconPath:'/assets/icon.png'},
+        {id:'test.ps5.app',name:'PlayStation 5',iconPath:'/missing-test-icon.png'}
       ]); },
       launch: function (id, success, failure) {
         launched.push(id);
@@ -42,9 +43,15 @@ fs.writeFileSync(path.join(root, 'test-native.js'), `
     badge.textContent = 'TESTE SIMULADO · SEM TV';
     badge.hidden = false;
     document.title = 'TESTE SIMULADO — Vibe TV';
+    var mutations = 0;
+    new MutationObserver(function (rows) {
+      mutations += rows.length;
+      document.body.setAttribute('data-test-shelf-mutations', String(mutations));
+    }).observe(document.getElementById('favorites'), {childList:true});
   });
 }());
 `);
+fs.writeFileSync(path.join(root, 'sizes.html'), '<!doctype html><meta charset="utf-8"><title>Vibe TV — teste de tamanhos</title><style>body{margin:0;background:#ddd;font:14px sans-serif}iframe{border:0;display:block;margin:20px}h1{margin:20px}</style><h1>TESTE SIMULADO: 1280×720 e 390×844</h1><iframe title="TV HD" src="index.html" width="1280" height="720"></iframe><iframe title="Tela estreita" src="index.html" width="390" height="844"></iframe>');
 const server = createPreviewServer(root);
 server.listen(4175, '127.0.0.1', () => console.log('SIMULATED integration fixture: http://127.0.0.1:4175 (no TV)'));
 const clean = () => { server.closeAllConnections(); server.close(); fs.rmSync(root,{recursive:true,force:true}); };

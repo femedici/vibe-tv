@@ -15,6 +15,10 @@
   var addCandidates = [];
   var toastTimer;
   var focusCounter = 0;
+  var shelfKey = '';
+  var heroKey = '';
+  var failedIcons = Object.create(null);
+  var brandAssets = { youtube: 'youtube.png', netflix: 'netflix.svg', prime: 'prime.png', max: 'max.png', samsung: 'samsung.jpg', disney: 'disney.jpg', spotify: 'spotify.svg' };
   var themeNames = { dark: 'Escuro', light: 'Claro', gray: 'Cinza', pastel: 'Pastel', wine: 'Vinho' };
 
   function byId(id) { return document.getElementById(id); }
@@ -45,35 +49,41 @@
   function itemById(id) {
     return State.items(state).filter(function (item) { return item.id === id; })[0];
   }
+  function brandId(item) {
+    if (!item.appId) return item.id;
+    var known = State.catalog.filter(function (candidate) {
+      var app = Navigation.resolveApp(candidate, inventory);
+      return app && app.id === item.appId;
+    })[0];
+    return known ? known.id : 'custom';
+  }
+  function fallbackBrand(item) {
+    var id = brandId(item);
+    if (id === 'custom') return icon('app');
+    var image = element('img', id === 'ps5' ? 'ps5-tile-logo' : 'brand-image');
+    image.alt = '';
+    image.src = id === 'ps5' ? 'assets/ps5-logo.png' : 'assets/brands/' + brandAssets[id];
+    image.onerror = function () {
+      if (image.parentNode) image.parentNode.replaceChild(icon('app'), image);
+    };
+    return image;
+  }
   function brand(item) {
-    if (item.id === 'ps5') {
-      var image = element('img', 'ps5-tile-logo');
-      image.src = 'assets/ps5-logo.png';
-      image.alt = '';
-      return image;
-    }
-    var kind = item.appId ? 'custom' : item.id;
-    var node = element('span', 'brand brand-' + kind);
-    if (kind === 'youtube') {
-      node.appendChild(element('i'));
-      node.appendChild(document.createTextNode('YouTube'));
-    } else if (kind === 'max') {
-      node.appendChild(element('small', '', 'HBO'));
-      node.appendChild(document.createTextNode('max'));
-    } else if (kind === 'samsung') {
-      node.appendChild(element('small', '', 'SAMSUNG'));
-      node.appendChild(document.createTextNode('TV Plus'));
-    } else if (kind === 'spotify') {
-      var glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      glyph.setAttribute('viewBox', '0 0 32 32');
-      glyph.innerHTML = '<circle cx="16" cy="16" r="15" fill="currentColor"/><path d="M8 12c6-2 11-1.5 16 1M9 17c5-1.6 10-1 14 1M10 22c4-1.1 8-.8 11 .8" fill="none" stroke="#19251f" stroke-width="2" stroke-linecap="round"/>';
-      node.appendChild(glyph);
-      node.appendChild(document.createTextNode('Spotify'));
-    } else {
-      var labels = { netflix: 'NETFLIX', prime: 'prime video', disney: 'Disney+' };
-      node.textContent = labels[kind] || item.name.split(/\s+/).map(function (part) { return part.charAt(0); }).slice(0, 2).join('').toUpperCase();
-    }
-    return node;
+    // TV metadata exposes small square icons, not the Smart Hub's wide artwork.
+    if (brandId(item) !== 'custom') return fallbackBrand(item);
+    var installed = Navigation.resolveApp(item, inventory);
+    if (!installed || !installed.iconPath || failedIcons[installed.iconPath]) return fallbackBrand(item);
+    var image = element('img', 'native-app-icon');
+    image.alt = '';
+    image.onerror = function () {
+      failedIcons[installed.iconPath] = true;
+      var parent = image.parentNode;
+      if (!parent) return;
+      parent.classList.remove('tile-native');
+      parent.replaceChild(fallbackBrand(item), image);
+    };
+    image.src = installed.iconPath;
+    return image;
   }
   function announce(message) {
     window.clearTimeout(toastTimer);
@@ -84,8 +94,8 @@
   }
   function focus(id) {
     var target = byId(id);
-    if (!target || target.disabled) return;
-    target.focus();
+    if (!target || target.disabled || target === document.activeElement) return;
+    target.focus({ preventScroll: true });
     target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
   }
   function commit(nextState, message) {
@@ -93,50 +103,31 @@
     var saved = State.save(storage, state);
     render();
     if (!saved) {
+      byId('storage-note').hidden = false;
       byId('storage-note').textContent = 'Armazenamento indisponível. Suas escolhas valem apenas nesta sessão.';
       announce('Alteração aplicada nesta sessão. Este dispositivo não permitiu salvar suas escolhas.');
     } else {
-      byId('storage-note').textContent = 'Sua ordem. Seus favoritos. Salvos neste dispositivo.';
+      byId('storage-note').hidden = true;
       if (message) announce(message);
     }
     return saved;
   }
   function renderHero() {
     var last = state.last && itemById(state.last.id);
-    var title = byId('hero-title');
+    var item = last || State.items(state)[0];
     var action = byId('hero-open');
     var visual = byId('hero-visual');
-    title.className = last && last.name.length > 18 ? 'long-title' : '';
-    if (!last) {
-      title.textContent = 'Sua TV.';
-      title.appendChild(element('br'));
-      title.appendChild(document.createTextNode('Do seu jeito.'));
-      byId('hero-description').textContent = 'Abra um app para começar. Seu último acesso pelo Vibe TV aparece aqui.';
-      byId('hero-action-label').textContent = 'Escolher um app';
-      byId('hero-note-text').textContent = 'Seu histórico começa aqui.';
-      action.dataset.action = 'choose';
-      action.removeAttribute('data-id');
-      byId('hero-art').className = 'hero-art art-ps5';
-      visual.textContent = '';
-      visual.appendChild(element('span', 'art-caption', 'SUA ARTE · PLAYSTATION 5'));
-      var ps5Logo = brand({ id: 'ps5' });
-      ps5Logo.className = 'ps5-hero-logo';
-      visual.appendChild(ps5Logo);
-      return;
-    }
-    title.textContent = last.name;
-    byId('hero-description').textContent = last.kind === 'input' ? 'Seu espaço para jogar. Volte para o PS5 conectado à entrada HDMI 2.' : 'Volte ao aplicativo. Seus vídeos, séries e músicas continuam por lá.';
-    byId('hero-action-label').textContent = last.kind === 'input' ? 'Ir para o PS5' : 'Abrir ' + last.name;
-    var time = new Date(state.last.at);
-    byId('hero-note-text').textContent = 'Aberto pelo Vibe TV · ' + time.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' + time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    action.dataset.action = 'launch';
-    action.dataset.id = last.id;
-    byId('hero-art').className = 'hero-art art-' + (last.appId ? 'custom' : last.id);
+    byId('hero-eyebrow').textContent = last ? 'Último acesso' : 'Acesso rápido';
+    byId('hero-title').textContent = item ? item.name : 'Adicionar aplicativo';
+    byId('hero-description').textContent = item ? item.kind === 'input' ? 'HDMI 2' : 'Abrir aplicativo' : '';
+    action.dataset.action = item ? 'launch' : 'panel';
+    action.dataset.panel = 'add';
+    action.dataset.id = item ? item.id : '';
+    action.setAttribute('aria-label', item ? 'Abrir ' + item.name + (last ? '. Último acesso pelo Vibe TV.' : '. Acesso rápido.') : 'Adicionar aplicativo');
+    action.className = 'hero-card art-' + (item ? brandId(item) : 'custom');
     visual.textContent = '';
-    visual.appendChild(element('span', 'art-caption', last.kind === 'input' ? 'PLAYSTATION 5 · HDMI 2' : 'SEU ÚLTIMO APLICATIVO'));
-    var logo = brand(last);
-    if (last.id === 'ps5') logo.className = 'ps5-hero-logo';
-    visual.appendChild(logo);
+    if (item) visual.appendChild(brand(item));
+    else visual.appendChild(icon('plus'));
   }
   function renderShelf() {
     var items = State.items(state);
@@ -153,12 +144,14 @@
       var description = !platform.native ? 'Disponibilidade não verificada nesta prévia.' : item.kind === 'input' ? 'Disponibilidade será verificada ao abrir.' : available ? 'Abrir na TV.' : 'Aplicativo não encontrado no inventário.';
       button.setAttribute('aria-label', item.name + '. ' + (item.kind === 'input' ? 'Entrada HDMI 2. ' : '') + description);
       if (pending === item.id) button.setAttribute('aria-busy', 'true');
-      var tile = element('span', 'app-tile tile-' + (item.appId ? 'custom' : item.id));
+      var tile = element('span', 'app-tile tile-' + brandId(item));
       tile.setAttribute('aria-hidden', 'true');
-      tile.appendChild(brand(item));
+      var appBrand = brand(item);
+      if (appBrand.className === 'native-app-icon') tile.classList.add('tile-native');
+      tile.appendChild(appBrand);
       button.appendChild(tile);
       button.appendChild(element('span', 'app-label', item.name));
-      button.appendChild(element('span', 'app-kind', item.kind === 'input' ? 'HDMI 2' : platform.native && !available ? 'Não encontrado' : 'Aplicativo'));
+      if (item.kind === 'input' || platform.native && !available) button.appendChild(element('span', 'app-kind', item.kind === 'input' ? 'HDMI 2' : 'Não encontrado'));
       row.appendChild(button);
       list.appendChild(row);
     });
@@ -167,8 +160,10 @@
   function render() {
     var focused = document.activeElement && document.activeElement.id;
     document.body.setAttribute('data-theme', state.theme);
-    renderHero();
-    renderShelf();
+    var nextShelfKey = JSON.stringify([state.order, state.custom, inventory]);
+    var nextHeroKey = JSON.stringify([state.last, state.order, state.custom, inventory]);
+    if (nextHeroKey !== heroKey) { heroKey = nextHeroKey; renderHero(); }
+    if (nextShelfKey !== shelfKey) { shelfKey = nextShelfKey; renderShelf(); }
     if (panelType) renderPanel();
     if (focused && byId(focused) && !byId(focused).disabled) focus(focused);
   }
@@ -198,7 +193,7 @@
     return section;
   }
   function renderThemes(container) {
-    container.appendChild(element('p', 'panel-intro', 'Uma cor para cada momento. Escolha o clima da sua TV.'));
+    container.appendChild(element('p', 'panel-intro', 'Escolha o tema.'));
     var grid = element('div', 'themes');
     State.themes.forEach(function (theme) {
       var choice = actionButton('theme-' + theme, 'theme-choice', 'theme');
@@ -278,7 +273,7 @@
     }
   }
   function renderPanel() {
-    var titles = { themes: 'Encontre sua vibe.', organize: 'Na sua ordem.', add: 'Mais na sua TV.', settings: 'Sua TV continua sua.', about: 'De volta ao que importa.', exit: 'Sair do Vibe TV?' };
+    var titles = { themes: 'Aparência', organize: 'Organizar aplicativos', add: 'Adicionar aplicativos', settings: 'Ajustes', about: 'Sobre o Vibe TV', exit: 'Sair do Vibe TV?' };
     byId('panel-title').textContent = titles[panelType] || '';
     byId('panel-eyebrow').textContent = panelType === 'themes' ? 'APARÊNCIA' : panelType === 'organize' ? 'SEUS FAVORITOS' : panelType === 'add' ? 'ADICIONAR APLICATIVOS' : panelType === 'exit' ? 'ATÉ JÁ' : 'COMO FUNCIONA';
     var content = byId('panel-content');
@@ -292,18 +287,13 @@
       content.appendChild(actionButton('cancel-exit', 'button quiet', 'close', 'Continuar aqui'));
       return;
     }
-    if (panelType === 'about') {
-      detail(content, 'Seu último acesso, em destaque', 'O app que você abriu com sucesso pelo Vibe TV ocupa a tela principal. Acessos feitos fora deste hub não entram no histórico.');
-      detail(content, 'Continue dentro do aplicativo', 'Netflix, YouTube e os outros serviços mantêm a própria experiência. Retomar episódios, ver progresso ou mostrar a arte do que você assistiu exige uma integração oficial ainda indisponível.');
-      detail(content, 'Seu PS5 tem lugar aqui', 'O atalho usa a entrada HDMI 2 e as artes que você escolheu. A troca de entrada e a imagem do console precisam ser verificadas na TV.');
-      if (!platform.native) detail(content, 'Você está na prévia local', 'Explore os temas e organize os atalhos. Abrir um app aqui não envia comandos para a TV nem cria um acesso fictício.');
-      return;
-    }
+    detail(content, 'Último acesso', 'Mostra o último aplicativo aberto com sucesso pelo Vibe TV. Acessos feitos pelo Smart Hub ou por outros atalhos não entram neste histórico.');
     detail(content, 'Configurações da Samsung', 'Use Home no controle para acessar o Smart Hub e as configurações da TV: imagem, som, Wi-Fi, conexões e contas. Home, volume e energia continuam sob controle da Samsung.');
     detail(content, 'Seus aplicativos e acessos', 'O Vibe TV abre os aplicativos existentes. Não lê suas senhas, não migra contas e não altera as configurações dos serviços. A preservação das sessões ainda precisa ser validada na TV.');
-    detail(content, 'Ao ligar a TV', 'Este é um aplicativo separado. Ele não substitui o Smart Hub e não há garantia de abertura automática ao ligar a televisão.');
+    detail(content, 'Ao ligar a TV', 'Em Configurações → Geral → Funções Smart, a Samsung oferece Execução Automática do Último Aplicativo. O resultado depende do último app usado e do suporte da TV. Home continua abrindo o Smart Hub.');
     detail(content, 'Retomar um episódio', 'A retomada acontece dentro de cada aplicativo. O Vibe TV não tem acesso ao seu histórico de séries, vídeos ou jogos.');
-    if (!platform.native) detail(content, 'Prévia local · instalação pendente', 'A instalação na TV está bloqueada até resolver o requisito de backup e recuperação. Nenhum backup integral do sistema ou das sessões foi criado.');
+    if (!platform.native) detail(content, 'Prévia local', 'Esta prévia não se conecta à televisão. Os atalhos funcionam no aplicativo assinado instalado na TV.');
+    detail(content, 'Vibe TV 1.0.3', 'As marcas pertencem aos respectivos serviços. As artes de episódios e o histórico privado ficam dentro de cada aplicativo.');
     if (platform.native) {
       var exitSection = detail(content, 'Voltar à televisão', 'Fechar este hub preserva os aplicativos e as configurações nativas.');
       var exit = actionButton('settings-exit', 'button quiet', 'panel', 'Sair do Vibe TV');
@@ -314,7 +304,8 @@
   function refreshInventory(manual) {
     if (!platform.native || loadingInventory) return;
     loadingInventory = true;
-    if (panelType === 'add') renderPanel();
+    var refreshButton = byId('refresh-inventory');
+    if (refreshButton) refreshButton.textContent = 'Consultando…';
     platform.listApps().then(function (apps) {
       inventory = apps;
       inventoryError = '';
@@ -338,17 +329,20 @@
     if (loadingInventory && item.kind === 'app') { announce('Aguarde a consulta dos aplicativos da TV.'); return; }
     var target = item.kind === 'app' && Navigation.resolveApp(item, inventory);
     if (item.kind === 'app' && !target) { announce(item.name + ' não foi identificado com segurança nesta TV. Confira os aplicativos em Adicionar.'); return; }
+    var opener = document.activeElement && document.activeElement.id;
     pending = item.id;
-    render();
+    if (byId(opener)) byId(opener).setAttribute('aria-busy', 'true');
     announce('Abrindo ' + item.name + '…');
     var request = item.kind === 'input' ? platform.launchInput(2) : platform.launchApp(target.id);
     request.then(function () {
       pending = null;
-      commit(State.recordLaunch(state, item.id, Date.now()), 'Abertura de ' + item.name + ' confirmada pela TV.');
+      if (byId(opener)) byId(opener).removeAttribute('aria-busy');
+      if (commit(State.recordLaunch(state, item.id, Date.now()))) byId('toast').hidden = true;
+      if (document.activeElement === document.body) focus(opener);
     }, function (error) {
       pending = null;
-      renderShelf();
-      focus('favorite-' + item.id);
+      if (byId(opener)) byId(opener).removeAttribute('aria-busy');
+      if (document.activeElement === document.body) focus(opener);
       announce(error.message || 'Não foi possível abrir ' + item.name + '.');
     });
   }
@@ -405,9 +399,10 @@
       else { focus('nav-home'); announce('Você está no início da prévia. Home no controle continua abrindo o Smart Hub.'); }
       return;
     }
-    var buttons = focusable();
+    var buttons;
     if (key === 'Tab' && panelType) {
       event.preventDefault();
+      buttons = focusable();
       focus(Navigation.tabFocus(buttons.map(function (button) { return button.id; }), document.activeElement.id, event.shiftKey));
       return;
     }
@@ -415,6 +410,8 @@
     var direction = directions[key] || directions[code];
     if (direction) {
       event.preventDefault();
+      var scope = panelType ? byId('panel') : byId('hub');
+      buttons = Array.prototype.slice.call(scope.querySelectorAll('button:not([disabled])'));
       var rectangles = buttons.map(function (button) {
         if (!button.id) button.id = 'focus-' + (++focusCounter);
         var rect = button.getBoundingClientRect();

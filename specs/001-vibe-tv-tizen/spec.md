@@ -2,7 +2,7 @@
 
 **Feature Branch**: `agent/vibe-tv`
 **Created**: 2026-10-19
-**Status**: Local implementation verified and published on agent/vibe-tv; TV installation blocked
+**Status**: Signed app installed and launched on the TV; owner confirmed correct initial rendering; native icons and startup investigation in progress
 **Input**: Clone free-my-tv into femedici/vibe-tv, rebuild the TV hub around the last accessed app, preserve all settings and logins, PS5 HDMI 2 artwork, editable favorite order and themes, document, capture and publish.
 
 ## Clarifications
@@ -10,10 +10,20 @@
 - User chose Spec Kit and explicitly authorized initialization of v1.0.3.
 - TV model confirmed by user and read-only LAN identification: Samsung UN50AU8000GXZD, Tizen.
 - User chose investigation of a separate Tizen app preserving Smart Hub and existing applications instead of an Android streamer.
-- User approved developing and testing locally: last access recorded through Vibe TV, requested favorites/PS5/themes, actual resume only with proven integration; TV installation remains blocked by backup requirement.
-- No factory-system or session backup has been created. No device mutation is authorized until that requirement is resolved.
+- Initially, user approved developing and testing locally: last access recorded through Vibe TV, requested favorites/PS5/themes, actual resume only with proven integration; TV installation was then blocked by the backup requirement.
+- Subsequent decision: user accepted documented factory reset instead of an integral backup, after receiving the settings/login/firmware limitations, then explicitly requested installation on the TV.
+- No factory-system or session backup has been created. Standalone Vibe TV installation and necessary developer connection are authorized; reset, firmware changes, credential extraction and replacement of Smart Hub remain outside execution scope.
+- After the first installation, owner confirmed correct rendering, requested actual installed-app icons (except PS5), and asked to replace the system. Investigate supported startup/launcher options separately; no unreviewed firmware/root procedure is authorized. Native shortcuts must keep opening the existing apps and preserve their sessions.
 
 ## User Scenarios & Testing
+### Refinement 2026-10-20
+- Owner requested the best supported native-style experience if global Home replacement is unavailable. References are the Android launchers shown by SimbasJungles and gathint on X.
+- The main screen becomes one large rectangular, directly actionable last-app card above app tiles. Remove “Sua TV. Do seu jeito.”, “Escolher um app”, descriptive marketing and technical explanations from the main screen. Keep limitations in Ajustes.
+- Before any successful launch, show the first favorite as a shortcut labeled “Acesso rápido”; never call it a previous access.
+- Show original local brand assets without stretching. Device inspection found low-resolution square icons (several 117×117) and a missing Prime icon, so use bundled official artwork for the known brands. Unknown apps use their installed icon, or a neutral app symbol and their real name if unavailable.
+- Recent video/episode art is allowed only with a proven authorized provider integration. None exists currently; use app artwork without representing it as watched content.
+- Keep supplied PS5 art, native launch APIs, preferences and five themes. Avoid rebuilding the app shelf on launch/theme changes or an unchanged inventory.
+
 ### User Story 1 - Return to my last app (Priority: P1)
 As the TV owner I want the largest area to show the last app successfully opened through Vibe TV with relevant artwork and an honest available action.
 **Why this priority**: Replaces irrelevant recommendations with personal navigation.
@@ -66,11 +76,12 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **FR-006** Identify installed apps from the TV inventory; prevent ambiguous/unavailable targets from silent substitution.
 - **FR-007** Select verified HDMI 2 for PS5 and expose errors; preserve native video handling rather than claiming a game overlay is equivalent.
 - **FR-008** Offer and persist dark, light, gray, pastel and wine themes.
-- **FR-009** Support directional navigation, OK and Back; preserve system Home/Power/Volume.
+- **FR-009** Support directional navigation, OK and Back; preserve system Home/Power/Volume. Down from the large card must go directly to the first app. Organize/Add/Appearance/Settings stay in the upper right, above the card. Focus highlights the item itself with a restrained 150 ms transform/opacity transition, without an external rectangular outline; reduced motion disables the transition.
 - **FR-010** Display unavailable integrations honestly; never fabricate episode names, watch progress or login transfer.
 - **FR-011** Preserve system/settings/sessions by avoiding destructive commands and account/token access.
-- **FR-012** Keep TV installation blocked until backup prerequisite is resolved; no actual backup claim without evidence.
+- **FR-012** Honor the revised recovery decision: install only the separate app with a valid Samsung certificate; preserve the existing system and use removal of only Vibe as the first rollback. Factory reset is a documented fallback, never an automatic test. Do not claim an integral backup or preserved sessions after reset.
 - **FR-013** Provide local run, focused automated checks, responsive checks, reduced-motion handling and screenshots.
+- **FR-017** Use bundled original brand artwork for known favorites and accessible installed icons for other apps, preserving aspect ratio and the user's PS5 artwork. Unknown apps with an unavailable icon use a neutral app symbol. Resolve known duplicate app labels using IDs observed on the TV and still present in the inventory; never invent an installed app.
 - **FR-014** Document build/package, device prerequisites, recovery limits and hardware test procedure; publish handoff.
 - **FR-015** Validate state at storage/inventory boundaries and recover gracefully from failures without losing previous valid state.
 - **FR-016** Clearly document startup limitations: cannot promise becoming Home or starting at every power-on.
@@ -87,15 +98,18 @@ I want existing apps, sessions and factory controls preserved, and an accurate r
 - **SC-002** Reordering, adding/removing favorites and all five theme choices survive reopening.
 - **SC-003** Successful launches update the hero; failed/unavailable launches never update viewing history.
 - **SC-004** Every advertised local workflow passes its targeted check and has actual interface captures.
-- **SC-005** No local preview operation changes the physical TV, and all hardware-dependent acceptance items remain explicitly unverified.
+- **SC-005** No local preview operation changes the physical TV, and hardware-dependent acceptance items distinguish observed results from remaining unverified checks.
 - **SC-006** The task branch contains the reviewed source, documentation, captures and handoff with no secrets or serial number.
 
 ## Assumptions
-- This approved phase is local development, not completion of the original full-TV installation goal.
+- The local phase is complete. Signed versions 1.0.0–1.0.2 were installed; the owner confirmed corrected artwork and native YouTube opening in 1.0.2. Remaining physical checks are tracked separately.
 - The TV's installed-app inventory, exact per-app launch behavior, native HDMI quality, startup and restoration require authorized hardware validation later.
 - No provider has supplied an authorized continue-watching integration; the interface offers app opening without fabricated content.
-- Factory full backup and session restore remain unresolved external prerequisites, not a task to bypass.
+- Full backup/session restoration are not proven. The owner explicitly replaced this prerequisite with documented factory reset as a fallback.
 
 ## Verified local implementation
 
-38 automated checks passed, plus live Edge keyboard/pointer, five skins/reload, favorites/empty/overflow and 1920×1080/390×844 checks. A separate explicitly simulated fixture verified successful/failed launch history, exact extra app identity, HDMI2/viewer sequence and exit UI. The production preview never fabricates native capabilities. See `docs/vibe-tv/validation.md` for evidence and `tasks.md` for publication/hardware state. Native hardware, startup, sessions and full backup remain unverified.
+38 automated checks passed, plus live Edge keyboard/pointer, five skins/reload, favorites/empty/overflow and 1920×1080/390×844 checks. A separate explicitly simulated fixture verified successful/failed launch history, exact extra app identity, HDMI2/viewer sequence and exit UI. The production preview never fabricates native capabilities. See `docs/vibe-tv/validation.md` for evidence and `tasks.md` for publication/hardware state. Physical installation, native inventory, artwork and YouTube opening have now been verified; startup, other provider sessions, physical HDMI behavior and full backup remain unverified. Latest focus/layout refinement is tracked in T014/T015.
+
+## Refinement evidence (2026-10-20)
+44 automated checks passed. Browser Down from hero reaches the first app; Up returns to hero. Header controls and focus motion checked at 1280×720 and 390×844 plus desktop. Signed 1.0.3 installed by direct update and launched. Owner accepted the latest focus/navigation; first native YouTube opening is confirmed, but a second opening failed according to the owner and is being diagnosed in T016. See validation.md for exact limits.

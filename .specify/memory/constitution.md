@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version: template -> 1.0.0
+Version: 1.0.0 -> 1.1.0 (owner accepted documented factory reset as fallback and authorized standalone app installation)
 Principles: populated from user requirements, global rules and confirmed Tizen scope.
 Added: Platform and preservation boundaries; Development and verification.
 Removed: template examples. No new domain or performance principles assumed.
@@ -13,9 +13,11 @@ Removed: template examples. No new domain or performance principles assumed.
 The Samsung system, Smart Hub, installed applications, accounts, picture, sound,
 network, inputs, pairing, and factory settings MUST remain available. Development
 MUST NOT reset, clear data, uninstall, disable system components, or replace firmware.
-A verified restorable backup of the current system and sessions remains a prerequisite
-to device changes. An inventory, source clone, firmware update download or application
-preferences export MUST NOT be represented as that backup.
+The owner accepted documented factory reset as a fallback instead of a full backup,
+understanding that settings and logins may need to be recreated and firmware downgrade
+is not supported. Installation of the separate Vibe TV application is now authorized.
+No integral backup or guaranteed recovery from firmware corruption may be claimed.
+An inventory, source clone or application preferences export is not a full backup.
 
 ### II. Respect the confirmed platform and authorization
 The identified target is Samsung UN50AU8000GXZD running Tizen. The upstream Android
@@ -71,4 +73,4 @@ must preserve them unless the user authorizes an amendment; record reasons and u
 the living spec and tracker. Version amendments semantically and check compliance during
 specification, planning, review and convergence. Higher-priority instructions prevail.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19
+**Version**: 1.1.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-19

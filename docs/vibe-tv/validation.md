@@ -1,81 +1,83 @@
-# Validação do Vibe TV
+# Validação do Vibe TV — 1.0.3
 
-Data de referência do trabalho: 19/10/2026. Esta evidência cobre a fase local aprovada, não a instalação na Samsung.
+Registro: 20/10/2026. As evidências abaixo distinguem navegador, simulação e Samsung física.
 
-## Ambiente e escopo
+## Resultado atual
 
-- Node.js v25.8.1, ferramentas nativas `zip`/`unzip`, macOS e Microsoft Edge.
-- Sem dependências de runtime, backend, chamadas de rede da aplicação ou credenciais de streaming.
-- Alvo de compatibilidade de fontes: Chromium 76 / Tizen 6.0. Execução no engine real da AU8000 ainda não verificada.
-- Histórico e licença do upstream preservados. O README original está em `README.upstream.md`; os arquivos Android não foram convertidos em um APK compatível com Tizen.
+- 1.0.3 assinada, instalada por atualização direta e aberta na Samsung UN50AU8000GXZD. O instalador retornou `install completed` e o launcher confirmou um novo processo.
+- Na 1.0.2, o proprietário confirmou artes corretas e abertura perfeita do YouTube. Depois pediu controles no topo direito, ↓ direto para os apps e um seletor suave; esses ajustes compõem a 1.0.3.
+- O proprietário confirmou o novo seletor e a navegação, mas relatou falha na segunda abertura do YouTube. Diagnóstico em T016, causa ainda não confirmada.
+- Home continua com o Smart Hub, observado pelo proprietário e consistente com a documentação Samsung. Não foi implementada troca de sistema/launcher global.
 
-## Evidência automatizada em integração
+## Verificação automatizada
 
-**38 testes passaram, zero falhas** (`node --test tests/*.test.cjs`).
+`node --test tests/*.test.cjs`: **44 passaram, zero falhas**.
 
-- Estado: 13 testes para ordem inicial, cinco temas, persistência, corrupção, falhas de armazenamento, edição de favoritos, validação de nomes/IDs/ícones e histórico.
-- Plataforma: 17 testes com adaptadores falsos e relógio controlado, cobrindo inventário real sanitizado, IDs exatos, callbacks, timeout, HDMI 2 e efeitos parciais. São testes da lógica, não evidência de funcionamento na TV.
-- Navegação/resolução: 6 testes de setas, limites, overflow, Tab e IDs/aliases, incluindo distinção entre aplicativo e HDMI com o mesmo nome.
-- Ferramentas: 2 testes de confinamento do servidor, caminhos/symlinks, métodos HTTP e conteúdo do pacote.
-- `node --check` em todos os scripts de runtime/ferramentas/fixture; XML do manifesto, alvo e ícone conferidos.
-- `node tools/package-tizen.cjs` gerou 13 arquivos de runtime/assets; `unzip -t` sem erros. Certificados, fixture e `test-native.js` ausentes do pacote.
-- Hashes SHA256 das duas artes idênticos aos anexos; fonte com OFL; README original byte a byte e árvore Android/licença inalterados.
-- RED/GREEN observado: gravação semanticamente igual com propriedades em outra ordem; preview/timeout/HDMI; servidor e pacote; distinção de HDMI versus app homônimo. As falhas foram reproduzidas antes das correções mínimas.
+| Área | Testes | Escopo |
+|---|---:|---|
+| Estado | 13 | ordem inicial, cinco temas, persistência, corrupção, armazenamento bloqueado, favoritos e histórico |
+| Plataforma | 17 | inventário sanitizado, ID exato, erro/timeout, HDMI2, viewer, falha parcial e saída |
+| Navegação | 9 | setas, overflow, Tab, nomes ambíguos, IDs observados, Spotify, HDMI/app homônimo, cartão largo |
+| Controlador | 3 | aviso de armazenamento permanece após sucesso; resposta assíncrona não rouba foco em sucesso/falha |
+| Ferramentas | 2 | servidor confinado, symlinks/métodos, arquivos do pacote |
+
+RED/GREEN observados: cartão largo era ignorado ao subir; aliases duplicados selecionavam alvo ambíguo; aviso de armazenamento sumia; callback tardio roubava foco. A reprodução VM dos últimos dois comportamentos falhou 3/3 antes das correções e passou 3/3 depois. A VM usa módulos reais com DOM/hardware simulados e omite renderização; não mede o aparelho.
+
+## Pacote e preservação
+
+- `node tools/package-tizen.cjs`: 20 arquivos de runtime/assets.
+- `tz pack` com perfil Samsung local VibeTV: pacote 1.0.3 com duas assinaturas XML.
+- ZIP/CRC, manifesto e assinaturas XML válidos; todos os 20 arquivos de runtime idênticos entre pacote não assinado e assinado. Entradas de diretório adicionadas pelo assinador não são arquivos de runtime.
+- Sem fixture, certificados privados ou credenciais no código/pacote-fonte. Pacote assinado fica em `dist/`, ignorado pelo Git.
+- Atualização por SDB push + `vd_appinstall`, sem comando de desinstalação. Somente o processo Vibe foi encerrado para abrir a versão nova. Nenhum reset, firmware ou dado de outro aplicativo foi alterado.
+- Assets de marcas copiados das fontes oficiais e hashes documentados em [brand-assets.md](brand-assets.md). Artes PS5 preservadas; fonte Inter/OFL e histórico Android preservados.
+
+## Navegador real
+
+Microsoft Edge, prévia principal em `http://127.0.0.1:4173`:
+
+| Verificação | Evidência |
+|---|---|
+| ↓ do cartão | RED: focava Organizar. GREEN 1.0.3: `favorite-youtube` após mover controles ao cabeçalho |
+| ↑ do primeiro app | Retorna a `hero-open` |
+| Destaque | Sem outline externo; tile com `scale(1.05)` e deslocamento −3px, transição transform de 150ms; sombra/realce em camada de opacidade |
+| Temas | Cinco temas selecionáveis; foco permanece no controle selecionado; claro/escuro inspecionados visualmente |
+| Imagens | Nove imagens visíveis carregadas (hero + oito favoritos), todas com `object-fit: contain` |
+| Tela principal | Capturas em 1912×845 e 1912×884; oito atalhos visíveis na prévia padrão |
+| HD e estreita | Fixture em iframes 1280×720 e 390×844: cabeçalho cabe, controles acima do cartão, ↓ alcança YouTube; prateleira rolável |
+| Movimento reduzido | Regra CSS inspecionada: duração 0,01ms e scroll auto; preferência do sistema não alterada |
+
+A fixture `node tests/ui-fixture.cjs` roda separada em 4175, com aviso “TESTE SIMULADO · SEM TV”. Nos testes desta revisão: sucesso YouTube por ID observado atualiza histórico; falha Netflix o preserva; PS5 usa HDMI2/viewer simulados; app adicional com ícone quebrado recebe símbolo neutro; mudança de tema/inventário inalterado não reconstrói a prateleira. A configuração simulada contém apps extras de teste e serviços ausentes, por isso suas capturas não representam o inventário físico.
+
+A fase local inicial também verificou reordenar/remover/adicionar, vazio/restauração, persistência após reload, Tab/Shift+Tab no painel, Escape/saída e 1920×1080. Esses resultados históricos não são apresentados como novas medições de desempenho.
+
+## Samsung física
+
+- Developer Mode/Host PC IP configurados pelo proprietário; SDB reconheceu o modelo e plataforma 6.0. Endereço de rede mudou durante a tarefa e foi redescoberto somente por leitura.
+- Certificado Samsung concluído pelo proprietário após uma primeira tentativa de callback expirar. Perfil válido usado para assinar 1.0.0, 1.0.1, 1.0.2 e 1.0.3. Não há pendência de emissão.
+- Web Inspector da 1.0.1 confirmou inventário e ícones: YouTube/HBO Max/TV Plus 117×117, Netflix 298×298, Disney+ 423×423, Spotify 170×170. Prime retornou `ERR_FILE_NOT_FOUND`. Isso motivou originais locais para marcas conhecidas.
+- Proprietário confirmou na 1.0.2: “tá correto, abre perfeito”, sobre artes e YouTube. Também confirmou Home abrindo Smart Hub e relatou o desvio do foco para Organizar.
+- 1.0.3: instalador e abertura confirmados por ferramenta; navegação e destaque aceitos pelo proprietário; reabertura do YouTube em investigação.
+- Autorun Last App foi ativado pelo proprietário. O ciclo de energia e o comportamento após usar outro app não foram verificados.
+
+Ferramentas: Node.js v25.8.1; extensão oficial Tizen VS Code 10.4.3, servidor arm64 10.4.5, SDB 4.2.36 e CLI `tz`.
 
 ## Revisão independente
 
-- Estado: sem achados acionáveis após revisão de spec/contrato/código e nova execução dos 13 testes.
-- Ferramentas e documentação de recuperação: sem achados acionáveis; 2 testes e checagem sintática passaram.
-- As revisões não certificam assinatura Samsung, instalação, engine antigo ou hardware.
+Revisores somente leitura conferiram plataforma/limites, ícones e UI. Achados sobre aviso de armazenamento, explicação inacessível do histórico e foco tardio foram corrigidos e revalidados. Revisão final dos controles superiores, transições e compatibilidade Chromium 76 não trouxe achados bloqueantes. O coordenador inspecionou os diffs e executou os 44 testes.
 
-## Verificação real no navegador
+## Capturas
 
-Prévia principal em `http://127.0.0.1:4173`, Microsoft Edge:
+- [1.0.3 escuro / foco no YouTube](../../outputs/vibe-tv-1.0.3-dark.png)
+- [1.0.3 claro](../../outputs/vibe-tv-1.0.3-light.png)
+- [1.0.3 PS5 — simulação explícita](../../outputs/vibe-tv-1.0.3-ps5-simulated.png)
+- [1.0.3 estreita — simulação explícita](../../outputs/vibe-tv-1.0.3-narrow-simulated.png)
 
-| Fluxo | Evidência observada |
-|---|---|
-| Full HD |1920×1080, documento 1920×1080, oito favoritos na ordem pedida; sem corte horizontal |
-| Tela estreita |390×844, documento sem overflow horizontal global; todas as oito opções alcançáveis por setas com rolagem da prateleira |
-| Temas | Claro, cinza, pastel, vinho e escuro selecionados e persistiram após reload |
-| Favoritos | PS5 movido à primeira posição; Spotify removido/restaurado; persistência conferida; ordem inicial restaurada |
-| Vazio | Todos os oito atalhos removidos; estado vazio visível; Escolher um app moveu foco a Adicionar; todos restaurados |
-| Foco | Enter/setas, Tab e Shift+Tab presos no painel; Escape fechou e restaurou o controle de origem |
-| Preview | PS5 exibiu indisponibilidade sem atualizar o destaque/histórico |
-| Console | Nenhum erro/aviso capturado nos fluxos conferidos |
-| Movimento reduzido | Regra CSS carregada e inspecionada: duração 0,01ms e scroll auto. Preferência do sistema não foi alterada; ativação na TV não testada |
+Capturas salvas do navegador e inspecionadas, sem mockups. Não são fotos da TV. Screencast do Web Inspector não forneceu pixels úteis do aparelho.
 
-### Integração isolada com APIs simuladas
+## Limites ainda abertos
 
-`node tests/ui-fixture.cjs` serve uma **cópia temporária** em `127.0.0.1:4175`, com aviso visível “TESTE SIMULADO · SEM TV”. A fixture não faz parte do WGT nem modifica a prévia principal. Foi encerrada após os testes.
+Não verificados: todos os demais serviços/sessões, HDMI/PS5 físico, imagem/HDR/Game Mode/áudio/latência, ciclo de energia/autorun, saída/remoção física e restauração. Não há medição de FPS. Nenhum backup integral foi criado; o proprietário aceitou reset documentado como fallback, sabendo que apaga configurações e sessões e não restaura firmware antigo/danificado. Reset não foi executado. Histórico privado/retomada de episódios não está integrado; só há último lançamento pelo Vibe.
 
-- YouTube simulado abriu com ID exato, virou o destaque e persistiu após reload.
-- Netflix simulado retornou `NotFoundError`; destaque anterior permaneceu.
-- Plex (teste) foi adicionado pelo inventário, persistiu e abriu por `test.plex`.
-- App chamado PlayStation5 continuou disponível para adicionar mesmo com o atalho HDMI2; YouTube já representado não apareceu duplicado.
-- Fluxo PS5 usou HDMI2 e depois `org.tizen.tv-viewer`; o destaque mudou para PS5 após callback de sucesso simulado.
-- Falha de foco reproduzida: antes da correção, sucesso deixava `document.activeElement` no body. Depois, permaneceu no favorito de origem.
-- Escape abriu confirmação de saída; cancelar restaurou o foco; confirmar chamou apenas a saída da aplicação simulada.
-
-**Esses resultados verificam a ligação entre UI/estado/adaptador, não uma TV conectada nem uma sessão real de streaming.**
-
-## Capturas reais
-
-- [Tema escuro / primeiro uso](../../outputs/vibe-tv-dark.jpg)
-- [Tema claro](../../outputs/vibe-tv-light.jpg)
-- [Painel de temas](../../outputs/vibe-tv-themes.jpg)
-- [Organização](../../outputs/vibe-tv-organize.jpg)
-- [Prévia estreita](../../outputs/vibe-tv-narrow.jpg)
-- [Último acesso com APIs simuladas — não é hardware](../../outputs/vibe-tv-simulated-last-access.jpg)
-- [Fork criado](../../outputs/repository-created.jpg)
-
-Todas as capturas da aplicação foram salvas do navegador e inspecionadas visualmente. Nenhum mockup substituiu screenshots.
-
-## Convergência e revisão final
-
-Conferidos 16 requisitos funcionais, 6 critérios de sucesso e 14 cenários de aceitação, 7 decisões de arquitetura (stack, plataforma, persistência, APIs, assets/motion, ferramentas e verificação) e 5 princípios da constituição. Sem lacunas de implementação local pendentes após T010/T011; revisão independente final 38/38, sintaxe/diff e lista WGT aprovados. Publicação rastreada por T008; hardware continua em T009, bloqueado, sem duplicar esse trabalho como concluído.
-
-## Ainda não verificado na TV
-
-Backup integral e restauração de sessões, certificado/assinatura, instalação, inventário real, abertura dos apps, saída do app, HDMI/PS5, qualidade de imagem, latência de jogo, áudio, controle físico e inicialização após ligar a TV.
-
-A TV não recebeu mudanças. Não foi criado nem anunciado backup integral. Não foram copiados logins ou tokens. A investigação inicial da rede foi somente leitura; a prévia local não se conecta à TV.
+## Novo relato do proprietário — após 1.0.3
+O proprietário confirmou navegação e destaque corretos, mas relatou que o YouTube abriu uma vez e não abriu na segunda tentativa. Reabertura em investigação em T016; causa ainda não comprovada. A instalação e a primeira abertura não validam ciclos consecutivos. Publicação final aguarda essa correção ou evidência clara do bloqueio.

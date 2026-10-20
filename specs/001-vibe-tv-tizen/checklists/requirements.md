@@ -7,7 +7,7 @@ Created: 2026-10-19. Feature: ../spec.md
 - [x] Requirements are testable and match the confirmed local phase.
 - [x] Failure cases and data boundaries are identified.
 - [x] Hardware limitations and original outstanding requirements remain visible.
-- [x] No unresolved material local-scope question; backup is a blocked installation prerequisite.
+- [x] No unresolved material local-scope question; recovery decision was subsequently revised to documented factory reset and standalone installation was authorized.
 - [x] User-approved platform/design decisions are recorded.
 
 This checks specification readiness, not feature implementation or hardware success.

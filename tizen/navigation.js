@@ -21,7 +21,9 @@
       } else {
         if (forward ? box.top < current.top + current.height - 2 : box.top + box.height > current.top + 2) return;
       }
-      var score = horizontal ? Math.abs(dx) : Math.abs(dy) + Math.abs(dx) * 0.8;
+      var gapX = Math.max(0, box.left - current.left - current.width, current.left - box.left - box.width);
+      var gapY = forward ? box.top - current.top - current.height : current.top - box.top - box.height;
+      var score = horizontal ? Math.abs(dx) : gapY + gapX * 0.8;
       if (score < distance) { best = box.id; distance = score; }
     });
     return best;
@@ -40,9 +42,17 @@
 
   function resolveApp(item, inventory) {
     if (!item || item.kind === 'input' || !Array.isArray(inventory)) return null;
+    // Consumer IDs observed on the TV distinguish same-name alternatives.
+    // Still require presence in this device's inventory; other models use exact names.
+    if (!item.appId && item.preferredAppIds) {
+      var preferred = inventory.filter(function (app) { return item.preferredAppIds.indexOf(app.id) !== -1; });
+      if (preferred.length === 1) return preferred[0];
+    }
     var aliases = (item.aliases || [item.name]).map(normalize);
     var matches = inventory.filter(function (app) {
-      return item.appId ? app.id === item.appId : aliases.indexOf(normalize(app.name)) !== -1;
+      if (item.appId) return app.id === item.appId;
+      if (item.excludedAppIds && item.excludedAppIds.indexOf(app.id) !== -1) return false;
+      return aliases.indexOf(normalize(app.name)) !== -1;
     });
     return matches.length === 1 ? matches[0] : null;
   }

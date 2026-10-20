@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#121619">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: file:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
-  <title>Vibe TV — seu espaço na TV</title>
+  <title>Vibe TV</title>
   <link rel="icon" href="assets/icon.png">
   <link rel="stylesheet" href="styles.css">
   <script src="state.js" defer></script>
@@ -15,15 +15,16 @@
 </head>
 <body data-theme="dark">
   <svg class="symbol-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H7V10h10v10M10 20v-6h4v6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9"/></symbol>
     <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"/></symbol>
-    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-.6 2.5-2.1 1.2-2.5-.7-2 3.5 1.9 1.8v2.4l-1.9 1.8 2 3.5 2.5-.7 2.1 1.2L9 22h4l.6-2.5 2.1-1.2 2.5.7 2-3.5-1.9-1.8v-2.4l1.9-1.8-2-3.5-2.5.7-2.1-1.2L13 3Z" transform="translate(1 -1) scale(.92)"/><circle cx="12" cy="11.5" r="3.2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-.5 2-2 1.2-2-.6-2 3.5L4 10.6v2.8l-1.5 1.5 2 3.5 2-.6 2 1.2.5 2h6l.5-2 2-1.2 2 .6 2-3.5-1.5-1.5v-2.8l1.5-1.5-2-3.5-2 .6-2-1.2L15 3Z"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-app" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
     <symbol id="i-screen" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8m-4-4v4"/></symbol>
   </svg>
 
@@ -32,6 +33,10 @@
       <div class="wordmark" aria-label="Vibe TV">vibe<span>tv</span><i aria-hidden="true"></i></div>
       <nav class="main-nav" aria-label="Principal">
         <button id="nav-home" class="nav-button selected" type="button" data-action="home" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Início</span></button>
+      </nav>
+      <nav class="hub-controls" aria-label="Personalizar">
+        <button id="organize-button" class="nav-button" type="button" data-action="panel" data-panel="organize"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg><span>Organizar</span></button>
+        <button id="add-button" class="nav-button" type="button" data-action="panel" data-panel="add"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Adicionar</span></button>
         <button id="nav-themes" class="nav-button" type="button" data-action="panel" data-panel="themes"><svg class="icon" aria-hidden="true"><use href="#i-theme"/></svg><span>Aparência</span></button>
         <button id="nav-settings" class="nav-button" type="button" data-action="panel" data-panel="settings"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>Ajustes</span></button>
       </nav>
@@ -39,45 +44,39 @@
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <div id="hero-art" class="hero-art art-ps5" aria-hidden="true"></div>
-        <div class="hero-shade" aria-hidden="true"></div>
-        <div id="hero-visual" class="hero-visual" aria-hidden="true"><span class="art-caption">SUA ARTE · PLAYSTATION 5</span><img src="assets/ps5-logo.png" alt="" class="ps5-hero-logo"></div>
-        <div class="hero-content shell">
-          <p id="hero-eyebrow" class="eyebrow">ÚLTIMO ACESSO</p>
-          <h1 id="hero-title">Sua TV.<br>Do seu jeito.</h1>
-          <p id="hero-description" class="hero-description">Abra um app para começar. Seu último acesso pelo Vibe TV aparece aqui.</p>
-          <div class="hero-actions">
-            <button id="hero-open" class="button primary" type="button" data-action="choose"><span id="hero-action-label">Escolher um app</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-            <button id="hero-about" class="button quiet" type="button" data-action="panel" data-panel="about">Como funciona</button>
-          </div>
-          <p id="hero-note" class="hero-note"><span class="hollow-dot" aria-hidden="true"></span><span id="hero-note-text">Seu histórico começa aqui.</span></p>
-        </div>
+      <section class="hero-section shell" aria-labelledby="hero-eyebrow">
+        <h1 id="hero-eyebrow" class="eyebrow">Acesso rápido</h1>
+        <button id="hero-open" class="hero-card art-youtube" type="button" data-action="choose">
+          <span id="hero-art" class="hero-art" aria-hidden="true"></span>
+          <span class="hero-shade" aria-hidden="true"></span>
+          <span id="hero-visual" class="hero-visual" aria-hidden="true"></span>
+          <span class="hero-content">
+            <span id="hero-title" class="hero-title">YouTube</span>
+            <span id="hero-description" class="hero-description">Abrir aplicativo</span>
+          </span>
+          <span class="hero-go" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+        </button>
       </section>
 
       <section class="favorites-section shell" aria-labelledby="favorites-title">
         <div class="section-heading">
-          <div class="section-title"><h2 id="favorites-title">Seus aplicativos</h2><span id="favorite-count" class="count">08</span></div>
-          <div class="shelf-actions">
-            <button id="organize-button" class="text-button" type="button" data-action="panel" data-panel="organize"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>Organizar</button>
-            <button id="add-button" class="text-button" type="button" data-action="panel" data-panel="add"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar</button>
-          </div>
+          <div class="section-title"><h2 id="favorites-title">Aplicativos</h2><span id="favorite-count" class="count">08</span></div>
         </div>
         <ul id="favorites" class="favorites" aria-label="Aplicativos favoritos"></ul>
         <p id="empty-favorites" class="empty-favorites" hidden>Sua prateleira está livre. Adicione um aplicativo para começar.</p>
-        <p id="storage-note" class="storage-note">Sua ordem. Seus favoritos. Salvos neste dispositivo.</p>
+        <p id="storage-note" class="storage-note" hidden></p>
       </section>
     </main>
 
     <footer class="footer shell">
       <div class="remote-hints"><span><kbd>↑ ↓ ← →</kbd> navegar</span><span><kbd>OK</kbd> selecionar</span><span><kbd>↩</kbd> voltar</span></div>
-      <span class="system-hint">Home abre o Smart Hub da Samsung</span>
+
     </footer>
   </div>
 
   <div id="panel-overlay" class="panel-overlay" hidden>
     <section id="panel" class="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title" tabindex="-1">
-      <header class="panel-header"><div><p id="panel-eyebrow" class="eyebrow">DO SEU JEITO</p><h2 id="panel-title"></h2></div><button id="panel-close" type="button" class="icon-button" data-action="close" aria-label="Fechar painel"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></header>
+      <header class="panel-header"><div><p id="panel-eyebrow" class="eyebrow"></p><h2 id="panel-title"></h2></div><button id="panel-close" type="button" class="icon-button" data-action="close" aria-label="Fechar painel"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></header>
       <div id="panel-content" class="panel-content"></div>
       <p class="panel-footnote"><kbd>↩</kbd> Voltar ao início</p>
     </section>

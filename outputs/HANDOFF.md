@@ -1,108 +1,98 @@
-# Handoff — Vibe TV para Samsung Tizen
+# Handoff — Vibe TV 1.0.3
 
-Data de referência: 19/10/2026. Responsável pela integração: Codex (`/root`).
+20/10/2026 · Samsung UN50AU8000GXZD · coordenador Codex `/root`.
 
-## Objetivo e pedido
+## Resultado entregue e estado atual
 
-Criar `femedici/vibe-tv` a partir de `simbasjungles/free-my-tv`, preservar o histórico e personalizar a interface da TV do proprietário: último aplicativo como destaque, arte contextual e ações reais, PS5 no HDMI 2 com as duas imagens fornecidas, favoritos editáveis na ordem YouTube, PS5, Netflix, Prime Video, HBO Max, Samsung TV Plus, Disney+ e Spotify, cinco temas (escuro, claro, cinza, pastel e vinho), navegação fluida, controles/configurações nativos preservados. Antes de qualquer mudança na TV, obter backup restaurável do sistema, configurações e sessões atuais. Rodar localmente, testar, capturar telas, documentar e publicar no GitHub.
+**1.0.3 assinada, instalada por atualização direta e aberta na TV.** Na 1.0.2, o proprietário confirmou artes corretas e abertura perfeita do YouTube. A 1.0.3 responde ao último feedback:
 
-**Pedido otimizado:** preservar o clone e implementar/testar localmente um hub Tizen independente para a Samsung UN50AU8000GXZD, com o visual, favoritos e temas solicitados, último acesso registrado somente após abertura confirmada pelo Vibe TV e retomada apenas com integração comprovada. Preservar Smart Hub, aplicativos e sessões sem acessar credenciais; não instalar enquanto o requisito de backup não estiver resolvido. Entregar fonte revisada, testes, capturas reais, documentação e branch publicada.
+- Organizar, Adicionar, Aparência e Ajustes no canto superior direito.
+- ↓ sai do cartão grande direto para YouTube; ↑ retorna ao cartão.
+- Destaque no próprio app com leve aumento/elevação e sombra, transição de 150 ms, sem retângulo externo; redução de movimento respeitada.
+- Cartão retangular inteiro abre o último app acessado pelo Vibe. Sem histórico, mostra o primeiro favorito como Acesso rápido.
+- Sete marcas com imagens oficiais locais, proporção preservada; ícone nativo/fallback neutro para apps extras. PS5 conserva as artes fornecidas.
+- Menos reconstruções de imagens; foco preservado durante callbacks; aviso de armazenamento não desaparece após abertura.
 
-## Decisões e autorizações já concedidas
+44 testes passaram. Prévia local rodando em [127.0.0.1:4173](http://127.0.0.1:4173), com o mesmo código do pacote. O proprietário confirmou navegação e destaque corretos. Porém relatou que YouTube abriu na primeira tentativa e não reabriu na segunda; T016 está em diagnóstico, sem causa confirmada.
 
-- Usar Spec Kit v1.0.3 e inicializar seu scaffold. Não atualizar a versão.
-- Investigar um app Tizen separado, após confirmar que o upstream Android não funciona nesta Samsung.
-- Desenvolver e testar localmente o desenho proposto com esses limites.
-- Commit/push da branch da tarefa estão autorizados. Não abrir PR, fazer merge remoto, deploy ou limpar worktrees sem pedido.
-- A instalação permanece bloqueada pelo requisito de backup integral. A aprovação local não libera alterações no aparelho.
-- Não assumir que todos os aplicativos permitem abertura por API, que existe acesso ao episódio assistido ou que Vibe TV pode substituir Home/ser iniciado em toda ligação.
+**Home continua abrindo Smart Hub.** Não foi feita substituição de sistema. Os exemplos Android usam a seleção de launcher do Android; a Samsung não oferece esse mecanismo público para o WGT. O usuário autorizou a melhor alternativa suportada. Autorun Last App foi ativado por ele, mas início após ligar/usar outros apps não foi verificado. Não há acesso a episódio/progresso/arte privada dos serviços. Backup integral não existe; reset não foi executado.
 
-## Estado atual
+Publicação desta continuação: commit/push da branch `agent/vibe-tv` em andamento; atualizar este registro após verificar o remoto. Entrega anterior publicada: `98afd9704983da2c8a22bf306e0174e4b84cf161`.
 
-Fase local implementada e validada: hub com último acesso, favoritos editáveis, cinco temas, artes PS5, adaptação ao controle, adaptador Tizen, prévia local e pacote não assinado. Fonte, capturas e documentação publicadas na branch `agent/vibe-tv`, com push e igualdade do SHA remoto verificados. O tracker autoritativo é `specs/001-vibe-tv-tizen/tasks.md`.
+## Pedido original e otimizado
 
-A prévia principal está rodando em http://127.0.0.1:4173 e foi deixada aberta no Edge. Nenhum requisito de hardware foi marcado como concluído.
+Original: clonar Free My TV em `femedici/vibe-tv`, reconstruir a interface da TV, manter configurações e logins, ter recuperação, último app em destaque com arte e ações reais, PS5 HDMI2 com imagens anexadas, favoritos editáveis na ordem YouTube, PS5, Netflix, Prime, HBO Max, Samsung TV Plus, Disney+, Spotify; cinco temas; fluidez; capturas/documentação/Git. Depois pediu Home como sistema, logos originais sem quebra e retirada do texto supérfluo; aceitou a melhor alternativa suportada quando a troca global não fosse possível. Último feedback: controles no topo direito e foco suave, direto para apps.
 
-**O objetivo físico original não foi concluído.** Não há backup integral restaurável verificado. Nenhuma instalação, ativação do modo desenvolvedor, pareamento, troca de entrada, reset ou mudança de configuração foi executada. As sessões existentes não foram lidas, copiadas ou exportadas, e sua restauração não foi prometida.
+**Pedido otimizado:** manter o clone e entregar o melhor hub Tizen suportado para a AU8000, com último lançamento confirmado pelo Vibe, artes originais proporcionais, favoritos/temas/PS5 e navegação leve. Preservar sistema, apps e credenciais; usar a instalação separada já autorizada. Corrigir o percurso do controle e o destaque, validar no navegador e instalar a versão assinada; documentar evidência real e limites de Home/histórico/recuperação, publicar fonte e capturas na branch e deixar teste local disponível.
 
-## Tarefas e dependências
+## Decisões e autorizações
 
-| ID | Entrega | Estado | Responsável / dependências |
-|---|---|---|---|
-| T001 | Constituição, spec e contratos aprovados | done | root / nenhuma |
-| T002 | Preferências, favoritos e histórico | done | audit_platform_recovery / T001 |
-| T003 | Adaptador e manifesto Tizen | done | audit_ui_capabilities / T001 |
-| T004 | Interface, assets e navegação | done | tv_interface / T001 |
-| T005 | Ferramentas e recuperação documentada | done | root / T001 |
-| T006 | Integração, testes e capturas | done | root / T002–T005 |
-| T007 | Revisão independente/convergência | done | root + revisores / T006 |
-| T008 | Handoff, commit e push final | done | root / T007 |
-| T009 | Backup e validação física | blocked | root + usuário / T008 e recuperação |
-| T010 | HDMI não oculta app homônimo | done | root / T004 |
-| T011 | Foco preservado após abertura | done | root / T006 |
-
-T009 é a única frente física. Próxima ação: decisão de recuperação antes de qualquer mutação no dispositivo. Não executar a partir desta entrega local.
-
-## Validação executada e evidência
-
-- `node --test tests/*.test.cjs`: **38/38**, zero falhas (estado 13, plataforma 17, navegação 6, ferramentas 2).
-- `node --check`: todos os scripts Tizen, ferramentas e fixture passaram.
-- `node tools/package-tizen.cjs`: 13 arquivos em `dist/VibeTV-unsigned.wgt`; `unzip -t` passou. Pacote excluído do Git e reproduzível; não assinado e não pronto para instalar, sem fixture ou certificados.
-- Manifesto XML, conteúdo/ícone e dois privilégios públicos conferidos. Hashes SHA256 das duas imagens idênticos aos originais; código Android/licença e README original preservados.
-- Edge em 1920×1080 e 390×844: ordem inicial, cinco temas após reload, reordenar/remover/adicionar, prateleira vazia/restauração, navegação com overflow, Enter/Escape e foco de painéis passaram. Sem erros/avisos de console nos fluxos conferidos.
-- Fixture separada, marcada SIMULADO, verificou último acesso após sucesso, falha preservando o anterior, ID de app extra, HDMI2/viewer e saída. Fixture encerrada; não é teste de hardware.
-- RED/GREEN adicional: app chamado PlayStation5 oculto por HDMI e foco perdido após sucesso; corrigidos e revalidados. Revisão independente final sem achados pendentes.
-- Redução de movimento: regra CSS carregada/inspecionada; preferência do sistema não alterada e comportamento físico pendente.
-- Convergência: 16 requisitos, 6 critérios, 14 cenários de aceitação, 7 decisões de arquitetura e 5 princípios revisados; sem lacunas locais de implementação. T008 registra a publicação concluída; o objetivo físico original permanece em T009.
-
-Veja [validação completa](../docs/vibe-tv/validation.md), [tema escuro](vibe-tv-dark.jpg), [claro](vibe-tv-light.jpg), [temas](vibe-tv-themes.jpg), [organização](vibe-tv-organize.jpg), [tela estreita](vibe-tv-narrow.jpg) e [histórico em simulação explícita](vibe-tv-simulated-last-access.jpg).
+- Spec Kit **v1.0.3**, scaffold/constituição existentes e autorizados; não atualizar automaticamente.
+- Tizen separado aprovado após constatar que o upstream exige Android. Nenhuma nova aprovação de desenho é necessária para os ajustes pedidos.
+- O requisito inicial de backup integral foi substituído expressamente por reset oficial documentado como fallback, com perda possível de sessões/configurações e sem garantia de recuperar firmware antigo ou corrompido.
+- Developer Mode, conexão, assinatura, instalação exclusiva do Vibe e testes de apps/HDMI autorizados. Conta/certificado Samsung concluídos pelo proprietário; não pedir credenciais no chat nem recriar certificado.
+- Commit/push da branch autorizados; sem PR, merge em main, force push ou limpeza automática de worktrees.
+- Reset, root, firmware/ISO/ADB, desativar Smart Hub ou limpar/desinstalar apps de terceiros continuam fora do escopo.
 
 ## Arquitetura e fluxo
 
-Sem frameworks ou dependências de runtime. HTML/CSS/JavaScript local escrito para compatibilidade com Chromium 76 / Tizen 6.0; execução neste engine ainda depende de hardware/SDK.
+Aplicação estática, sem dependências de runtime, backend ou chamadas externas. HTML/CSS/JS compatíveis com Chromium 76 / Tizen 6.0.
 
-1. `tizen/state.js`: estado versionado validado de tema, ordem, favoritos personalizados e último acesso; armazenamento local sem credenciais.
-2. `tizen/app.js` + `navigation.js`: renderização, painéis, controle de foco, seleção exata de apps por inventário e ações do usuário.
-3. `tizen/platform.js`: adaptador UMD para APIs Tizen públicas; preview rejeita; callbacks têm timeout. Apps abrem por ID real. PS5 enumera VIDEOSOURCE e aceita somente HDMI 2; seleciona a fonte e abre `org.tizen.tv-viewer`. Falha após mudança de fonte relata o efeito parcial.
-4. Histórico atualiza apenas após sucesso do adaptador; falhas e preview não inventam acesso. Conteúdo privado/episódios dos provedores não é acessado.
-5. `tools/preview.cjs`: servidor estático restrito a `tizen/`, ligado só em `127.0.0.1`, sem conexão à TV.
-6. `tools/package-tizen.cjs`: ZIP/WGT de fontes com lista explícita, sem assinatura ou instalação. Não é build certificado pelo SDK.
+1. `state.js`: `vibe-tv.preferences.v1` em localStorage — tema, ordem, favoritos e último lançamento; nenhuma senha/token.
+2. `app.js`: UI, hero, logos, painéis, cache de renderização e feedback. Dados inalterados não recriam shelf/hero. Falhas de armazenamento mantêm aviso.
+3. `navigation.js`: geometria por distância entre bordas; resolução por ID observado presente no inventário ou nome exato não ambíguo. IDs dummy conhecidos excluídos.
+4. `platform.js`: APIs públicas Tizen com timeout de 5 s. `application.launch` abre o app já instalado; só sucesso registra último acesso.
+5. PS5: enumera VIDEOSOURCE, exige HDMI2 conectado, `tvwindow.setSource`, depois `org.tizen.tv-viewer`. Erro parcial é explícito. Fluxo confirmado em simulação; imagem/áudio/HDR/latência físicos pendentes.
+6. `preview.cjs`: serve apenas `tizen/` em loopback. Navegador não abre apps reais nem inventa histórico.
+7. `package-tizen.cjs`: prepara WGT não assinado com 20 arquivos; assinatura posterior via perfil Samsung local e atualização direta `vd_appinstall`.
 
-O código Android original continua em `app/` com seu `build.sh` e README em `README.upstream.md`. Não aplicar suas instruções ADB à Samsung Tizen.
+Privilégios: somente `application.launch` e `tv.window`. O original Android em `app/` permanece preservado, assim como licença/histórico e `README.upstream.md`.
 
-## Arquivos e documentação
+## Tracker e dependências
 
-- `tizen/`: hub, adaptadores, manifesto, estilos e assets locais. `assets/ATTRIBUTION.txt` preserva origem; imagens PS5 copiadas do usuário e fonte Inter com OFL.
-- `tests/`: testes de estado, plataforma, navegação e ferramentas.
-- `tools/`: servidor local e preparação do pacote não assinado.
-- `README.md`: uso e limites; `README.upstream.md`: original preservado.
-- `docs/vibe-tv/recovery.md`: requisito de recuperação não atendido; backup de configurações não equivale a imagem e sessões restauráveis.
-- `docs/vibe-tv/compatibility.md`: matriz de capacidades, fontes oficiais e checklist físico futuro.
-- `docs/vibe-tv/validation.md`: resultados observados, ambiente e limites dos testes.
-- `specs/001-vibe-tv-tizen/`: contrato vivo, plano interno, pesquisa, contratos de módulos, checklist e único tracker.
-- `.specify/`, `.agents/skills/`: scaffold autorizado do Spec Kit 1.0.3.
-- `outputs/`: este handoff, prova do repositório criado e capturas reais da aplicação.
+Única fonte de verdade: `specs/001-vibe-tv-tizen/tasks.md`; somente coordenador atualiza. Resumo, sem tracker paralelo:
+
+- T001–T008: fase local original concluída/publicada.
+- T010–T011: correções iniciais de deduplicação e foco concluídas.
+- T012: ícones/IDs corrigidos, aceitos pelo proprietário.
+- T013: pesquisa Home/autorun concluída; sem mecanismo público para substituir Home.
+- T014: refinamento 1.0.3 implementado/validado/instalado.
+- T015: revisão/capturas/docs feitas, publicação em andamento (depende de T014).
+- T009: validação física parcial em andamento (depende de T008). Navegação/destaque aceitos; falha na reabertura do YouTube em T016; demais serviços/sessões, PS5, desempenho e autorun ainda não verificados.
+
+Não marcar toda a integração física concluída com base no sucesso do YouTube ou de uma fixture.
+
+## Verificações executadas
+
+- `node --test tests/*.test.cjs`: **44/44**, zero falhas (estado 13, plataforma 17, navegação 9, controlador 3, ferramentas 2).
+- `node --check` em 12 scripts; manifesto XML com somente dois privilégios públicos.
+- Browser RED: ↓ do hero parava em Organizar. GREEN: `favorite-youtube`; ↑ retorna a hero. Desktop, 1280×720 e 390×844 conferidos.
+- Imagens carregadas com `contain`; cinco temas/foco; fallback neutro e ausência de reconstrução da prateleira testados. Capturas reais do navegador, não fotografias da TV.
+- Revisores independentes sem bloqueios após correções de aviso de armazenamento, foco assíncrono e descrição do histórico. VM RED 0/3 antes/GREEN 3/3 depois.
+- 1.0.3: 20 arquivos idênticos entre unsigned e signed, duas assinaturas XML adicionais; CRC/XML/version válidos. Primeira comparação encontrou entradas de diretório extras do assinador; verificação corrigida para comparar arquivos, sem divergência de bytes.
+- TV: atualização reportou `install completed`; somente Vibe reiniciado e novo processo confirmado. 1.0.2 teve aceitação explícita de visual e YouTube pelo proprietário.
+- `git diff --check`, prerequisites Spec Kit e inspeção de privacidade passaram antes de publicar. Pacotes/chaves/identificadores privados fora do Git.
+
+Capturas: [escuro](vibe-tv-1.0.3-dark.png), [claro](vibe-tv-1.0.3-light.png), [PS5 simulado](vibe-tv-1.0.3-ps5-simulated.png), [estreita simulada](vibe-tv-1.0.3-narrow-simulated.png). Capturas 1.0.2 preservadas como evidência intermediária. Veja [validação detalhada](../docs/vibe-tv/validation.md).
+
+## Arquivos relevantes desta continuação
+
+- `tizen/{index.html,styles.css,app.js,navigation.js,state.js,config.xml}`: layout/foco/logos/IDs/cache/versão 1.0.3.
+- `tizen/assets/brands/*`, `ATTRIBUTION.txt`: originais oficiais e atribuição; [fontes/hashes](../docs/vibe-tv/brand-assets.md).
+- `tests/navigation.test.cjs`, `controller.test.cjs`, `ui-fixture.cjs`: regressões e ambiente explicitamente simulado.
+- `docs/vibe-tv/{compatibility,recovery,validation,installation,brand-assets}.md`, README: limites, processo e evidências atualizados.
+- `.specify/memory/constitution.md`, `specs/001-vibe-tv-tizen/`: decisão de recuperação, contrato vivo, pesquisa, plano, tracker e checklist.
+- `outputs/`: capturas e este handoff. `dist/` e `.dev/` continuam privados/ignorados.
 
 ## Git e worktrees
 
-Repositório: [femedici/vibe-tv — branch entregue](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv)
+Repo: [femedici/vibe-tv, agent/vibe-tv](https://github.com/femedici/vibe-tv/tree/agent/vibe-tv).
 
-Commit de implementação validada e publicado: `5beaa78321e959cc205417774c797eb4e85e532a`. `git ls-remote origin refs/heads/agent/vibe-tv` coincidiu com o HEAD local. A revisão documental que contém este fechamento vem em seguida na mesma branch; não houve PR, merge em main ou deploy.
+Raiz `/Users/felipemedici/Documents/quadro-branco/vibe-tv`; branch de integração `agent/vibe-tv`. `origin` é o fork; `upstream` é simbasjungles/free-my-tv. Histórico preservado. Não commitar diretamente em main.
 
-Diretório local: `/Users/felipemedici/Documents/quadro-branco/vibe-tv`.
+Worktrees existentes preservadas: `.worktrees/state` (`agent/vibe-tv-state`), `.worktrees/platform` (`agent/vibe-tv-platform`), `.worktrees/interface` (`agent/vibe-tv-interface`). Base comum original `c084d09`. Nesta continuação root editou sequencialmente; agentes trabalharam somente em pesquisa/revisão ou snippets em `/tmp`. Nenhuma branch auxiliar precisa ser publicada.
 
-Branch de integração: `agent/vibe-tv`. Base original: `b29d3e0e646a5a185ede9cf4dadf9306e6c529f5`. Base comum das tarefas: `c084d09`.
-
-| Branch | Worktree | Responsabilidade |
-|---|---|---|
-| agent/vibe-tv | raiz | coordenação, ferramentas, documentação, integração e entrega |
-| agent/vibe-tv-state | .worktrees/state | estado e seus testes |
-| agent/vibe-tv-platform | .worktrees/platform | adaptador Tizen e seus testes |
-| agent/vibe-tv-interface | .worktrees/interface | interface, assets e navegação |
-
-Worktrees preservadas. Só a branch de integração reúne o resultado. `origin` aponta para o fork, com push SSH já autenticado como `femedici`; `upstream` aponta para `simbasjungles/free-my-tv`. Nunca imprimir chaves/tokens. `main` permanece o upstream; a adaptação está na branch de trabalho.
-
-## Retomar localmente
+## Retomar e rodar
 
 ```sh
 cd /Users/felipemedici/Documents/quadro-branco/vibe-tv
@@ -111,18 +101,16 @@ node --test tests/*.test.cjs
 node tools/preview.cjs
 ```
 
-Se a prévia já estiver ativa, reutilize http://127.0.0.1:4173. Se a porta estiver ocupada por outro processo, use `node tools/preview.cjs 4174`; não encerre processos alheios. Setas/Enter/Escape e mouse permitem revisar a interface. Os temas e a ordem ficam no armazenamento local deste navegador; esta preferência não é backup da TV.
+Reutilizar a prévia ativa em 4173. Para integração simulada, `node tests/ui-fixture.cjs` serve 4175; nunca confundir com hardware. Servidores não precisam de npm install.
 
 ```sh
 node tools/package-tizen.cjs
-unzip -l dist/VibeTV-unsigned.wgt
 SPECIFY_FEATURE_DIRECTORY=specs/001-vibe-tv-tizen .specify/scripts/bash/check-prerequisites.sh --json --require-spec --require-tasks --include-tasks
 ```
 
-O override de Spec Kit resolve a feature em novos clones porque `.specify/feature.json` é estado local ignorado. Ler spec, constituição, tracker e validação antes de alterar. Novas mudanças devem atualizar o contrato vivo e manter os limites aprovados.
+Para TV, seguir [installation.md](../docs/vibe-tv/installation.md). Ferramentas já instaladas em `~/.tizen-extension-platform/server/sdktools/`; perfil VibeTV pronto. Não usar `tz install` para atualização, pois o wrapper observado tenta desinstalar primeiro. Conferir `sdb devices` e modelo atual: endereço mudou por DHCP. Não publicar IP/DUID/serial/perfis. Guardar certificado no Mac, não no repo. A porta/debug do Web Inspector é temporária; reconectar somente quando necessário.
 
-## Bloqueios e ações proibidas
+Próxima ação: coletar a mensagem do segundo clique no YouTube e reproduzir T016. Após reiniciar somente Vibe para diagnóstico, versão 1.0.3 foi confirmada no Web Inspector; estado inicial sem aria-busy e sem toast. Isso não reproduz a falha. A conexão de debug posteriormente fechou, sem causa confirmada. Se houver problema reproduzível, corrigir com teste proporcional, incrementar versão, reempacotar/assinar e atualizar só Vibe. Para demais verificações físicas, orientar um teste por vez; não reiniciar/resetar a TV como atalho sem contexto. Home global e histórico privado não devem ser prometidos.
 
-T009 depende de um backup realmente restaurável ou decisão explícita do usuário revisando esse requisito. Só depois poderão ser definidos SDK/certificados/autorizações e testes físicos. A instalação e o comportamento no aparelho não se deduzem do sucesso do navegador ou das APIs simuladas.
-
-Não usar root/firmware/ISO/ADB para contornar Tizen. Não resetar Smart Hub ou fábrica, limpar dados, desinstalar apps existentes, migrar tokens privados, mudar rede/pareamento, habilitar modo desenvolvedor, instalar, trocar HDMI ou alterar inicialização nesta fase. Não publicar serial, DUID, endereços de rede privados, certificados, senhas ou tokens. Não force push, reescrever histórico, integrar em main, fazer deploy ou remover worktrees automaticamente.
+## Novo relato do proprietário — após 1.0.3
+O proprietário confirmou navegação e destaque corretos, mas relatou que o YouTube abriu uma vez e não abriu na segunda tentativa. Reabertura em investigação em T016; causa ainda não comprovada. A instalação e a primeira abertura não validam ciclos consecutivos. Publicação final aguarda essa correção ou evidência clara do bloqueio.
