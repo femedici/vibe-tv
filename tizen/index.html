@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#121619">
+  <meta name="theme-color" content="#171c1f">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: file:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
   <title>Vibe TV</title>
   <link rel="icon" href="assets/icon.png">
@@ -30,17 +30,19 @@
 
   <div id="hub" class="hub">
     <header class="topbar shell">
-      <div class="wordmark" aria-label="Vibe TV">vibe<span>tv</span><i aria-hidden="true"></i></div>
-      <nav class="main-nav" aria-label="Principal">
-        <button id="nav-home" class="nav-button selected" type="button" data-action="home" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Início</span></button>
-      </nav>
+      <div class="topbar-leading">
+        <time id="clock" aria-label="Horário local"></time>
+        <nav class="main-nav" aria-label="Principal">
+          <button id="nav-home" class="home-button" type="button" data-action="home" aria-current="page" aria-label="Vibe TV — início"><span class="wordmark">vibe<span>tv</span></span></button>
+        </nav>
+        <span id="preview-badge" class="preview-badge">Prévia local</span>
+      </div>
       <nav class="hub-controls" aria-label="Personalizar">
-        <button id="organize-button" class="nav-button" type="button" data-action="panel" data-panel="organize"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg><span>Organizar</span></button>
-        <button id="add-button" class="nav-button" type="button" data-action="panel" data-panel="add"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Adicionar</span></button>
-        <button id="nav-themes" class="nav-button" type="button" data-action="panel" data-panel="themes"><svg class="icon" aria-hidden="true"><use href="#i-theme"/></svg><span>Aparência</span></button>
-        <button id="nav-settings" class="nav-button" type="button" data-action="panel" data-panel="settings"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>Ajustes</span></button>
+        <button id="organize-button" class="nav-button" type="button" data-action="panel" data-panel="organize" aria-label="Organizar aplicativos"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg><span class="control-label">Organizar</span></button>
+        <button id="add-button" class="nav-button" type="button" data-action="panel" data-panel="add" aria-label="Adicionar aplicativos"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span class="control-label">Adicionar</span></button>
+        <button id="nav-themes" class="nav-button" type="button" data-action="panel" data-panel="themes" aria-label="Aparência"><svg class="icon" aria-hidden="true"><use href="#i-theme"/></svg><span class="control-label">Aparência</span></button>
+        <button id="nav-settings" class="nav-button" type="button" data-action="panel" data-panel="settings" aria-label="Ajustes"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span class="control-label">Ajustes</span></button>
       </nav>
-      <div class="topbar-meta"><span id="preview-badge" class="preview-badge">Prévia local</span><time id="clock" aria-label="Horário local"></time></div>
     </header>
 
     <main>
@@ -59,7 +61,7 @@
       </section>
 
       <section class="favorites-section shell" aria-labelledby="favorites-title">
-        <div class="section-heading">
+        <div class="section-heading sr-only">
           <div class="section-title"><h2 id="favorites-title">Aplicativos</h2><span id="favorite-count" class="count">08</span></div>
         </div>
         <ul id="favorites" class="favorites" aria-label="Aplicativos favoritos"></ul>
@@ -70,7 +72,6 @@
 
     <footer class="footer shell">
       <div class="remote-hints"><span><kbd>↑ ↓ ← →</kbd> navegar</span><span><kbd>OK</kbd> selecionar</span><span><kbd>↩</kbd> voltar</span></div>
-
     </footer>
   </div>
 
