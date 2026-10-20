@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+    id="https://github.com/femedici/vibe-tv" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="VibeTV2026.VibeTV" package="VibeTV2026" required_version="6.0"/>
+    <content src="index.html"/>
+    <icon src="assets/icon.png"/>
+    <name>Vibe TV</name>
+    <tizen:profile name="tv-samsung"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+    <tizen:content-security-policy>default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' file:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'</tizen:content-security-policy>
+    <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>
